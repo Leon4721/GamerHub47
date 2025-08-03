@@ -1,0 +1,82 @@
+/* General Layout */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #222;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  padding: 20px;
+}
+
+.instructions {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+/* Game Buttons */
+.game-container {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  grid-gap: 15px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.game-button {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.8;
+  outline: none;
+}
+
+#green { background: #00a74a; }
+#red { background: #ff4c4c; }
+#yellow { background: #fed93f; }
+#blue { background: #1c8cff; }
+
+.game-button.active {
+  opacity: 1;
+  box-shadow: 0 0 20px #fff;
+}
+
+/* Controls */
+.controls {
+  margin-top: 15px;
+}
+
+#start-btn {
+  background-color: #444;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+#start-btn:hover {
+  background-color: #666;
+}
+
+#feedback {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+  .game-container {
+    grid-template-columns: repeat(2, 120px);
+    grid-gap: 10px;
+  }
+  .game-button {
+    width: 120px;
+    height: 120px;
+  }
+}
