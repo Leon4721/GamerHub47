@@ -30,35 +30,35 @@ const monsters = [
     { 
         name: "Goblin", 
         level: 1, 
-        image: "goblin.png",
+        image: "assets/images/goblin.png",
         speed: 800,
         health: 100
     },
     { 
         name: "Orc", 
         level: 2, 
-        image: "orc.png",
+        image: "assets/images/orc.png",
         speed: 700,
         health: 120
     },
     { 
         name: "Dark Mage", 
         level: 3, 
-        image: "darkmage.png",
+        image: "assets/images/darkmage.png",
         speed: 600,
         health: 150
     },
     { 
         name: "Skeleton King", 
         level: 4, 
-        image: "sknigh.png",
+        image: "assets/images/sknigh.png",
         speed: 500,
         health: 200
     },
     { 
         name: "Dragon", 
         level: 5, 
-        image: "dragon.png",
+        image: "assets/images/dragon.png",
         speed: 400,
         health: 250
     }
