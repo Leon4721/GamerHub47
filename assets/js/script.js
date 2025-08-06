@@ -29,35 +29,36 @@
             { 
                 name: "Goblin", 
                 level: 1, 
-                image: "https://images.unsplash.com/photo-1618941718718-7d5d0d2f4d3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                image: "assets/images/goblin.png",
                 speed: 800,
                 health: 100
             },
             { 
                 name: "Orc", 
                 level: 2, 
-                image: "https://images.unsplash.com/photo-1618941718718-7d5d0d2f4d3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                image: "assets/images/orc.png",
                 speed: 700,
                 health: 120
             },
             { 
                 name: "Dark Mage", 
                 level: 3, 
-                image: "https://images.unsplash.com/photo-1618941718718-7d5d0d2f4d3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                image: "assets/images/darkmage.png", .
+                
                 speed: 600,
                 health: 150
             },
             { 
                 name: "Skeleton King", 
                 level: 4, 
-                image: "https://images.unsplash.com/photo-1618941718718-7d5d0d2f4d3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                image: "assets/images/skight.png",
                 speed: 500,
                 health: 200
             },
             { 
                 name: "Dragon", 
                 level: 5, 
-                image: "https://images.unsplash.com/photo-1618941718718-7d5d0d2f4d3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                image:"assets/images/dragon.png",
                 speed: 400,
                 health: 250
             }
@@ -332,4 +333,3 @@
 
         // Initialize the game
         initGame();
-        

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Memory Battle</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #f0f0f0;
+        }
+        
+        .game-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-title {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+            letter-spacing: 2px;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: rgba(30, 30, 50, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #444;
+        }
+        
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-box {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 15px 20px;
+            border-radius: 12px;
+            min-width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .stat-title {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        .monster-container {
+            position: relative;
+            margin: 30px auto;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .monster-display {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 15px;
+            perspective: 1000px;
+        }
+        
+        .monster-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            border: 3px solid #ffcc00;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease, box-shadow 0.3s ease;
+        }
+        
+        .monster-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            box-shadow: 0 12px 24px rgba(255, 204, 0, 0.4);
+        }
+        
+        .monster-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-shadow: 0 0 8px rgba(255, 107, 107, 0.7);
+            margin-bottom: 10px;
+        }
+        
+        .monster-level {
+            font-size: 1.2rem;
+            color: #4ecdc4;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .health-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 25px;
+        }
+        
+        .health-bar {
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+            border: 2px solid #555;
+        }
+        
+        .health-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 0.5s ease;
+        }
+        
+        #player-health {
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+        }
+        
+        #monster-health {
+            background: linear-gradient(to right, #F44336, #FF9800);
+        }
+        
+        .health-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .control-btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .control-btn:active {
+            transform: translateY(1px);
+        }
+        
+        #start-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        #redo-btn {
+            background: linear-gradient(to right, #f39c12, #d35400);
+        }
+        
+        .game-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 0 auto 25px;
+            max-width: 500px;
+        }
+        
+        .game-button {
+            height: 100px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+        
+        .game-button:active {
+            transform: translateY(2px);
+        }
+        
+        .game-button.active {
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+        
+        .button-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        #archer {
+            background: linear-gradient(to bottom right, #8e44ad, #9b59b6);
+        }
+        
+        #mage {
+            background: linear-gradient(to bottom right, #3498db, #2980b9);
+        }
+        
+        #warrior {
+            background: linear-gradient(to bottom right, #e74c3c, #c0392b);
+        }
+        
+        #healer {
+            background: linear-gradient(to bottom right, #2ecc71, #27ae60);
+        }
+        
+        .key-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        #feedback {
+            min-height: 60px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            margin: 20px auto;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #444;
+        }
+        
+        .instructions {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .instructions h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .level-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 204, 0, 0.2);
+            border: 2px solid #ffcc00;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .level-indicator .label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .level-indicator .value {
+            font-size: 2rem;
+            color: #ffcc00;
+        }
+        
+        @media (max-width: 600px) {
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .game-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .monster-display {
+                width: 140px;
+                height: 140px;
+            }
+        }
+        
+        /* Monster cards animation */
+        @keyframes cardAppear {
+            0% { transform: scale(0.8) rotateY(90deg); opacity: 0; }
+            100% { transform: scale(1) rotateY(0); opacity: 1; }
+        }
+        
+        .monster-card.appear {
+            animation: cardAppear 0.8s ease-out forwards;
+        }
+        
+        @keyframes cardDefeat {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(-30deg); opacity: 0; }
+        }
+        
+        .monster-card.defeat {
+            animation: cardDefeat 1s ease-in forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">RPG Memory Battle</h1>
+        
+        <div class="level-indicator">
+            <div class="label">LEVEL</div>
+            <div class="value" id="level-display">1</div>
+        </div>
+        
+        <div class="game-header">
+            <div class="stat-box">
+                <div class="stat-title">ROUND</div>
+                <div class="stat-value" id="round-display">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-title">SCORE</div>
+                <div class="stat-value" id="score-display">0</div>
+            </div>
+        </div>
+        
+        <div class="monster-container">
+            <div class="monster-display">
+                <!-- Monster card will be inserted here -->
+            </div>
+            <div class="monster-name" id="monster-name">Goblin</div>
+            <div class="monster-level">Level <span id="monster-level">1</span></div>
+        </div>
+        
+        <div class="health-container">
+            <div class="health-label">
+                <span>Player Health</span>
+                <span id="player-health-value">100%</span>
+            </div>
+            <div class="health-bar">
+                <div class="health-fill" id="player-health" style="width: 100%"></div>
+            </div>
+            
+            <div class="health-label">
+                <span>Monster Health</span>
+                <span id="monster-health-value">100%</span>
+            </div>
+            <div class="health-bar">
+                <div class="health-fill" id="monster-health" style="width: 100%"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="start-btn">Start Battle</button>
+            <button class="control-btn" id="redo-btn">Replay Pattern</button>
+        </div>
+        
+        <div class="game-buttons">
+            <button class="game-button" id="archer">
+                <div class="button-icon">🏹</div>
+                Archer
+                <div class="key-hint">1</div>
+            </button>
+            <button class="game-button" id="mage">
+                <div class="button-icon">🔮</div>
+                Mage
+                <div class="key-hint">2</div>
+            </button>
+            <button class="game-button" id="warrior">
+                <div class="button-icon">⚔️</div>
+                Warrior
+                <div class="key-hint">3</div>
+            </button>
+            <button class="game-button" id="healer">
+                <div class="button-icon">❤️</div>
+                Healer
+                <div class="key-hint">4</div>
+            </button>
+        </div>
+        
+        <div id="feedback">Press Start Battle to begin your adventure!</div>
+        
+        <div class="instructions">
+            <h3>How to Play</h3>
+            <ul>
+                <li>Memorize the sequence of attacks shown by the monster</li>
+                <li>Repeat the sequence by clicking the buttons or pressing 1-4 keys</li>
+                <li>Correct sequences damage the monster, mistakes damage you</li>
+                <li>Defeat monsters to advance to higher levels</li>
+                <li>Healer attacks restore your health but don't damage monsters</li>
+            </ul>
+            <p>Monster difficulty increases with each level - defeat the Dragon to win the game!</p>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let sequence = [];
+        let playerSequence = [];
+        let round = 0;
+        let score = 0;
+        let playerHealth = 100;
+        let monsterHealth = 100;
+        let level = 1;
+        let gameStarted = false;
+
+        // DOM elements
+        const buttons = document.querySelectorAll('.game-button');
+        const feedback = document.getElementById('feedback');
+        const monsterName = document.getElementById('monster-name');
+        const monsterLevel = document.getElementById('monster-level');
+        const monsterDisplay = document.querySelector('.monster-display');
+        const playerHPBar = document.getElementById('player-health');
+        const monsterHPBar = document.getElementById('monster-health');
+        const playerHealthValue = document.getElementById('player-health-value');
+        const monsterHealthValue = document.getElementById('monster-health-value');
+        const roundDisplay = document.getElementById('round-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const levelDisplay = document.getElementById('level-display');
+        const startBtn = document.getElementById('start-btn');
+        const redoBtn = document.getElementById('redo-btn');
+
+        // Monster data with increasing difficulty and unique images
+        const monsters = [
+            { 
+                name: "Goblin", 
+                level: 1, 
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%233a8c3a'/%3E%3Ccircle cx='90' cy='70' r='30' fill='%2367c767'/%3E%3Cpath d='M60 120 Q90 150 120 120' stroke='%2367c767' stroke-width='10' fill='none'/%3E%3Ccircle cx='80' cy='60' r='5' fill='black'/%3E%3Ccircle cx='100' cy='60' r='5' fill='black'/%3E%3C/svg%3E",
+                speed: 800,
+                health: 100
+            },
+            { 
+                name: "Orc", 
+                level: 2, 
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23556b2f'/%3E%3Ccircle cx='90' cy='70' r='35' fill='%236b8e23'/%3E%3Cpath d='M60 120 Q90 160 120 120' stroke='%236b8e23' stroke-width='12' fill='none'/%3E%3Ccircle cx='80' cy='60' r='6' fill='black'/%3E%3Ccircle cx='100' cy='60' r='6' fill='black'/%3E%3Crect x='70' y='90' width='40' height='10' fill='%23333'/%3E%3C/svg%3E",
+                speed: 700,
+                health: 120
+            },
+            { 
+                name: "Dark Mage", 
+                level: 3, 
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23483d8b'/%3E%3Ccircle cx='90' cy='70' r='30' fill='%236a5acd'/%3E%3Cpath d='M60 120 Q90 140 120 120' stroke='%236a5acd' stroke-width='8' fill='none'/%3E%3Ccircle cx='80' cy='60' r='5' fill='black'/%3E%3Ccircle cx='100' cy='60' r='5' fill='black'/%3E%3Crect x='80' y='85' width='20' height='5' fill='white'/%3E%3Cpath d='M90 100 L100 115 L80 115 Z' fill='%23f0f0f0'/%3E%3C/svg%3E",
+                speed: 600,
+                health: 150
+            },
+            { 
+                name: "Skeleton King", 
+                level: 4, 
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%232f4f4f'/%3E%3Ccircle cx='90' cy='70' r='30' fill='%23708090'/%3E%3Cpath d='M60 120 Q90 150 120 120' stroke='%23708090' stroke-width='10' fill='none'/%3E%3Ccircle cx='80' cy='60' r='5' fill='black'/%3E%3Ccircle cx='100' cy='60' r='5' fill='black'/%3E%3Crect x='85' y='40' width='10' height='15' fill='%23ffcc00'/%3E%3Cpath d='M80 100 L90 120 L100 100' fill='%23f0f0f0'/%3E%3C/svg%3E",
+                speed: 500,
+                health: 200
+            },
+            { 
+                name: "Dragon", 
+                level: 5, 
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23b22222'/%3E%3Cpath d='M90 50 Q120 30 150 50 T180 100 Q160 120 140 100 T90 50' fill='%23dc143c'/%3E%3Ccircle cx='100' cy='70' r='5' fill='black'/%3E%3Cpath d='M150 60 L170 40 L165 60' fill='%23dc143c'/%3E%3Cpath d='M140 80 L160 70 L155 85' fill='%23dc143c'/%3E%3Cpath d='M130 100 L150 95 L145 110' fill='%23dc143c'/%3E%3C/svg%3E",
+                speed: 400,
+                health: 250
+            }
+        ];
+
+        // Create monster card element
+        function createMonsterCard(monster) {
+            const card = document.createElement('div');
+            card.className = 'monster-card appear';
+            card.style.backgroundImage = `url('${monster.image}')`;
+            card.style.display = 'block';
+            return card;
+        }
+
+        // Initialize game
+        function initGame() {
+            sequence = [];
+            playerSequence = [];
+            round = 0;
+            score = 0;
+            playerHealth = 100;
+            level = 1;
+            
+            // Set first monster
+            setMonster(level - 1);
+            updateDisplays();
+            
+            feedback.textContent = "Press Start Battle to begin your adventure!";
+            gameStarted = false;
+        }
+
+        // Set monster based on level
+        function setMonster(index) {
+            const monster = monsters[index];
+            monsterName.textContent = monster.name;
+            monsterLevel.textContent = monster.level;
+            monsterHealth = monster.health;
+            levelDisplay.textContent = monster.level;
+            
+            // Clear previous card and create new one
+            monsterDisplay.innerHTML = '';
+            const card = createMonsterCard(monster);
+            monsterDisplay.appendChild(card);
+        }
+
+        // Update all displays
+        function updateDisplays() {
+            playerHPBar.style.width = playerHealth + "%";
+            monsterHPBar.style.width = (monsterHealth / monsters[level-1].health * 100) + "%";
+            playerHealthValue.textContent = playerHealth + "%";
+            monsterHealthValue.textContent = Math.round((monsterHealth / monsters[level-1].health) * 100) + "%";
+            roundDisplay.textContent = round;
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+        }
+
+        // Start battle
+        function startBattle() {
+            if (gameStarted) return;
+            
+            gameStarted = true;
+            feedback.textContent = "Battle begins! Defeat the Goblin!";
+            
+            setTimeout(() => {
+                nextRound();
+            }, 1500);
+        }
+
+        // Replay sequence
+        function replaySequence() {
+            if (gameStarted && sequence.length > 0) {
+                feedback.textContent = "Replaying the pattern...";
+                showSequence();
+            }
+        }
+
+        // Move to next round
+        function nextRound() {
+            if (!gameStarted) return;
+            
+            playerSequence = [];
+            round++;
+            roundDisplay.textContent = round;
+            
+            // Add a new attack to the sequence
+            sequence.push(nextAttack());
+            
+            feedback.textContent = `Memorize the attack pattern! Round ${round}`;
+            showSequence();
+        }
+
+        // Generate random attack
+        function nextAttack() {
+            const choices = ['archer', 'mage', 'warrior', 'healer'];
+            return choices[Math.floor(Math.random() * choices.length)];
+        }
+
+        // Show sequence to player
+        function showSequence() {
+            const monster = monsters[level-1];
+            let delay = 600;
+            
+            sequence.forEach((cls, index) => {
+                setTimeout(() => {
+                    highlightButton(cls);
+                    
+                    // Add sound effect based on attack type
+                    const sound = new Audio();
+                    sound.volume = 0.3;
+                    
+                    switch(cls) {
+                        case 'archer': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
+                        case 'mage': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
+                        case 'warrior': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
+                        case 'healer': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
+                    }
+                    
+                    sound.play().catch(e => console.log("Audio play error:", e));
+                    
+                }, delay * (index + 1));
+            });
+            
+            // After sequence, allow player input
+            setTimeout(() => {
+                if (gameStarted) {
+                    feedback.textContent = "Your turn! Repeat the pattern.";
+                }
+            }, delay * (sequence.length + 1));
+        }
+
+        // Highlight button
+        function highlightButton(cls) {
+            const btn = document.getElementById(cls);
+            btn.classList.add('active');
+            
+            setTimeout(() => {
+                btn.classList.remove('active');
+            }, 400);
+        }
+
+        // Handle player input
+        function handlePlayerInput(cls) {
+            if (!gameStarted) return;
+            
+            playerSequence.push(cls);
+            highlightButton(cls);
+            
+            // Check if input is correct
+            if (!checkPlayerInput()) {
+                // Player made a mistake
+                const damage = 10 + (level * 2); // Damage increases with level
+                playerHealth -= damage;
+                updateDisplays();
+                
+                feedback.textContent = `❌ Wrong move! ${monsters[level-1].name} hits you for ${damage} damage!`;
+                
+                if (playerHealth <= 0) {
+                    playerHealth = 0;
+                    gameStarted = false;
+                    feedback.textContent = "💀 You were defeated! Game over.";
+                    return;
+                }
+                
+                // After a delay, restart the round
+                setTimeout(() => {
+                    playerSequence = [];
+                    feedback.textContent = "Try again...";
+                    showSequence();
+                }, 2000);
+                
+                return;
+            }
+            
+            // Check if sequence is complete
+            if (playerSequence.length === sequence.length) {
+                // Successful sequence
+                let healAmount = 0;
+                let damageAmount = 0;
+                
+                // Calculate damage and healing
+                sequence.forEach(attack => {
+                    if (attack === 'healer') {
+                        healAmount += 10 + (level * 2); // Healing increases with level
+                    } else {
+                        damageAmount += 10 + (level * 2); // Damage increases with level
+                    }
+                });
+                
+                // Apply healing (capped at 100)
+                playerHealth = Math.min(playerHealth + healAmount, 100);
+                
+                // Apply damage to monster
+                monsterHealth -= damageAmount;
+                score += damageAmount;
+                
+                // Update displays
+                updateDisplays();
+                
+                if (monsterHealth <= 0) {
+                    // Monster defeated
+                    monsterHealth = 0;
+                    
+                    // Play defeat animation
+                    const card = document.querySelector('.monster-card');
+                    card.classList.remove('appear');
+                    card.classList.add('defeat');
+                    
+                    feedback.textContent = `🏆 ${monsters[level-1].name} defeated!`;
+                    score += 100 * level; // Bonus for defeating monster
+                    
+                    // Advance to next level
+                    setTimeout(() => {
+                        if (level < monsters.length) {
+                            level++;
+                            setMonster(level - 1);
+                            playerHealth = 100; // Full health for next battle
+                            sequence = [];
+                            round = 0;
+                            updateDisplays();
+                            
+                            feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level-1].name}!`;
+                            
+                            // Start next battle after delay
+                            setTimeout(() => {
+                                nextRound();
+                            }, 2500);
+                        } else {
+                            // Game completed
+                            gameStarted = false;
+                            feedback.textContent = "🎉 CONGRATULATIONS! You defeated all monsters and won the game!";
+                        }
+                    }, 2000);
+                } else {
+                    // Continue to next round
+                    let message = "✅ Perfect! ";
+                    
+                    if (healAmount > 0) {
+                        message += `You healed ${healAmount} HP. `;
+                    }
+                    
+                    message += `You dealt ${damageAmount} damage!`;
+                    feedback.textContent = message;
+                    
+                    setTimeout(() => {
+                        nextRound();
+                    }, 1500);
+                }
+            }
+        }
+
+        // Check player input
+        function checkPlayerInput() {
+            const index = playerSequence.length - 1;
+            return playerSequence[index] === sequence[index];
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startBattle);
+        redoBtn.addEventListener('click', replaySequence);
+        
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => handlePlayerInput(btn.id));
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (!gameStarted) return;
+            if (e.key === '1') handlePlayerInput('archer');
+            if (e.key === '2') handlePlayerInput('mage');
+            if (e.key === '3') handlePlayerInput('warrior');
+            if (e.key === '4') handlePlayerInput('healer');
+        });
+
+        // Initialize the game
+        initGame();
+    </script>
+</body>
+</html>
