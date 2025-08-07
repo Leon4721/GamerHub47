@@ -49,7 +49,7 @@ const monsters = [
         health: 150
     },
     { 
-        name: "Skeleton King", 
+        name: "Skeleton Knight", 
         level: 4, 
         image: "assets/images/sknigh.png",
         speed: 500,
@@ -210,17 +210,7 @@ function handlePlayerInput(cls) {
     if (!checkPlayerInput()) {
         // Player made a mistake
         const damage = 10 + (level * 2); // Damage increases with level
-        playerHealth -= damage;
-        updateDisplays();
         
-        feedback.textContent = `❌ Wrong move! ${monsters[level-1].name} hits you for ${damage} damage!`;
-        
-        if (playerHealth <= 0) {
-            playerHealth = 0;
-            gameStarted = false;
-            feedback.textContent = "💀 You were defeated! Game over.";
-            return;
-        }
         
         // After a delay, restart the round
         setTimeout(() => {
