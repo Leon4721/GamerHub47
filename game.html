@@ -35,15 +35,10 @@
         </div>
         
         <div class="health-container">
-
-<div class="health-label">
-    <!-- add an id here -->
-    <span id="player-health-label">Player Health</span>
-    <span id="player-health-value">100%</span>
-</div>
-
-        
-
+            <div class="health-label">
+                <span id="player-health-label">Player Health</span>
+                <span id="player-health-value">100%</span>
+            </div>
             <div class="health-bar">
                 <div class="health-fill" id="player-health" style="width: 100%"></div>
             </div>
@@ -52,7 +47,6 @@
                 <span>Monster Health</span>
                 <span id="monster-health-value">100%</span>
             </div>
-
             <div class="health-bar">
                 <div class="health-fill" id="monster-health" style="width: 100%"></div>
             </div>
@@ -101,6 +95,41 @@
         </div>
     </div>
 
-    <script src="assets/js/script.js"></script>
+    <!-- Story Modal -->div id="story-modal" class="hidden">
+    <div>
+        <img id="story-image" src="" alt="Story Scene">
+        <p id="story-text"></p>
+        <div id="story-buttons"></div>
+    </div>
+</div>
+
+    <div id="story-modal" class="hidden" style="
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    ">
+        <div style="
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            color: #fff;
+            border: 3px solid #ffcc00;
+        ">
+            <img id="story-image" src="" alt="Story Scene" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 15px;">
+            <p id="story-text" style="margin-bottom: 20px; line-height: 1.4;"></p>
+            <div id="story-buttons" style="display: flex; gap: 10px; justify-content: center;"></div>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/story.js"></script>
+    <script type="module" src="assets/js/ui.js"></script>
+    <script type="module" src="assets/js/script.js"></script>
 </body>
 </html>

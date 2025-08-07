@@ -1,8 +1,6 @@
 // selection.js
 // Handles character selection and starting the game
-
 document.addEventListener('DOMContentLoaded', () => {
-  // Character definitions
   const characters = [
     {
       name: "Male",
@@ -20,12 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  // DOM references
   const characterList = document.getElementById('characterList');
   const startBtn = document.getElementById('start-btn');
   let selectedCharacter = null;
 
-  // Dynamically generate character cards
   characters.forEach((char, index) => {
     const card = document.createElement('div');
     card.classList.add('character-card');
@@ -36,21 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="character-role">${char.role}</div>
       <div class="character-image" style="background-image:url('${char.image}')"></div>
       <div class="character-stats">
-        ${Object.entries(char.stats)
-          .map(([stat, val]) => `
+        ${Object.entries(char.stats).map(([stat, val]) => `
             <div class="stat">
               <div class="stat-value">${val}</div>
               <div class="stat-label">${stat}</div>
             </div>
-          `)
-          .join('')}
+        `).join('')}
       </div>
       <div class="character-description">${char.description}</div>
       <button class="select-btn">SELECT</button>
     `;
     characterList.appendChild(card);
 
-    // Handle card selection
     card.addEventListener('click', () => {
       document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
@@ -59,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Start game handler: save to localStorage and redirect
   startBtn.addEventListener('click', () => {
     const playerName = document.getElementById('playerName').value.trim();
     if (!playerName) {
@@ -70,14 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert("Please select a character before starting the quest!");
       return;
     }
-
-    // Persist player data (name + full character object)
-    localStorage.setItem(
-      'playerData',
-      JSON.stringify({ name: playerName, character: selectedCharacter })
-    );
-
-    // Redirect to the game page
+    localStorage.setItem('playerData', JSON.stringify({ name: playerName, character: selectedCharacter }));
     window.location.href = 'game.html';
   });
 });
