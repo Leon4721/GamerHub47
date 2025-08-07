@@ -116,6 +116,27 @@ function updateDisplays() {
 }
 
 // Start battle
+document.getElementById("start-btn").addEventListener("click", () => {
+    const playerName = document.getElementById("playerName").value.trim();
+    if (!playerName) {
+        alert("Please enter your hero's name first!");
+        return;
+    }
+
+    if (!selectedCharacter) {
+        alert("Please select a character before starting the quest!");
+        return;
+    }
+
+    // Store player data in localStorage
+    localStorage.setItem("playerData", JSON.stringify({
+        name: playerName,
+        character: selectedCharacter
+    }));
+
+    // Redirect to the game page
+    window.location.href = "game.html";
+});
 function startBattle() {
     if (gameStarted) return;
     
