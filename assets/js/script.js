@@ -1,346 +1,249 @@
 // script.js
-// Game state
-let sequence = [];
-let playerSequence = [];
-let round = 0;
-let score = 0;
-let playerHealth = 100;
-let monsterHealth = 100;
-let level = 1;
-let gameStarted = false;
+// Game page: loads saved hero, populates HUD, then runs battle logic with difficulty, player damage on failure, and conditional healing
 
-// DOM elements
-const buttons = document.querySelectorAll('.game-button');
-const feedback = document.getElementById('feedback');
-const monsterName = document.getElementById('monster-name');
-const monsterLevel = document.getElementById('monster-level');
-const monsterDisplay = document.querySelector('.monster-display');
-const playerHPBar = document.getElementById('player-health');
-const monsterHPBar = document.getElementById('monster-health');
-const playerHealthValue = document.getElementById('player-health-value');
-const monsterHealthValue = document.getElementById('monster-health-value');
-const roundDisplay = document.getElementById('round-display');
-const scoreDisplay = document.getElementById('score-display');
-const levelDisplay = document.getElementById('level-display');
-const startBtn = document.getElementById('start-btn');
-const redoBtn = document.getElementById('redo-btn');
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Load & verify playerData
+  const raw = localStorage.getItem('playerData');
+  if (!raw) {
+    window.location.href = 'index.html';
+    return;
+  }
+  const { name: playerName, character } = JSON.parse(raw);
 
-// Monster data with increasing difficulty and unique images
-const monsters = [
-    { 
-        name: "Goblin", 
-        level: 1, 
-        image: "assets/images/goblin.png",
-        speed: 800,
-        health: 100
-    },
-    { 
-        name: "Orc", 
-        level: 2, 
-        image: "assets/images/orc.png",
-        speed: 700,
-        health: 120
-    },
-    { 
-        name: "Dark Mage", 
-        level: 3, 
-        image: "assets/images/darkmage.png",
-        speed: 600,
-        health: 150
-    },
-    { 
-        name: "Skeleton Knight", 
-        level: 4, 
-        image: "assets/images/sknigh.png",
-        speed: 500,
-        health: 200
-    },
-    { 
-        name: "Dragon", 
-        level: 5, 
-        image: "assets/images/dragon.png",
-        speed: 400,
-        health: 250
-    }
-];
+  // 2) Populate HUD
+  const nameEl    = document.getElementById('playerNameEl');
+  const roleEl    = document.getElementById('playerRoleEl');
+  const avatarEl  = document.getElementById('playerAvatar');
+  const healthLbl = document.getElementById('player-health-label');
 
-// Create monster card element
-function createMonsterCard(monster) {
-    const card = document.createElement('div');
-    card.className = 'monster-card appear';
-    card.style.backgroundImage = `url('${monster.image}')`;
-    card.style.display = 'block';
-    return card;
-}
+  if (nameEl)   nameEl.textContent   = playerName;
+  if (roleEl)   roleEl.textContent   = character.role;
+  if (avatarEl) avatarEl.src         = character.image;
+  if (healthLbl) healthLbl.textContent = `${playerName}'s Health`;
 
-// Initialize game
-function initGame() {
+  Object.entries(character.stats).forEach(([stat,val]) => {
+    const el = document.getElementById(`${stat.toLowerCase()}-value`);
+    if (el) el.textContent = val;
+  });
+
+  // 3) Battle logic state
+  let sequence       = [];
+  let playerSequence = [];
+  let round          = 0;
+  let score          = 0;
+  let playerHealth   = 100;
+  let monsterHealth  = 100;
+  let level          = 1;
+  let gameStarted    = false;
+
+  // 4) DOM elements
+  const buttons        = document.querySelectorAll('.game-button');
+  const feedback       = document.getElementById('feedback');
+  const monsterNameEl  = document.getElementById('monster-name');
+  const monsterLevelEl = document.getElementById('monster-level');
+  const monsterDisplay = document.querySelector('.monster-display');
+  const playerHPBar    = document.getElementById('player-health');
+  const monsterHPBar   = document.getElementById('monster-health');
+  const playerHPValue  = document.getElementById('player-health-value');
+  const monsterHPValue = document.getElementById('monster-health-value');
+  const roundDisplay   = document.getElementById('round-display');
+  const scoreDisplay   = document.getElementById('score-display');
+  const levelDisplay   = document.getElementById('level-display');
+  const startBtn       = document.getElementById('start-btn');
+  const redoBtn        = document.getElementById('redo-btn');
+
+  // 5) Monster definitions (include speed for difficulty)
+  const monsters = [
+    { name: 'Goblin',         level: 1, image: 'assets/images/goblin.png',     speed: 800, health: 100 },
+    { name: 'Orc',            level: 2, image: 'assets/images/orc.png',        speed: 700, health: 120 },
+    { name: 'Dark Mage',      level: 3, image: 'assets/images/darkmage.png',  speed: 600, health: 150 },
+    { name: 'Skeleton Knight',level: 4, image: 'assets/images/sknigh.png',    speed: 500, health: 200 },
+    { name: 'Dragon',         level: 5, image: 'assets/images/dragon.png',     speed: 400, health: 250 }
+  ];
+
+  // Helper: create monster card
+  function createMonsterCard(m) {
+    const c = document.createElement('div');
+    c.className = 'monster-card appear';
+    c.style.backgroundImage = `url('${m.image}')`;
+    return c;
+  }
+
+  // Initialize game
+  function initGame() {
     sequence = [];
     playerSequence = [];
     round = 0;
     score = 0;
     playerHealth = 100;
     level = 1;
-    
-    // Set first monster
-    setMonster(level - 1);
+    monsterHealth = monsters[0].health;
+
+    setMonster(0);
     updateDisplays();
-    
-    feedback.textContent = "Press Start Battle to begin your adventure!";
+    feedback.textContent = 'Press Start Battle to begin your adventure!';
     gameStarted = false;
-}
+  }
 
-// Set monster based on level
-function setMonster(index) {
-    const monster = monsters[index];
-    monsterName.textContent = monster.name;
-    monsterLevel.textContent = monster.level;
-    monsterHealth = monster.health;
-    levelDisplay.textContent = monster.level;
-    
-    // Clear previous card and create new one
-    monsterDisplay.innerHTML = '';
-    const card = createMonsterCard(monster);
-    monsterDisplay.appendChild(card);
-}
+  // Set current monster and UI
+  function setMonster(i) {
+    const m = monsters[i];
+    monsterNameEl.textContent  = m.name;
+    monsterLevelEl.textContent = m.level;
+    monsterHealth = m.health;
+    levelDisplay.textContent   = m.level;
+    monsterDisplay.innerHTML   = '';
+    monsterDisplay.appendChild(createMonsterCard(m));
+  }
 
-// Update all displays
-function updateDisplays() {
-    playerHPBar.style.width = playerHealth + "%";
-    monsterHPBar.style.width = (monsterHealth / monsters[level-1].health * 100) + "%";
-    playerHealthValue.textContent = playerHealth + "%";
-    monsterHealthValue.textContent = Math.round((monsterHealth / monsters[level-1].health) * 100) + "%";
-    roundDisplay.textContent = round;
-    scoreDisplay.textContent = score;
-    levelDisplay.textContent = level;
-}
+  // Update health bars, scores, etc.
+  function updateDisplays() {
+    playerHPBar.style.width  = `${playerHealth}%`;
+    monsterHPBar.style.width = `${(monsterHealth / monsters[level-1].health) * 100}%`;
+    playerHPValue.textContent  = `${playerHealth}%`;
+    monsterHPValue.textContent = `${Math.round((monsterHealth / monsters[level-1].health) * 100)}%`;
+    roundDisplay.textContent   = round;
+    scoreDisplay.textContent   = score;
+    levelDisplay.textContent   = level;
+  }
 
-// Start battle
-document.getElementById("start-btn").addEventListener("click", () => {
-    const playerName = document.getElementById("playerName").value.trim();
-    if (!playerName) {
-        alert("Please enter your hero's name first!");
-        return;
-    }
-
-    if (!selectedCharacter) {
-        alert("Please select a character before starting the quest!");
-        return;
-    }
-
-    // Store player data in localStorage
-    localStorage.setItem("playerData", JSON.stringify({
-        name: playerName,
-        character: selectedCharacter
-    }));
-
-    // Redirect to the game page
-    window.location.href = "game.html";
-});
-function startBattle() {
+  // Start battle
+  function startBattle() {
     if (gameStarted) return;
-    
     gameStarted = true;
-    feedback.textContent = "Battle begins! Defeat the Goblin!";
-    
-    setTimeout(() => {
-        nextRound();
-    }, 1500);
-}
+    feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+    setTimeout(nextRound, 1500);
+  }
 
-// Replay sequence
-function replaySequence() {
-    if (gameStarted && sequence.length > 0) {
-        feedback.textContent = "Replaying the pattern...";
-        showSequence();
-    }
-}
+  // Replay pattern
+  function replaySequence() {
+    if (!gameStarted || !sequence.length) return;
+    feedback.textContent = 'Replaying the pattern...';
+    showSequence();
+  }
 
-// Move to next round
-function nextRound() {
+  // Next round: add attack and show pattern
+  function nextRound() {
     if (!gameStarted) return;
-    
     playerSequence = [];
     round++;
-    roundDisplay.textContent = round;
-    
-    // Add a new attack to the sequence
-    sequence.push(nextAttack());
-    
+   sequence.push(nextAttack(), nextAttack()); m
     feedback.textContent = `Memorize the attack pattern! Round ${round}`;
     showSequence();
-}
+  }
 
-// Generate random attack
-function nextAttack() {
+  // Pick random attack
+  function nextAttack() {
     const choices = ['archer', 'mage', 'warrior', 'healer'];
     return choices[Math.floor(Math.random() * choices.length)];
-}
+  }
 
-// Show sequence to player
-function showSequence() {
-    const monster = monsters[level-1];
-    let delay = 600;
-    
-    sequence.forEach((cls, index) => {
-        setTimeout(() => {
-            highlightButton(cls);
-            
-            // Add sound effect based on attack type
-            const sound = new Audio();
-            sound.volume = 0.3;
-            
-            switch(cls) {
-                case 'archer': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
-                case 'mage': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
-                case 'warrior': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
-                case 'healer': sound.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAA='; break;
-            }
-            
-            sound.play().catch(e => console.log("Audio play error:", e));
-            
-        }, delay * (index + 1));
+  // Display the sequence with monster speed
+  function showSequence() {
+    const delay = monsters[level-1].speed;
+    sequence.forEach((cls, i) => {
+      setTimeout(() => highlightButton(cls), delay * (i + 1));
     });
-    
-    // After sequence, allow player input
     setTimeout(() => {
-        if (gameStarted) {
-            feedback.textContent = "Your turn! Repeat the pattern.";
-        }
+      feedback.textContent = 'Your turn! Repeat the pattern.';
     }, delay * (sequence.length + 1));
-}
+  }
 
-// Highlight button
-function highlightButton(cls) {
-    const btn = document.getElementById(cls);
+  // Highlight button
+  function highlightButton(id) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
     btn.classList.add('active');
-    
-    setTimeout(() => {
-        btn.classList.remove('active');
-    }, 400);
-}
+    setTimeout(() => btn.classList.remove('active'), 400);
+  }
 
-// Handle player input
-function handlePlayerInput(cls) {
+  // Handle player input
+  function handlePlayerInput(id) {
     if (!gameStarted) return;
-    
-    playerSequence.push(cls);
-    highlightButton(cls);
-    
-    // Check if input is correct
-    if (!checkPlayerInput()) {
-        // Player made a mistake
-        const damage = 10 + (level * 2); // Damage increases with level
-        
-        
-        // After a delay, restart the round
-        setTimeout(() => {
-            playerSequence = [];
-            feedback.textContent = "Try again...";
-            showSequence();
-        }, 2000);
-        
-        return;
+    playerSequence.push(id);
+    highlightButton(id);
+
+    // Wrong input: damage player and replay
+    if (playerSequence[playerSequence.length - 1] !== sequence[playerSequence.length - 1]) {
+      const dmg = 10 + level * 2;
+      playerHealth = Math.max(playerHealth - dmg, 0);
+      updateDisplays();
+      if (playerHealth <= 0) {
+        gameStarted = false;
+        return feedback.textContent = '💀 You have fallen! Game Over.';
+      }
+      setTimeout(() => {
+        feedback.textContent = `Wrong! You take ${dmg} damage.`;
+        playerSequence = [];
+        showSequence();
+      }, 500);
+      return;
     }
-    
-    // Check if sequence is complete
+
+    // Completed sequence correctly
     if (playerSequence.length === sequence.length) {
-        // Successful sequence
-        let healAmount = 0;
-        let damageAmount = 0;
-        
-        // Calculate damage and healing
-        sequence.forEach(attack => {
-            if (attack === 'healer') {
-                healAmount += 10 + (level * 2); // Healing increases with level
-            } else {
-                damageAmount += 10 + (level * 2); // Damage increases with level
-            }
-        });
-        
-        // Apply healing (capped at 100)
-        playerHealth = Math.min(playerHealth + healAmount, 100);
-        
-        // Apply damage to monster
-        monsterHealth -= damageAmount;
-        score += damageAmount;
-        
-        // Update displays
-        updateDisplays();
-        
-        if (monsterHealth <= 0) {
-            // Monster defeated
-            monsterHealth = 0;
-            
-            // Play defeat animation
-            const card = document.querySelector('.monster-card');
-            card.classList.remove('appear');
-            card.classList.add('defeat');
-            
-            feedback.textContent = `🏆 ${monsters[level-1].name} defeated!`;
-            score += 100 * level; // Bonus for defeating monster
-            
-            // Advance to next level
-            setTimeout(() => {
-                if (level < monsters.length) {
-                    level++;
-                    setMonster(level - 1);
-                    playerHealth = 100; // Full health for next battle
-                    sequence = [];
-                    round = 0;
-                    updateDisplays();
-                    
-                    feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level-1].name}!`;
-                    
-                    // Start next battle after delay
-                    setTimeout(() => {
-                        nextRound();
-                    }, 2500);
-                } else {
-                    // Game completed
-                    gameStarted = false;
-                    feedback.textContent = "🎉 CONGRATULATIONS! You defeated all monsters and won the game!";
-                }
-            }, 2000);
+      // Calculate damage to monster and healing to player
+      let dmg = 0;
+      let heal = 0;
+      sequence.forEach(a => {
+        if (a === 'healer') {
+          // Allow heal if female or level > 2
+          if (character.name === 'Female' || level > 2) {
+            heal += 10 + level * 2;
+          }
         } else {
-            // Continue to next round
-            let message = "✅ Perfect! ";
-            
-            if (healAmount > 0) {
-                message += `You healed ${healAmount} HP. `;
-            }
-            
-            message += `You dealt ${damageAmount} damage!`;
-            feedback.textContent = message;
-            
-            setTimeout(() => {
-                nextRound();
-            }, 1500);
+          dmg += 10 + level * 2;
         }
+      });
+
+      // Apply healing then damage
+      playerHealth = Math.min(playerHealth + heal, 100);
+      monsterHealth -= dmg;
+      score += dmg;
+      updateDisplays();
+
+      // Monster defeated
+      if (monsterHealth <= 0) {
+        monsterHealth = 0;
+        document.querySelector('.monster-card')?.classList.replace('appear', 'defeat');
+        feedback.textContent = `🏆 ${monsters[level-1].name} defeated!`;
+        score += 100 * level;
+        setTimeout(() => {
+          if (level < monsters.length) {
+            level++;
+            setMonster(level - 1);
+            playerHealth = 100;
+            sequence = [];
+            round = 0;
+            updateDisplays();
+            feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level-1].name}!`;
+            setTimeout(nextRound, 2500);
+          } else {
+            gameStarted = false;
+            feedback.textContent = '🎉 CONGRATULATIONS! You defeated all monsters and won the game!';
+          }
+        }, 2000);
+      } else {
+        // Round success
+        const msgParts = [];
+        if (heal) msgParts.push(`Healed ${heal} HP.`);
+        msgParts.push(`Dealt ${dmg} damage!`);
+        feedback.textContent = `✅ ${msgParts.join(' ')}`;
+        setTimeout(nextRound, 1500);
+      }
     }
-}
+  }
 
-// Check player input
-function checkPlayerInput() {
-    const index = playerSequence.length - 1;
-    return playerSequence[index] === sequence[index];
-}
-
-// Event listeners
-startBtn.addEventListener('click', startBattle);
-redoBtn.addEventListener('click', replaySequence);
-
-buttons.forEach(btn => {
-    btn.addEventListener('click', () => handlePlayerInput(btn.id));
-});
-
-document.addEventListener('keydown', (e) => {
+  // Attach events
+  startBtn.addEventListener('click', startBattle);
+  redoBtn.addEventListener('click', replaySequence);
+  buttons.forEach(b => b.addEventListener('click', () => handlePlayerInput(b.id)));
+  document.addEventListener('keydown', e => {
     if (!gameStarted) return;
-    if (e.key === '1') handlePlayerInput('archer');
-    if (e.key === '2') handlePlayerInput('mage');
-    if (e.key === '3') handlePlayerInput('warrior');
-    if (e.key === '4') handlePlayerInput('healer');
-});
+    const map = { '1': 'archer', '2': 'mage', '3': 'warrior', '4': 'healer' };
+    if (map[e.key]) handlePlayerInput(map[e.key]);
+  });
 
-// Initialize the game
-initGame();
+  // Start everything
+  initGame();
+});
