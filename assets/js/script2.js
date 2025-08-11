@@ -1,5 +1,6 @@
-// selection.js
-// Handles character selection and starting the game
+// selection.js — handles character selection and the pre-game story popup
+import { showStory } from './ui.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const characters = [
     {
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('start-btn');
   let selectedCharacter = null;
 
+  // Build character cards
   characters.forEach((char, index) => {
     const card = document.createElement('div');
     card.classList.add('character-card');
@@ -33,14 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="character-image" style="background-image:url('${char.image}')"></div>
       <div class="character-stats">
         ${Object.entries(char.stats).map(([stat, val]) => `
-            <div class="stat">
-              <div class="stat-value">${val}</div>
-              <div class="stat-label">${stat}</div>
-            </div>
+          <div class="stat">
+            <div class="stat-value">${val}</div>
+            <div class="stat-label">${stat}</div>
+          </div>
         `).join('')}
       </div>
       <div class="character-description">${char.description}</div>
-      <button class="select-btn">SELECT</button>
+      <button class="select-btn" type="button">SELECT</button>
     `;
     characterList.appendChild(card);
 
@@ -52,17 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Start -> show Post-Select popup (before navigating)
   startBtn.addEventListener('click', () => {
     const playerName = document.getElementById('playerName').value.trim();
-    if (!playerName) {
-      alert("Please enter your hero's name first!");
-      return;
-    }
-    if (!selectedCharacter) {
-      alert("Please select a character before starting the quest!");
-      return;
-    }
+    if (!playerName) { alert("Please enter your hero's name first!"); return; }
+    if (!selectedCharacter) { alert("Please select a character before starting the quest!"); return; }
+
+    // Stash data first so the story beat can read context if needed later
     localStorage.setItem('playerData', JSON.stringify({ name: playerName, character: selectedCharacter }));
-    window.location.href = 'game.html';
+
+    // Show the illustrated story pop-up before moving to game.html
+    showStory('postSelect', { name: playerName, character: selectedCharacter });
   });
 });

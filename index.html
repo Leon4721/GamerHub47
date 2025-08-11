@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Character Selection</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="./assets/css/style2.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RPG Character Selection</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./assets/css/style2.css"/>
 </head>
 <body>
-    
-    <div class="login-container">
-        <h1 class="title">RPG CHARACTER SELECTION</h1>
-        <p class="subtitle">Enter your name and choose your hero!</p>
+  <div class="login-container">
+    <h1 class="title">RPG CHARACTER SELECTION</h1>
+    <p class="subtitle">Enter your name and choose your hero!</p>
 
-        <!-- Player Name Input -->
-        <div class="player-name">
-            <input type="text" id="playerName" placeholder="Enter your hero name...">
-        </div>
-
-        <!-- Character Cards -->
-        <div class="character-selection" id="characterList"></div>
-
-        <!-- Start Game -->
-        <button id="start-btn" disabled>BEGIN YOUR QUEST</button>
-        <div class="game-link">Already have a character? <a href="#">Continue your adventure</a></div>
+    <div class="player-name">
+      <input type="text" id="playerName" placeholder="Enter your hero name..."/>
     </div>
 
-    <script  type="module" src="assets/js/script2.js"></script>
+    <div class="character-selection" id="characterList"></div>
+
+    <button id="start-btn" disabled>BEGIN YOUR QUEST</button>
+    <div class="game-link">Already have a character? <a href="game.html">Continue your adventure</a></div>
+  </div>
+
+  <!-- Shared Story Modal (used here for Post-Select) -->
+  <div id="story-modal" class="hidden">
+    <div class="story-card">
+      <img id="story-image" src="" alt="Story Scene"/>
+      <p id="story-text"></p>
+      <div id="story-buttons"></div>
+    </div>
+  </div>
+
+  <!-- Load story/ui first so script2 can call showStory -->
+  <script type="module" src="assets/js/story.js"></script>
+  <script type="module" src="assets/js/ui.js"></script>
+  <script type="module" src="assets/js/script2.js"></script>
 </body>
 </html>
