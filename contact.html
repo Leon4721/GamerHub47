@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us - RPG Memory Battle</title>
+  <link rel="stylesheet" href="assets/css/style2.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body {
+      flex-direction: column;
+      padding: 40px 15px;
+    }
+    .contact-wrapper {
+      background: rgba(0,0,0,0.85);
+      border: 3px solid #ffcc00;
+      border-radius: 15px;
+      padding: 25px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .contact-wrapper h1 {
+      color: #ffcc00;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .contact-wrapper p {
+      color: #ccc;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #ffcc00;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #555;
+      background: #222;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: #ffcc00;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .form-actions button, .form-actions a {
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .form-actions button:hover, .form-actions a:hover {
+      background: linear-gradient(to right, #27ae60, #2ecc71);
+    }
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #aaa;
+    }
+    footer a {
+      color: #ffcc00;
+      margin: 0 8px;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contact-wrapper">
+    <h1>Contact Us</h1>
+    <p>Send us your feedback, ideas, or questions about RPG Memory Battle.</p>
+
+    <form id="contact-form">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input id="name" name="name" type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input id="email" name="email" type="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Send Message</button>
+        <button type="button" onclick="history.back()">Return</button>
+
+      </div>
+    </form>
+  </div>
+
+  <footer>
+    <p>
+      <a href="https://github.com/YOUR-USERNAME/YOUR-REPO" target="_blank"><i class="fab fa-github"></i> GitHub</a> |
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+    </p>
+    <p>&copy; 2025 RPG Memory Battle</p>
+  </footer>
+
+</body>
+</html>

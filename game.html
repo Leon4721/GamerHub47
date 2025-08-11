@@ -15,22 +15,29 @@
       <div class="value" id="level-display">1</div>
     </div>
 
-    <div class="game-header">
-      <div class="stat-box">
-        <div class="stat-title">ROUND</div>
-        <div class="stat-value" id="round-display">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title">SCORE</div>
-        <div class="stat-value" id="score-display">0</div>
-      </div>
+    <!-- Header with embedded monster -->
+<div class="game-header header-with-monster">
+  <div class="stats-rail">
+    <div class="stat-box">
+      <div class="stat-title">ROUND</div>
+      <div class="stat-value" id="round-display">0</div>
     </div>
+    <div class="stat-box">
+      <div class="stat-title">SCORE</div>
+      <div class="stat-value" id="score-display">0</div>
+    </div>
+  </div>
 
-    <div class="monster-container">
-      <div class="monster-display"><!-- Monster card inserted here --></div>
-      <div class="monster-name" id="monster-name">Goblin</div>
-      <div class="monster-level">Level <span id="monster-level">1</span></div>
-    </div>
+  <div class="monster-slot">
+    <div class="monster-display"><!-- Monster card inserted here --></div>
+  </div>
+</div>
+
+
+<div class="monster-meta">
+  <div class="monster-name" id="monster-name">Goblin</div>
+  <div class="monster-level">Level <span id="monster-level">1</span></div>
+</div>
 
     <div class="health-container">
       <div class="health-label">
@@ -81,6 +88,9 @@
       <div id="story-buttons"></div>
     </div>
   </div>
+<a href="contact.html" class="contact-btn">
+  <i class="fas fa-envelope"></i> Contact Us
+</a>
 
   <script type="module" src="assets/js/story.js"></script>
   <script type="module" src="assets/js/ui.js"></script>
