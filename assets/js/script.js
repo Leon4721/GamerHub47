@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ch = e.key.length === 1 ? e.key : '';
     _buffer = (_buffer + ch).slice(-20);
     // Trigger when the buffer ends with /EliasZilla (case-sensitive)
-    if (_buffer.endsWith('/EliasZilla')) {
+    if (_buffer.endsWith('/Elias')) {
       cheatDefeatLevel();
       _buffer = ""; // optional: clear so it doesn’t retrigger immediately
     }

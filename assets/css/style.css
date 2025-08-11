@@ -24,7 +24,7 @@ body {
 
 .monster-container { position: relative; margin: 30px auto; height: 360px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 
-.monster-display { position:relative; width: 300px; height: 300px; margin-bottom: 20px; perspective: 1000px; }
+.monster-display { position:relative; width: 300px; height: 500px; margin-bottom: 20px; perspective: 1000px; }
 
 .monster-card {
   position:absolute; inset:0; background-size:contain; background-repeat:no-repeat; background-position:center;
