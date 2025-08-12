@@ -1,5 +1,46 @@
 // story.js
 // Central place for all story beats (images + text + buttons)
+function getHighScores() {
+  try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
+  catch { return []; }
+}
+
+function renderHighScoreTable() {
+  const rows = getHighScores().map((r, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name || '—'}</td>
+      <td>${r.score}</td>
+      <td>${r.bestStreak || 0}</td>
+      <td>${r.rounds}</td>
+      <td>${r.level}</td>
+      <td>${r.path || '—'}</td>
+      <td>${r.outcome}</td>
+      <td>${r.date}</td>
+    </tr>`).join('');
+
+  return `
+  <div class="hs-wrap">
+    <h4>Top 5 High Scores</h4>
+    <table class="hs-table">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Score</th><th>Streak</th><th>Rounds</th><th>Lvl</th><th>Path</th><th>Result</th><th>Date</th></tr>
+      </thead>
+      <tbody>${rows || '<tr><td colspan="9">No scores yet</td></tr>'}</tbody>
+    </table>
+  </div>`;
+}
+
+function formatRunText(r) {
+  return [
+    'RPG Memory Battle — Result',
+    `Player: ${r.name} (${r.character})`,
+    `Outcome: ${r.outcome.toUpperCase()}`,
+    `Score: ${r.score} | Best Streak: ${r.bestStreak} | Rounds: ${r.rounds}`,
+    `Level: ${r.level} | Path: ${r.path || '—'}`,
+    `Date: ${r.date}`
+  ].join('\n');
+}
 
 export const storyBeats = {
   // 1) After character is selected, BEFORE moving to game.html

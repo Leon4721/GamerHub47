@@ -18,6 +18,37 @@ document.addEventListener('DOMContentLoaded', () => {
   let monsterHealth = 100;
   let level = 1;
   let gameStarted = false;
+let currentStreak = 0;
+let bestStreak = 0;
+
+function getHighScores() {
+  try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
+  catch { return []; }
+}
+
+function saveHighScore(entry) {
+  const list = getHighScores();
+  list.push(entry);
+  // Sort by score desc, then bestStreak desc, then rounds desc
+  list.sort((a,b) => b.score - a.score || b.bestStreak - a.bestStreak || b.rounds - a.rounds);
+  const top5 = list.slice(0,5);
+  localStorage.setItem('rpgHighScores', JSON.stringify(top5));
+}
+
+function makeRunEntry({ outcome }) {
+  const now = new Date().toISOString().slice(0,10);
+  return {
+    name: playerName,
+    character: character?.name || '',
+    score,
+    rounds: round,
+    level,
+    bestStreak,
+    path: pathChoice,
+    outcome, // 'victory' | 'defeat'
+    date: now
+  };
+}
 
   // One-time flags for special popups
   let shownHalfPlayer = false;
@@ -160,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
       playerHealth = Math.max(playerHealth - dmg, 0);
       updateDisplays();
       if (playerHealth <= 0) {
+        
         // DEFEAT popup
         gamePauseWith(() =>
           showStory('defeat', {

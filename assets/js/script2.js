@@ -53,6 +53,28 @@ document.addEventListener('DOMContentLoaded', () => {
       startBtn.disabled = false;
     });
   });
+function getHighScores() {
+  try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
+  catch { return []; }
+}
+
+function renderHighScoresIndex() {
+  const tbody = document.querySelector('#highscore-table tbody');
+  if (!tbody) return;
+  const list = getHighScores();
+  tbody.innerHTML = list.map((r, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name || '—'}</td>
+      <td>${r.score}</td>
+      <td>${r.bestStreak || 0}</td>
+      <td>${r.rounds}</td>
+      <td>${r.level}</td>
+      <td>${r.path || '—'}</td>
+      <td>${r.outcome}</td>
+      <td>${r.date}</td>
+    </tr>`).join('') || '<tr><td colspan="9">No scores yet</td></tr>';
+}
 
   // Start -> show Post-Select popup (before navigating)
   startBtn.addEventListener('click', () => {
