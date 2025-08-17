@@ -136,12 +136,20 @@ function makeRunEntry({ outcome }) {
     updateDisplays();
   }
 
-  function startBattle() {
-    if (gameStarted) return;
-    gameStarted = true;
-    feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
-    setTimeout(nextRound, 1200);
-  }
+function startBattle() {
+  if (gameStarted) return;
+  gameStarted = true;
+  feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+
+  // Smooth scroll to controls
+  document.querySelector('.controls').scrollIntoView({ 
+    behavior: 'smooth', 
+    block: 'center' 
+  });
+
+  setTimeout(nextRound, 1200);
+}
+
 
   function replaySequence() {
     if (!gameStarted || !sequence.length) return;

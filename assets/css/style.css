@@ -123,8 +123,25 @@ body {
   background: rgba(0,0,0,.4); margin:20px auto; max-width:600px; display:flex; align-items:center; justify-content:center; border:2px solid #444;
 }
 
-.instructions { background: rgba(40,40,60,.8); padding:20px; border-radius:15px; margin-top:20px; text-align:left; font-size:1rem; line-height:1.5; }
-.instructions h3 { color:#ffcc00; margin-bottom:10px; text-align:center; }
+.instructions-side {
+  position: fixed;        /* sticks to screen edge */
+  top: 100px;             /* adjust vertical alignment */
+  right: 20px;            /* distance from right edge */
+  width: 280px;
+  background: rgba(40,40,60,.85);
+  padding: 20px;
+  border-radius: 15px;
+  font-size: 1rem;
+  line-height: 2;
+  text-align: left;
+  z-index: 500;           /* ensure above background */
+}
+.instructions-side h3 {
+  color: #ffcc00;
+  margin-bottom: 10px;
+}
+
+
 .instructions ul { padding-left:20px; margin-bottom:15px; }
 
 .level-indicator {
