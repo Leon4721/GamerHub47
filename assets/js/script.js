@@ -149,6 +149,16 @@ function startBattle() {
 
   setTimeout(nextRound, 1200);
 }
+  // Load difficulty (fallback to Medium)
+  const defaultDiff = { key:'medium', label:'Medium', speedFactor:1.0, complexityFactor:1.0, scoreFactor:1.0 };
+  const difficulty = (() => {
+    try { return JSON.parse(localStorage.getItem('difficulty')) || defaultDiff; }
+    catch { return defaultDiff; }
+  })();
+
+  // Show the game mode visibly on the page
+  const diffTag = document.getElementById('difficulty-tag');
+  if (diffTag) diffTag.textContent = `Mode: ${difficulty.label}`;
 
 
   function replaySequence() {
@@ -161,8 +171,11 @@ function startBattle() {
     if (!gameStarted) return;
     playerSequence = [];
     round++;
+
     // Increase pattern length more aggressively per level for difficulty
     sequence.push(nextAttack(), nextAttack()); // base +2 each round
+
+    
     if (round % 2 === 0) sequence.push(nextAttack()); // add extra step every 2 rounds
     feedback.textContent = `Memorize the attack pattern! Round ${round}`;
     showSequence();

@@ -78,11 +78,13 @@ function renderHighScoresIndex() {
 
   // Start -> show Post-Select popup (before navigating)
 // === Difficulty popup (runs before story) ===
+// === Difficulty profiles used by the game page ===
 const DIFFICULTY = {
-  easy:   { key:'easy',   label:'Easy',   speedFactor: 1.5,  healthFactor: 0.5,  playerDamageTakenFactor: 0.5,  damageToMonsterFactor: 1.5 },
-  medium: { key:'medium', label:'Medium', speedFactor: 1.0,  healthFactor: 1.0,  playerDamageTakenFactor: 1.0,  damageToMonsterFactor: 1.0 },
-  hard:   { key:'hard',   label:'Hard',   speedFactor: 0.75, healthFactor: 1.25, playerDamageTakenFactor: 1.25, damageToMonsterFactor: 0.75 }
+  easy:   { key:'easy',   label:'Easy',   speedFactor: 2.0, complexityFactor: 0.5, scoreFactor: 0.5 },
+  medium: { key:'medium', label:'Medium', speedFactor: 1.0, complexityFactor: 1.0, scoreFactor: 1.0 },
+  hard:   { key:'hard',   label:'Hard',   speedFactor: 0.5, complexityFactor: 2.0, scoreFactor: 2.0 }
 };
+
 
 function showDifficultyModal(onPick) {
   // overlay
