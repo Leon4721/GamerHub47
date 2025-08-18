@@ -142,12 +142,6 @@ body {
 
 .instructions ul { padding-left:20px; margin-bottom:15px; }
 
-.level-indicator {
-  position:absolute; top:20px; right:20px; background: rgba(255,204,0,.2);
-  border:2px solid #ffcc00; border-radius:50%; width:80px; height:80px; display:flex; flex-direction:column; justify-content:center; align-items:center; font-weight:bold;
-}
-.level-indicator .label { font-size:.9rem; color:#aaa; }
-.level-indicator .value { font-size:2rem; color:#ffcc00; }
 
 @media (max-width: 600px) {
   .game-title { font-size:2rem; }
@@ -218,45 +212,69 @@ body {
 }
 /* Keep your existing .level-indicator rules */
 
-/* Circular Game Mode badge under the level icon */
-#difficulty-tag {
+/* One circular badge for level + mode */
+.level-indicator {
   position: absolute;
+  top: 20px;
   right: 20px;
-  top: calc(20px + 80px + 12px); /* level top + diameter + gap */
-  width: 80px;
-  height: 80px;
+
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
+
+  background: rgba(255,204,0,.18);
   border: 2px solid #ffcc00;
-  background: rgba(255,204,0,.2);
-  color: #ffcc00;
+  box-shadow: 0 4px 10px rgba(0,0,0,.35);
+
   display: flex;
-  flex-direction: column;      /* so the pseudo “MODE” sits above the value */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  font-weight: 700;
-  line-height: 1.1;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  padding: 6px 4px;
   z-index: 2;
 }
 
-/* Small “MODE” label inside the circle */
-#difficulty-tag::before {
-  content: "MODE";
+.level-indicator .label {
   font-size: .65rem;
   color: #aaa;
   letter-spacing: .06em;
+  line-height: 1;
 }
 
-/* Scale down on small screens */
+.level-indicator .value {
+  font-size: 2rem;         /* big level number */
+  font-weight: 800;
+  color: #ffcc00;
+  line-height: 1.05;
+}
+
+.level-indicator .mode-label {
+  font-size: .6rem;
+  color: #aaa;
+  letter-spacing: .06em;
+  margin-top: 2px;
+  line-height: 1;
+}
+
+.level-indicator .mode {
+  font-size: .9rem;        /* readable mode text */
+  font-weight: 700;
+  color: #ffcc00;
+  line-height: 1.05;
+}
+
+/* Mobile tweaks */
 @media (max-width: 600px) {
-  #difficulty-tag {
+  .level-indicator {
+    top: 12px;
     right: 12px;
-    top: calc(12px + 70px + 8px); /* adjust if you also shrink the level icon */
-    width: 64px;
-    height: 64px;
-    font-size: .8rem;
+    width: 90px;
+    height: 90px;
+    padding: 4px 3px;
+    gap: 1px;
   }
-  #difficulty-tag::before { font-size: .6rem; }
+  .level-indicator .value { font-size: 1.6rem; }
+  .level-indicator .mode { font-size: .8rem; }
 }

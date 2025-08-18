@@ -10,10 +10,14 @@
   <div class="game-container">
     <h1 class="game-title">RPG Memory Battle</h1>
 
-    <div class="level-indicator">
-      <div class="label">LEVEL</div>
-      <div class="value" id="level-display">1</div>
-    </div>
+    <!-- Level + Mode in one circle -->
+<div class="level-indicator" aria-live="polite" aria-label="Game HUD">
+  <div class="label">LEVEL</div>
+  <div class="value" id="level-display">1</div>
+  <div class="mode-label">MODE</div>
+  <div class="mode" id="mode-display">Medium</div>
+</div>
+
 <p id="difficulty-tag" style="margin-top:-10px; opacity:.85;"></p>
     <!-- Header with embedded monster -->
 <div class="game-header header-with-monster">

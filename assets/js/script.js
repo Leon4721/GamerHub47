@@ -157,10 +157,11 @@ function startBattle() {
   })();
 
   // Show the game mode visibly on the page
-const diffTag = document.getElementById('difficulty-tag');
-if (diffTag) {
-  diffTag.textContent = difficulty.label;                 // e.g. “Medium”
-  diffTag.setAttribute('aria-label', `Mode: ${difficulty.label}`);
+
+const modeEl = document.getElementById('mode-display');
+if (modeEl) {
+  modeEl.textContent = difficulty.label; // "Easy", "Medium", "Hard"
+  modeEl.parentElement?.setAttribute('aria-label', `Level ${level} — Mode ${difficulty.label}`);
 }
 
 
