@@ -136,6 +136,19 @@ startBtn.addEventListener('click', () => {
 
   // Stash player first
   localStorage.setItem('playerData', JSON.stringify({ name: playerName, character: selectedCharacter }));
+// Set player's portrait from selected character
+const playerPortraitEl = document.getElementById('player-portrait');
+if (playerPortraitEl) {
+  const portrait = character?.image || character?.portrait || 'assets/images/characters/default.png';
+  playerPortraitEl.src = portrait;
+  playerPortraitEl.alt = character?.name ? `${character.name} portrait` : 'Selected character';
+}
+
+// Show mode name inside the circle
+const modeEl = document.getElementById('mode-display');
+if (modeEl && typeof difficulty?.label === 'string') {
+  modeEl.textContent = difficulty.label;  // "Easy" | "Medium" | "Hard"
+}
 
   // Ask for difficulty BEFORE any story beat
   showDifficultyModal(() => {

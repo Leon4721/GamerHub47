@@ -1,5 +1,13 @@
 /* style.css */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+:root{
+  --card-w: clamp(260px, 36vw, 420px);
+  --card-ratio: 7 / 10;
+  --lane-gap: 32px;
+  --meta-h: 44px;             /* space reserved above each card for symmetry */
+}
+
 body {
   background: url('../images/bck_img.png') no-repeat center center fixed;
   background-size: cover;
@@ -11,17 +19,29 @@ body {
   color: #f0f0f0;
 }
 
-
+/* ========= Container & Title ========= */
 .game-container {
   background: rgba(0,0,0,0.7);
-  border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  width: 100%; max-width: 800px; padding: 30px; text-align: center; position: relative; overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 1200px;          /* widened */
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.game-title { font-size: 2.8rem; margin-bottom: 20px; color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,.7); letter-spacing: 2px; }
-/* Auto-sized card that holds ROUND + SCORE only */
+.game-title {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  color: #ffcc00;
+  text-shadow: 0 0 10px rgba(255,204,0,.7);
+  letter-spacing: 2px;
+}
+
+/* ========= Round / Score Rail ========= */
 .stats-rail{
-  grid-column:1 / -1;           /* sits across the header lanes */
   display:flex;
   align-items:stretch;
   justify-content:center;
@@ -31,161 +51,186 @@ body {
   border:2px solid #444;
   border-radius:15px;
   box-shadow:0 4px 8px rgba(0,0,0,.4);
-  width:max-content;             /* shrink-wrap to its content */
-  margin:0 auto;                 /* center horizontally */
-  z-index:1;                     /* under the monster */
+  width:max-content;
+  margin:0 auto;
+  z-index:1;
+}
+.stats-rail .stat-box{ min-width:160px; max-width:240px; }
+.stat-title{ font-size:.95rem; color:#aaa; }
+.stat-value{ font-size:1.6rem; color:#ffcc00; font-weight:700; }
+
+/* ========= ARENA: Player vs Monster ========= */
+.arena{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--lane-gap);
+  align-items:start;           /* top-align both columns */
+  justify-items:center;        /* center contents within each column */
+  margin:18px 0 10px;
+}
+.side{ display:flex; flex-direction:column; gap:14px; align-items:center; }
+
+/* Card frames (player + monster) */
+.card-frame{
+  width: var(--card-w);
+  aspect-ratio: var(--card-ratio); /* trading-card look */
+  border:3px solid #ffcc00;
+  border-radius:12px;
+  background: rgba(0,0,0,.25);
+  box-shadow:0 8px 16px rgba(0,0,0,.45);
+  position:relative;
+  overflow:hidden;
+  perspective:1000px;
 }
 
-/* Keep stat boxes tidy inside the rail */
-.stats-rail .stat-box{
-  min-width:160px;
-  max-width:240px;
-}
-.stat-title{font-size:.95rem;}
-.stat-value{font-size:1.6rem;}
-
-
-.stats-container { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-bottom:25px; }
-
-.stat-box{min-width:160px;max-width:240px;justify-self:stretch;}
-
-.stat-title { font-size:1rem; color:#aaa; margin-bottom:5px; }
-
-.stat-value { font-size:1.8rem; font-weight:bold; color:#ffcc00; }
-
-.monster-container { position: relative; margin: 30px auto; height: 360px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-
-.monster-slot,
-.monster-display {
-  position: relative;
-  width: clamp(220px, 35vw, 420px); /* min, fluid, max */
-  aspect-ratio: 7 / 10;            /* 280×400 ratio */
-  margin: 0 auto 20px;
-  perspective: 1000px;
+/* Player image fills left frame */
+#player-portrait{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
 }
 
-/* Card fills the container */
-.monster-card {
-  position: absolute; inset: 0;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  border-radius: 10px;
-  border: 3px solid #ffcc00;
-  box-shadow: 0 8px 16px rgba(0,0,0,.5);
-  transform-style: preserve-3d;
+/* Monster card fills right frame */
+.monster-display{ width:100%; height:100%; margin:0; }
+.monster-card{
+  position:absolute; inset:0;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  /* no border here — frame already has one */
+  border-radius:10px;
+  box-shadow:0 8px 16px rgba(0,0,0,.5);
+  transform-style:preserve-3d;
   transition: transform .5s ease, box-shadow .3s ease;
 }
+.monster-card:hover{ transform: translateY(-10px) rotateY(5deg); box-shadow:0 12px 24px rgba(255,204,0,.4); }
 
-.monster-card:hover { transform: translateY(-10px) rotateY(5deg); box-shadow: 0 12px 24px rgba(255,204,0,.4); }
+/* Titles above monster; reserve same space on player side for symmetry */
+.monster-meta{
+  min-height: var(--meta-h);
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; margin-bottom:6px;
+}
+.player-side::before{
+  content:""; display:block; height: var(--meta-h); margin-bottom:6px;
+}
 
+.monster-name{ font-size:1.8rem; font-weight:bold; color:#ff6b6b; text-shadow:0 0 8px rgba(255,107,107,.7); }
+.monster-level{ font-size:1.1rem; color:#4ecdc4; }
 
-.monster-name { font-size:1.8rem; font-weight:bold; color:#ff6b6b; text-shadow: 0 0 8px rgba(255,107,107,.7); margin-bottom:10px; }
-.monster-level { font-size:1.2rem; color:#4ecdc4; background: rgba(0,0,0,.5); padding:5px 15px; border-radius:20px; display:inline-block; }
+/* ========= Health Bars (under each card) ========= */
+.health-container{ width: var(--card-w); max-width:none; margin:0; }
+.health-bar{
+  height:30px; background:#333; border-radius:15px;
+  overflow:hidden; margin:10px 0; position:relative; border:2px solid #555;
+}
+.health-fill{ height:100%; border-radius:15px; transition: width .5s ease; }
+#player-health{ background: linear-gradient(to right, #4CAF50, #8BC34A); }
+#monster-health{ background: linear-gradient(to right, #F44336, #FF9800); }
+.health-label{ display:flex; justify-content:space-between; font-size:.9rem; margin-top:5px; }
 
-.health-container { width:100%; max-width:500px; margin:0 auto 25px; }
-.health-bar { height:30px; background:#333; border-radius:15px; overflow:hidden; margin:10px 0; position:relative; border:2px solid #555; }
-.health-fill { height:100%; border-radius:15px; transition: width .5s ease; }
-#player-health { background: linear-gradient(to right, #4CAF50, #8BC34A); }
-#monster-health { background: linear-gradient(to right, #F44336, #FF9800); }
-.health-label { display:flex; justify-content:space-between; font-size:.9rem; margin-top:5px; }
-
-.controls { display:flex; justify-content:center; gap:15px; margin-bottom:25px; }
-.control-btn {
+/* ========= Controls & Buttons ========= */
+.controls{ display:flex; justify-content:center; gap:15px; margin:20px 0 25px; }
+.control-btn{
   padding:12px 25px; font-size:1.1rem; font-weight:bold; border:none; border-radius:50px; cursor:pointer; transition: all .3s ease;
   background: linear-gradient(to right, #3498db, #2980b9); color:#fff; box-shadow:0 4px 8px rgba(0,0,0,.3);
 }
-.control-btn:hover { transform: translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,.4); }
-.control-btn:active { transform: translateY(1px); }
-#start-btn { background: linear-gradient(to right, #2ecc71, #27ae60); }
-#redo-btn  { background: linear-gradient(to right, #f39c12, #d35400); }
+.control-btn:hover{ transform: translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,.4); }
+.control-btn:active{ transform: translateY(1px); }
+#start-btn{ background: linear-gradient(to right, #2ecc71, #27ae60); }
+#redo-btn{  background: linear-gradient(to right, #f39c12, #d35400); }
 
-.game-buttons { display:grid; grid-template-columns: repeat(2, 1fr); gap:20px; margin:0 auto 25px; max-width:500px; }
-.game-button {
+.game-buttons{
+  display:grid; grid-template-columns: repeat(2, 1fr);
+  gap:20px; margin:0 auto 25px; max-width:500px;
+}
+.game-button{
   height:100px; border:none; border-radius:15px; cursor:pointer; font-size:1.3rem; font-weight:bold;
   display:flex; flex-direction:column; justify-content:center; align-items:center; transition: all .2s ease;
   box-shadow:0 6px 12px rgba(0,0,0,.3); position:relative; overflow:hidden;
 }
-.game-button:hover { transform: translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,.4); }
-.game-button:active { transform: translateY(2px); }
-.game-button.active { transform: scale(.95); box-shadow:0 0 20px rgba(255,255,255,.8); }
-.button-icon { font-size:2.5rem; margin-bottom:10px; }
-#archer  { background: linear-gradient(to bottom right, #8e44ad, #9b59b6); }
-#mage    { background: linear-gradient(to bottom right, #3498db, #2980b9); }
-#warrior { background: linear-gradient(to bottom right, #e74c3c, #c0392b); }
-#healer  { background: linear-gradient(to bottom right, #2ecc71, #27ae60); }
-.key-hint { position:absolute; bottom:8px; right:8px; background: rgba(0,0,0,.4); border-radius:50%; width:25px; height:25px; display:flex; justify-content:center; align-items:center; font-size:.9rem; }
-
-#feedback {
-  min-height:60px; font-size:1.4rem; font-weight:bold; padding:15px; border-radius:12px;
-  background: rgba(0,0,0,.4); margin:20px auto; max-width:600px; display:flex; align-items:center; justify-content:center; border:2px solid #444;
+.game-button:hover{ transform: translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,.4); }
+.game-button:active{ transform: translateY(2px); }
+.game-button.active{ transform: scale(.95); box-shadow:0 0 20px rgba(255,255,255,.8); }
+.button-icon{ font-size:2.5rem; margin-bottom:10px; }
+#archer{  background: linear-gradient(to bottom right, #8e44ad, #9b59b6); }
+#mage{    background: linear-gradient(to bottom right, #3498db, #2980b9); }
+#warrior{ background: linear-gradient(to bottom right, #e74c3c, #c0392b); }
+#healer{  background: linear-gradient(to bottom right, #2ecc71, #27ae60); }
+.key-hint{
+  position:absolute; bottom:8px; right:8px;
+  background: rgba(0,0,0,.4); border-radius:50%; width:25px; height:25px;
+  display:flex; justify-content:center; align-items:center; font-size:.9rem;
 }
 
-.instructions-side {
-  position: fixed;        /* sticks to screen edge */
-  top: 100px;             /* adjust vertical alignment */
-  right: 20px;            /* distance from right edge */
+/* ========= Feedback ========= */
+#feedback{
+  min-height:60px; font-size:1.4rem; font-weight:bold; padding:15px; border-radius:12px;
+  background: rgba(0,0,0,.4); margin:20px auto; max-width:800px; display:flex; align-items:center; justify-content:center; border:2px solid #444;
+}
+
+/* ========= Side Instructions ========= */
+.instructions-side{
+  position: fixed;
+  top: 100px;
+  right: 20px;
   width: 280px;
   background: rgba(40,40,60,.85);
   padding: 20px;
   border-radius: 15px;
   font-size: 1rem;
-  line-height: 2.5;
+  line-height: 1.7;
   text-align: left;
-  z-index: 500;           /* ensure above background */
+  z-index: 500;
 }
-.instructions-side h3 {
-  color: #ffcc00;
-  margin-bottom: 10px;
+.instructions-side h3{ color:#ffcc00; margin-bottom:10px; }
+.instructions ul{ padding-left:20px; margin-bottom:15px; }
+
+/* ========= Level + Mode Circle ========= */
+.level-indicator{
+  position:absolute; top:20px; right:20px;
+  width:110px; height:110px; border-radius:50%;
+  background: rgba(255,204,0,.18);
+  border:2px solid #ffcc00;
+  box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; text-align:center; padding:6px 4px; z-index:2;
 }
+.level-indicator .label{ font-size:.65rem; color:#aaa; letter-spacing:.06em; line-height:1; }
+.level-indicator .value{ font-size:2rem; font-weight:800; color:#ffcc00; line-height:1.05; }
+.level-indicator .mode-label{ font-size:.6rem; color:#aaa; letter-spacing:.06em; margin-top:2px; line-height:1; }
+.level-indicator .mode{ font-size:.9rem; font-weight:700; color:#ffcc00; line-height:1.05; }
 
-
-.instructions ul { padding-left:20px; margin-bottom:15px; }
-
-
-@media (max-width: 600px) {
-  .game-title { font-size:2rem; }
-  .stats-container { flex-direction:column; align-items:center; }
-  .game-buttons { grid-template-columns: 1fr; }
-  .monster-display { width: 180px; height: 180px; }
-}
-* Optional: shrink on very small screens */
-@media (max-width: 600px) {
-  .monster-slot,
-  .monster-display {
-    width: 200px;
-    height: 285px; /* maintain ~7:10 ratio */
-  }
-}
-/* Monster cards animation */
+/* ========= Animations ========= */
 @keyframes cardAppear { 0% { transform: scale(2) rotateY(90deg); opacity:0; } 100% { transform: scale(1) rotateY(0); opacity:1; } }
-.monster-card.appear { animation: cardAppear .8s ease-out forwards; }
+.monster-card.appear{ animation: cardAppear .8s ease-out forwards; }
 
 @keyframes cardDefeat { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(-100px) rotate(-30deg); opacity:0; } }
-.monster-card.defeat { animation: cardDefeat 1s ease-in forwards; }
+.monster-card.defeat{ animation: cardDefeat 1s ease-in forwards; }
 
-/* Shared Story Modal */
-#story-modal {
+/* ========= Story Modal ========= */
+#story-modal{
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.85);
   display: flex; justify-content: center; align-items: center; z-index: 1000;
 }
-#story-modal.hidden { display: none; }
-.story-card {
-  background: #222; padding: 20px; border-radius: 12px;
-  max-width: 640px; width: 92%; text-align: center; color: #fff; border: 3px solid #ffcc00;
+#story-modal.hidden{ display:none; }
+.story-card{
+  background:#222; padding:20px; border-radius:12px;
+  max-width:640px; width:92%; text-align:center; color:#fff; border:3px solid #ffcc00;
 }
-#story-image { width: 100%; max-height: 340px; object-fit: contain; border-radius: 10px; margin-bottom: 16px; }
-#story-text { margin-bottom: 20px; line-height: 1.5; }
-#story-buttons { display:flex; gap:10px; justify-content:center; flex-wrap: wrap; }
-#story-buttons button {
-  padding: 10px 20px; background: linear-gradient(to right, #2ecc71, #27ae60);
+#story-image{ width:100%; max-height:340px; object-fit:contain; border-radius:10px; margin-bottom:16px; }
+#story-text{ margin-bottom:20px; line-height:1.5; }
+#story-buttons{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+#story-buttons button{
+  padding:10px 20px; background: linear-gradient(to right, #2ecc71, #27ae60);
   border:none; border-radius:8px; color:#fff; cursor:pointer; font-size:1rem; transition:.3s;
 }
-#story-buttons button:hover { background: linear-gradient(to right, #27ae60, #2ecc71); }
+#story-buttons button:hover{ background: linear-gradient(to right, #27ae60, #2ecc71); }
 
-/* Contact Us Floating Button */
-.contact-btn {
+/* ========= Contact Button ========= */
+.contact-btn{
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -200,81 +245,30 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  transition: all .3s ease;
   z-index: 1001;
 }
-.contact-btn i {
-  font-size: 1.2rem;
-}
-.contact-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0,0,0,.5);
-}
-/* Keep your existing .level-indicator rules */
+.contact-btn i{ font-size:1.2rem; }
+.contact-btn:hover{ transform: translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,.5); }
 
-/* One circular badge for level + mode */
-.level-indicator {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-
-  background: rgba(255,204,0,.18);
-  border: 2px solid #ffcc00;
-  box-shadow: 0 4px 10px rgba(0,0,0,.35);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  text-align: center;
-  padding: 6px 4px;
-  z-index: 2;
+/* ========= Responsive ========= */
+@media (max-width: 1024px){
+  /* Avoid overlap on tablets */
+  .instructions-side{ position: static; width:auto; margin-top:16px; }
 }
 
-.level-indicator .label {
-  font-size: .65rem;
-  color: #aaa;
-  letter-spacing: .06em;
-  line-height: 1;
+@media (max-width: 900px){
+  .arena{ grid-template-columns: 1fr; gap:20px; }
+  .health-container{ width: 100%; }
+  .card-frame{ width: 100%; }
 }
 
-.level-indicator .value {
-  font-size: 2rem;         /* big level number */
-  font-weight: 800;
-  color: #ffcc00;
-  line-height: 1.05;
-}
-
-.level-indicator .mode-label {
-  font-size: .6rem;
-  color: #aaa;
-  letter-spacing: .06em;
-  margin-top: 2px;
-  line-height: 1;
-}
-
-.level-indicator .mode {
-  font-size: .9rem;        /* readable mode text */
-  font-weight: 700;
-  color: #ffcc00;
-  line-height: 1.05;
-}
-
-/* Mobile tweaks */
-@media (max-width: 600px) {
-  .level-indicator {
-    top: 12px;
-    right: 12px;
-    width: 90px;
-    height: 90px;
-    padding: 4px 3px;
-    gap: 1px;
+@media (max-width: 600px){
+  .game-title{ font-size:2rem; }
+  .game-buttons{ grid-template-columns:1fr; }
+  .level-indicator{
+    top:12px; right:12px; width:90px; height:90px; padding:4px 3px; gap:1px;
   }
-  .level-indicator .value { font-size: 1.6rem; }
-  .level-indicator .mode { font-size: .8rem; }
+  .level-indicator .value{ font-size:1.6rem; }
+  .level-indicator .mode{ font-size:.8rem; }
 }

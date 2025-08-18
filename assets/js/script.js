@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Label the player bar with chosen name
   document.getElementById('player-health-label').textContent = `${playerName}'s Health`;
 
+  // Put player's portrait into the left card
+  const playerPortraitEl = document.getElementById('player-portrait');
+  if (playerPortraitEl) {
+    const portrait =
+      character?.image || character?.portrait ||
+      'assets/images/characters/default.png';
+    playerPortraitEl.src = portrait;
+    playerPortraitEl.alt = character?.name ? `${character.name} portrait` : 'Selected character';
+  }
+
   // State
   let sequence = [];
   let playerSequence = [];
@@ -18,43 +28,44 @@ document.addEventListener('DOMContentLoaded', () => {
   let monsterHealth = 100;
   let level = 1;
   let gameStarted = false;
-let currentStreak = 0;
-let bestStreak = 0;
+  let currentStreak = 0;
+  let bestStreak = 0;
 
-function getHighScores() {
-  try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
-  catch { return []; }
-}
+  function getHighScores() {
+    try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
+    catch { return []; }
+  }
 
-function saveHighScore(entry) {
-  const list = getHighScores();
-  list.push(entry);
-  // Sort by score desc, then bestStreak desc, then rounds desc
-  list.sort((a,b) => b.score - a.score || b.bestStreak - a.bestStreak || b.rounds - a.rounds);
-  const top5 = list.slice(0,5);
-  localStorage.setItem('rpgHighScores', JSON.stringify(top5));
-}
+  function saveHighScore(entry) {
+    const list = getHighScores();
+    list.push(entry);
+    // Sort by score desc, then bestStreak desc, then rounds desc
+    list.sort((a,b) => b.score - a.score || b.bestStreak - a.bestStreak || b.rounds - a.rounds);
+    const top5 = list.slice(0,5);
+    localStorage.setItem('rpgHighScores', JSON.stringify(top5));
+  }
 
-function makeRunEntry({ outcome }) {
-  const now = new Date().toISOString().slice(0,10);
-  return {
-    name: playerName,
-    character: character?.name || '',
-    score,
-    rounds: round,
-    level,
-    bestStreak,
-    path: pathChoice,
-    outcome, // 'victory' | 'defeat'
-    date: now
-  };
-}
+  function makeRunEntry({ outcome }) {
+    const now = new Date().toISOString().slice(0,10);
+    return {
+      name: playerName,
+      character: character?.name || '',
+      score,
+      rounds: round,
+      level,
+      bestStreak,
+      path: pathChoice,
+      outcome, // 'victory' | 'defeat'
+      date: now
+    };
+  }
 
   // One-time flags for special popups
   let shownHalfPlayer = false;
   let shownHalfMonster = false;
   let pathChoice = 'assault'; // default if player doesn't choose at Lv4 popup
 
+  // DOM
   const buttons = document.querySelectorAll('.game-button');
   const feedback = document.getElementById('feedback');
   const monsterNameEl = document.getElementById('monster-name');
@@ -70,6 +81,7 @@ function makeRunEntry({ outcome }) {
   const startBtn = document.getElementById('start-btn');
   const redoBtn = document.getElementById('redo-btn');
 
+  // Monsters
   const monsters = [
     { name: 'Goblin',          level: 1, image: 'assets/images/goblin.png',        speed: 800, health: 100 },
     { name: 'Orc',             level: 2, image: 'assets/images/orc.png',           speed: 700, health: 120 },
@@ -96,6 +108,17 @@ function makeRunEntry({ outcome }) {
     // Reset half-health flags per monster
     shownHalfMonster = false;
   }
+
+  // Difficulty (defaults to Medium; apply factors)
+  const defaultDiff = { key:'medium', label:'Medium', speedFactor:1.0, complexityFactor:1.0, scoreFactor:1.0 };
+  const difficulty = (() => {
+    try { return JSON.parse(localStorage.getItem('difficulty')) || defaultDiff; }
+    catch { return defaultDiff; }
+  })();
+
+  // Show the game mode inside the circle
+  const modeEl = document.getElementById('mode-display');
+  if (modeEl) modeEl.textContent = difficulty.label || 'Medium';
 
   function updateDisplays() {
     const maxM = monsters[level - 1].health;
@@ -136,53 +159,23 @@ function makeRunEntry({ outcome }) {
     updateDisplays();
   }
 
-function startBattle() {
-  if (gameStarted) return;
-  gameStarted = true;
-  feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+  function startBattle() {
+    if (gameStarted) return;
+    gameStarted = true;
+    feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
 
-  // Smooth scroll to controls
-  document.querySelector('.controls').scrollIntoView({ 
-    behavior: 'smooth', 
-    block: 'center' 
-  });
+    // Smooth scroll to controls
+    document.querySelector('.controls').scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
 
-  setTimeout(nextRound, 1200);
-}
-  // Load difficulty (fallback to Medium)
-  const defaultDiff = { key:'medium', label:'Medium', speedFactor:1.0, complexityFactor:1.0, scoreFactor:1.0 };
-  const difficulty = (() => {
-    try { return JSON.parse(localStorage.getItem('difficulty')) || defaultDiff; }
-    catch { return defaultDiff; }
-  })();
-
-  // Show the game mode visibly on the page
-
-const modeEl = document.getElementById('mode-display');
-if (modeEl) {
-  modeEl.textContent = difficulty.label; // "Easy", "Medium", "Hard"
-  modeEl.parentElement?.setAttribute('aria-label', `Level ${level} — Mode ${difficulty.label}`);
-}
-
-
+    setTimeout(nextRound, 1200);
+  }
 
   function replaySequence() {
     if (!gameStarted || !sequence.length) return;
     feedback.textContent = 'Replaying the pattern...';
-    showSequence();
-  }
-
-  function nextRound() {
-    if (!gameStarted) return;
-    playerSequence = [];
-    round++;
-
-    // Increase pattern length more aggressively per level for difficulty
-    sequence.push(nextAttack(), nextAttack()); // base +2 each round
-
-    
-    if (round % 2 === 0) sequence.push(nextAttack()); // add extra step every 2 rounds
-    feedback.textContent = `Memorize the attack pattern! Round ${round}`;
     showSequence();
   }
 
@@ -191,8 +184,27 @@ if (modeEl) {
     return choices[Math.floor(Math.random() * choices.length)];
   }
 
+  function nextRound() {
+    if (!gameStarted) return;
+    playerSequence = [];
+    round++;
+
+    // Complexity: base + extra every 2 rounds, scaled by difficulty
+    const baseAdds = 2;
+    const extra = (round % 2 === 0) ? 1 : 0;
+    const factor = Math.max(0.5, Number(difficulty?.complexityFactor) || 1);
+    const adds = Math.max(1, Math.round((baseAdds + extra) * factor));
+    for (let i = 0; i < adds; i++) sequence.push(nextAttack());
+
+    feedback.textContent = `Memorize the attack pattern! Round ${round}`;
+    showSequence();
+  }
+
   function showSequence() {
-    const delay = monsters[level - 1].speed;
+    const baseDelay = monsters[level - 1].speed;
+    const speedFactor = Math.max(0.5, Number(difficulty?.speedFactor) || 1);
+    const delay = Math.max(120, Math.round(baseDelay / speedFactor));
+
     sequence.forEach((cls, i) => {
       setTimeout(() => highlightButton(cls), delay * (i + 1));
     });
@@ -217,7 +229,7 @@ if (modeEl) {
       playerHealth = Math.max(playerHealth - dmg, 0);
       updateDisplays();
       if (playerHealth <= 0) {
-        
+
         // DEFEAT popup
         gamePauseWith(() =>
           showStory('defeat', {
@@ -260,14 +272,18 @@ if (modeEl) {
 
       playerHealth = Math.min(playerHealth + heal, 100);
       monsterHealth = Math.max(monsterHealth - dmg, 0);
-      score += dmg;
+
+      // Score scaled by difficulty
+      const scoreFactor = Math.max(0.5, Number(difficulty?.scoreFactor) || 1);
+      score += Math.round(dmg * scoreFactor);
+
       updateDisplays();
 
       if (monsterHealth <= 0) {
         // Monster defeated
         document.querySelector('.monster-card')?.classList.replace('appear', 'defeat');
         feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
-        score += 100 * level;
+        score += Math.round(100 * level * scoreFactor);
 
         // Level transition handling + required story popups
         setTimeout(() => {
@@ -289,17 +305,12 @@ if (modeEl) {
             };
 
             // Required popups:
-            // - after level 2 (before 3)
-            // - after level 3 (before 4)
-            // - after level 4 (before 5) with path choice
             if (justCleared === 2) {
               gamePauseWith(() => showStory('afterLevel2', {}), doAdvance);
             } else if (justCleared === 3) {
               gamePauseWith(() => showStory('afterLevel3', {}), doAdvance);
             } else if (justCleared === 4) {
-              const ctx = {
-                setPath: (p) => { pathChoice = p; }
-              };
+              const ctx = { setPath: (p) => { pathChoice = p; } };
               gamePauseWith(() => showStory('afterLevel4', ctx), doAdvance);
             } else {
               doAdvance();
@@ -325,18 +336,16 @@ if (modeEl) {
     gameStarted = false;
     // Show story, then optionally continue
     showFn();
-    // If we passed a continuation, wire it to the first visible button click (after modal closes)
-    // Handled inside showStory button actions; here we just set a small delay to resume if provided.
     if (after) {
-      // Resume after the modal closes (buttons close modal immediately)
+      const modal = document.getElementById('story-modal');
       const observer = new MutationObserver(() => {
-        const hidden = document.getElementById('story-modal')?.classList.contains('hidden');
+        const hidden = modal?.classList.contains('hidden');
         if (hidden) {
           observer.disconnect();
           setTimeout(() => { if (!wasRunning) gameStarted = true; after(); }, 150);
         }
       });
-      observer.observe(document.getElementById('story-modal'), { attributes: true, attributeFilter: ['class'] });
+      if (modal) observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
     }
   }
 
@@ -350,74 +359,73 @@ if (modeEl) {
     if (map[e.key]) handlePlayerInput(map[e.key]);
   });
 
+  /* === CHEAT: Type /Elias to insta-defeat the current level === */
+  (() => {
+    let _buffer = "";
+    function cheatDefeatLevel() {
+      // Make sure we’re in a valid state
+      if (level < 1 || level > monsters.length) return;
 
-  /* === CHEAT: Type /EliasZilla to insta-defeat the current level === */
-(() => {
-  let _buffer = "";
+      // Drop the monster to 0 HP and run the same transition flow you use on kill
+      monsterHealth = 0;
+      updateDisplays();
 
-  function cheatDefeatLevel() {
-    // Make sure we’re in a valid state
-    if (level < 1 || level > monsters.length) return;
+      // Animate card defeat + feedback + scoring
+      document.querySelector('.monster-card')?.classList.replace('appear', 'defeat');
+      feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
+      const scoreFactor = Math.max(0.5, Number(difficulty?.scoreFactor) || 1);
+      score += Math.round(100 * level * scoreFactor);
 
-    // Drop the monster to 0 HP and run the same transition flow you use on kill
-    monsterHealth = 0;
-    updateDisplays();
+      // Advance logic exactly like real kills
+      setTimeout(() => {
+        if (level < monsters.length) {
+          const justCleared = level;
+          level++;
 
-    // Animate card defeat + feedback + scoring
-    document.querySelector('.monster-card')?.classList.replace('appear', 'defeat');
-    feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
-    score += 100 * level;
+          // Reset round/sequence and health for next level
+          sequence = [];
+          round = 0;
+          playerHealth = 100;
+          shownHalfPlayer = false;
+          shownHalfMonster = false;
 
-    // Advance logic exactly like real kills
-    setTimeout(() => {
-      if (level < monsters.length) {
-        const justCleared = level;
-        level++;
+          const doAdvance = () => {
+            setMonster(level - 1);
+            updateDisplays();
+            feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level - 1].name}!`;
+            setTimeout(nextRound, 1200);
+          };
 
-        // Reset round/sequence and health for next level
-        sequence = [];
-        round = 0;
-        playerHealth = 100;
-        shownHalfPlayer = false;
-        shownHalfMonster = false;
-
-        const doAdvance = () => {
-          setMonster(level - 1);
-          updateDisplays();
-          feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level - 1].name}!`;
-          setTimeout(nextRound, 1200);
-        };
-
-        // Required story beats between levels
-        if (justCleared === 2) {
-          gamePauseWith(() => showStory('afterLevel2', {}), doAdvance);
-        } else if (justCleared === 3) {
-          gamePauseWith(() => showStory('afterLevel3', {}), doAdvance);
-        } else if (justCleared === 4) {
-          const ctx = { setPath: (p) => { pathChoice = p; } };
-          gamePauseWith(() => showStory('afterLevel4', ctx), doAdvance);
+          // Required story beats between levels
+          if (justCleared === 2) {
+            gamePauseWith(() => showStory('afterLevel2', {}), doAdvance);
+          } else if (justCleared === 3) {
+            gamePauseWith(() => showStory('afterLevel3', {}), doAdvance);
+          } else if (justCleared === 4) {
+            const ctx = { setPath: (p) => { pathChoice = p; } };
+            gamePauseWith(() => showStory('afterLevel4', ctx), doAdvance);
+          } else {
+            doAdvance();
+          }
         } else {
-          doAdvance();
+          // Final victory
+          gamePauseWith(() => showStory('victory', { score, rounds: round, path: pathChoice }));
+          gameStarted = false;
         }
-      } else {
-        // Final victory
-        gamePauseWith(() => showStory('victory', { score, rounds: round, path: pathChoice }));
-        gameStarted = false;
-      }
-    }, 900);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    // Build a small rolling buffer of recent keystrokes
-    const ch = e.key.length === 1 ? e.key : '';
-    _buffer = (_buffer + ch).slice(-20);
-    // Trigger when the buffer ends with /EliasZilla (case-sensitive)
-    if (_buffer.endsWith('/Elias')) {
-      cheatDefeatLevel();
-      _buffer = ""; // optional: clear so it doesn’t retrigger immediately
+      }, 900);
     }
-  });
-})();
+
+    document.addEventListener('keydown', (e) => {
+      // Build a rolling buffer of recent keystrokes
+      const ch = e.key.length === 1 ? e.key : '';
+      _buffer = (_buffer + ch).slice(-20);
+      // Trigger when the buffer ends with /Elias (case-sensitive)
+      if (_buffer.endsWith('/Elias')) {
+        cheatDefeatLevel();
+        _buffer = ""; // prevent immediate retrigger
+      }
+    });
+  })();
 
   // Go!
   initGame();
