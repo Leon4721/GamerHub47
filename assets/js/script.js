@@ -157,8 +157,12 @@ function startBattle() {
   })();
 
   // Show the game mode visibly on the page
-  const diffTag = document.getElementById('difficulty-tag');
-  if (diffTag) diffTag.textContent = `Mode: ${difficulty.label}`;
+const diffTag = document.getElementById('difficulty-tag');
+if (diffTag) {
+  diffTag.textContent = difficulty.label;                 // e.g. “Medium”
+  diffTag.setAttribute('aria-label', `Mode: ${difficulty.label}`);
+}
+
 
 
   function replaySequence() {
