@@ -1,0 +1,30 @@
+/* assets/css/fit.css
+   Non-destructive viewport fit: scales .game-container when it would exceed the viewport.
+   Keeps your original CSS/HTML untouched. */
+
+:root { --gc-scale: 1; }
+
+/* Only hide vertical scroll when we’re scaling the game to fit. */
+body.gc-fit { overflow-y: hidden; }
+
+/* Scale the game content around the top-center so the HUD stays anchored. */
+.gc-fit .game-container {
+  transform-origin: top center;
+  transform: scale(var(--gc-scale));
+  will-change: transform;
+}
+
+/* Optional: on very small phones, nudge the side instructions so they stay neat. */
+@media (max-width: 420px){
+  .gc-fit .instructions-side{
+    right: 8px;
+    top: 72px;
+    width: min(260px, 86vw);
+    padding: 12px;
+  }
+}
+
+/* If your browser shows hairline shifting during transform, this helps a little. */
+@supports (backface-visibility: hidden) {
+  .gc-fit .game-container { backface-visibility: hidden; }
+}
