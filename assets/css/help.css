@@ -1,0 +1,127 @@
+/* Compact Help / How-to Modal + floating ? button */
+
+/* Visually hidden utility for screen-reader-only text (if you want to use it) */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 1px, 1px);
+  border: 0;
+}
+
+/* Floating ? button */
+.help-fab{
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 700;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #ffcc00;
+  background: rgba(30,30,50,.9);
+  color: #ffcc00;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0,0,0,.35);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.help-fab:hover{ transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,.45); background: rgba(40,40,70,.95); }
+.help-fab:active{ transform: translateY(0); }
+
+.help-icon{
+  font-size: 1.2rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+/* Modal shell */
+.hidden { display: none !important; }
+
+.howto-modal{
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.howto-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+}
+
+/* Modal card */
+.howto-card{
+  position: relative;
+  z-index: 1001;
+  width: min(92vw, 560px);
+  margin: 6vh auto 0 auto;
+  background: #222;
+  color: #fff;
+  border: 3px solid #ffcc00;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.6);
+  display: flex;
+  flex-direction: column;
+}
+
+.howto-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,204,0,.25);
+}
+.howto-header h3{
+  font-size: 1.15rem;
+  color: #ffcc00;
+  margin: 0;
+}
+.howto-close{
+  background: transparent;
+  border: 2px solid #555;
+  color: #ddd;
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease;
+}
+.howto-close:hover{ border-color: #ffcc00; background: rgba(255,204,0,.08); }
+
+.howto-body{
+  padding: 14px;
+  line-height: 1.6;
+}
+.howto-body ul{
+  padding-left: 20px;
+  margin: 0 0 10px 0;
+}
+.howto-body li{ margin: 4px 0; }
+
+.howto-footer{
+  padding: 12px 14px 14px 14px;
+  border-top: 1px solid rgba(255,204,0,.25);
+  display: flex; justify-content: flex-end;
+}
+.howto-ok{
+  padding: 10px 16px;
+  background: linear-gradient(to right, #2ecc71, #27ae60);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .2s ease;
+}
+.howto-ok:hover{ filter: brightness(1.05); }
+
+/* Avoid overlapping the Contact Us button on extra-small screens */
+@media (max-width: 420px){
+  .help-fab{
+    left: 10px; bottom: 66px; /* lift it above the contact button area */
+  }
+}
