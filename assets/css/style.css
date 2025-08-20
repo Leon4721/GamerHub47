@@ -2,9 +2,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 :root{
-  --card-w: clamp(260px, 36vw, 420px);
+  --card-w: clamp(240px, 32vw, 400px);
   --card-ratio: 7 / 10;
-  --lane-gap: 32px;
+  --lane-gap: 27px;
   --meta-h: 44px;             /* space reserved above each card for symmetry */
 }
 
@@ -25,7 +25,7 @@ body {
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   width: 100%;
-  max-width: 1200px;          /* widened */
+  max-width: 1250px;          /* widened */
   padding: 30px;
   text-align: center;
   position: relative;
