@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="./assets/css/style.css"/>
   <!-- NEW: Help / How-to modal styles -->
   <link rel="stylesheet" href="./assets/css/help.css"/>
-
+  <link rel="stylesheet" href="assets/css/fit.css">
   <!-- Icons (used by contact/help buttons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
@@ -145,7 +145,12 @@
   </a>
 
   <!-- Scripts: your game module (imports ui.js -> story.js), then the small help module -->
-  <script type="module" src="./assets/js/script.js"></script>
-  <script type="module" src="./assets/js/help.js"></script>
+   <script type="module" src="assets/js/ui.js"></script>
+   
+   <script type="module" src="assets/js/story.js"></script>
+   <script type="module" src="assets/js/script.js"></script>
+   <script src="assets/js/fit.js" defer></script>      <!-- fit after layout -->
+   <script src="assets/js/help.js" defer></script> 
+   <script type="module" src="./assets/js/help.js"></script>
 </body>
 </html>

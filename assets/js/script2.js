@@ -156,5 +156,6 @@ if (modeEl && typeof difficulty?.label === 'string') {
     showStory('postSelect', { name: playerName, character: selectedCharacter });
   });
 });
+renderHighScoresIndex(); // populate the index high score table on load
 
 });
