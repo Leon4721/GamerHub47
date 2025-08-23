@@ -2,7 +2,7 @@
 
 (Developer: Leon Freeman)
 
-![project-rpg](assets/images/dragon.png)
+![project-rpg](assets/images/)
 
 [Live webpage](https://leon4721.github.io/Project-RPG/)
 
