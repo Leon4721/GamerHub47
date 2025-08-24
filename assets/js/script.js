@@ -6,59 +6,67 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!raw) { window.location.href = 'index.html'; return; }
   const { name: playerName, character } = JSON.parse(raw);
 
-// Put player's portrait into the left card (robust)
-const playerPortraitEl = document.getElementById('player-portrait');
+  // ===== Robust portrait loader with multi-step fallbacks =====
+  const PORTRAIT_DEFAULTS = [
+    'assets/images/characters/default.png',
+    '/assets/images/characters/default.png',
+    'assets/images/default.png',
+    '/assets/images/default.png'
+  ];
 
-function resolvePortraitPath() {
-  // preferred → alt → safe fallback
-  const candidate =
-    character?.image ||
-    character?.portrait ||
-    'assets/images/characters/default.png'; // adjust if your real path differs
-  return candidate;
-}
-
-function setPortraitSafe(imgEl, src) {
-  if (!imgEl) {
-    console.warn('[portrait] #player-portrait not found in DOM');
-    return;
+  function fileNameOnly(p) {
+    try { return String(p || '').split('/').pop() || ''; } catch { return ''; }
   }
 
-  // Clear any prior handlers
-  imgEl.onerror = null;
-  imgEl.onload = null;
+  function buildPortraitCandidates(char) {
+    const chosen = (char?.portrait || char?.image || '').trim();
 
-  // Add robust onerror to swap to a known-good fallback
-  imgEl.onerror = () => {
-    console.error('[portrait] Failed to load:', imgEl.src);
-    // Try a hard-coded fallback variant (root vs relative) to cover path base issues
-    const fallbacks = [
-      'assets/images/characters/default.png',
-      '/assets/images/characters/default.png'
-    ];
-    const next = fallbacks.find(fb => !imgEl.src.endsWith(fb));
-    if (next) {
-      console.warn('[portrait] Trying fallback:', next);
-      imgEl.src = next;
+    // If we got an absolute or characters-path, keep as-is first
+    const list = [];
+    if (chosen) list.push(chosen);
+
+    // If it isn't already inside /characters/, try mapping same filename into /characters/
+    const name = fileNameOnly(chosen);
+    if (name && !chosen.includes('/characters/')) {
+      list.push('assets/images/characters/' + name);
     }
-  };
 
-  // Log success so you can see which path actually worked
-  imgEl.onload = () => {
-    console.log('[portrait] Loaded:', imgEl.src);
-  };
+    // If it isn't already inside /assets/images/, try that too
+    if (name && !chosen.startsWith('assets/images/')) {
+      list.push('assets/images/' + name);
+    }
 
-  // Set alt text and src
-  imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
-  imgEl.src = src;
-}
+    // Add defaults last
+    return [...new Set([...list, ...PORTRAIT_DEFAULTS])];
+  }
 
-if (playerPortraitEl) {
-  const src = resolvePortraitPath();
-  console.log('[portrait] Attempting:', src);
-  setPortraitSafe(playerPortraitEl, src);
-}
+  function setPortraitWithFallbacks(imgEl, candidates) {
+    if (!imgEl || !candidates?.length) return;
 
+    let idx = 0;
+    const tryNext = () => {
+      if (idx >= candidates.length) return; // give up quietly
+      const src = candidates[idx++];
+      imgEl.onerror = tryNext;
+      imgEl.onload = () => { console.log('[portrait] Loaded:', imgEl.src); };
+      imgEl.src = src;
+    };
+
+    // Set alt text once
+    imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
+    tryNext();
+  }
+  // =================================================================
+
+  // Put player's portrait into the left card (robust)
+  const playerPortraitEl = document.getElementById('player-portrait');
+  if (playerPortraitEl) {
+    const candidates = buildPortraitCandidates(character);
+    console.log('[portrait] Candidates →', candidates);
+    setPortraitWithFallbacks(playerPortraitEl, candidates);
+  } else {
+    console.warn('[portrait] #player-portrait not found in DOM');
+  }
 
   // State
   let sequence = [];
@@ -76,9 +84,6 @@ if (playerPortraitEl) {
     try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
     catch { return []; }
   }
-
-  // ⛑️ FIX: This line used to crash when playerPortraitEl was null.
-  // It's now guarded above; no second assignment here.
 
   function saveHighScore(entry) {
     const list = getHighScores();
@@ -130,7 +135,7 @@ if (playerPortraitEl) {
     { name: 'Goblin',          level: 1, image: 'assets/images/goblin.png',        speed: 800, health: 100 },
     { name: 'Orc',             level: 2, image: 'assets/images/orc.png',           speed: 700, health: 120 },
     { name: 'Dark Mage',       level: 3, image: 'assets/images/darkmage.png',      speed: 600, health: 150 },
-    // NOTE: check filename below - was 'sknigh.png'; if your asset is 'sknight.png', update accordingly
+    // NOTE: ensure the filename really is 'sknight.png' in your assets
     { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknight.png',       speed: 500, health: 200 },
     { name: 'Dragon',          level: 5, image: 'assets/images/dragon.png',        speed: 400, health: 250 }
   ];
@@ -208,57 +213,46 @@ if (playerPortraitEl) {
     updateDisplays();
   }
 
- function startBattle() {
-  if (gameStarted) return;
+  function startBattle() {
+    if (gameStarted) return;
 
-  // Only auto-scroll on narrow screens
-  if (window.innerWidth < 800) {
-    const controls = document.querySelector('.controls');
-    if (controls) {
-      controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Only auto-scroll on narrow screens
+    if (window.innerWidth < 800) {
+      const controls = document.querySelector('.controls');
+      if (controls) {
+        controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
-  }
 
-  const begin = () => {
-    gameStarted = true;
-    feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
-    setTimeout(nextRound, 1200);
-  };
+    const begin = () => {
+      gameStarted = true;
+      if (feedback) feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+      setTimeout(nextRound, 1200);
+    };
 
-  // First-time users: show How-to once, then start
-  const seenHowto = localStorage.getItem('howtoSeen') === '1';
-  if (!seenHowto) {
-    const helpBtn = document.getElementById('help-btn');
-    const modal   = document.getElementById('howto-modal');
+    // First-time users: show How-to once, then start
+    const seenHowto = localStorage.getItem('howtoSeen') === '1';
+    if (!seenHowto) {
+      const helpBtn = document.getElementById('help-btn');
+      const modal   = document.getElementById('howto-modal');
 
-    // Fallback: if modal elements aren't available, just start
-    if (!helpBtn || !modal) {
-      begin();
+      if (!helpBtn || !modal) { begin(); return; }
+
+      helpBtn.click();
+      localStorage.setItem('howtoSeen', '1');
+
+      const mo = new MutationObserver(() => {
+        if (modal.classList.contains('hidden')) {
+          mo.disconnect();
+          begin();
+        }
+      });
+      mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
       return;
     }
 
-    // Open the How-to modal using the existing help.js logic
-    helpBtn.click();
-    localStorage.setItem('howtoSeen', '1');
-
-    // Wait until the modal is closed, then begin
-    const mo = new MutationObserver(() => {
-      if (modal.classList.contains('hidden')) {
-        mo.disconnect();
-        begin();
-      }
-    });
-    mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
-
-    // Note: we deliberately DO NOT set gameStarted yet,
-    // so keyboard input won't be processed under the modal.
-    return;
+    begin();
   }
-
-  // Non-first-time path: start immediately
-  begin();
-}
-
 
   function replaySequence() {
     if (!gameStarted || !sequence.length) return;
@@ -276,7 +270,6 @@ if (playerPortraitEl) {
     playerSequence = [];
     round++;
 
-    // Complexity: base + extra every 2 rounds, scaled by difficulty
     const baseAdds = 2;
     const extra = (round % 2 === 0) ? 1 : 0;
     const factor = Math.max(0.5, Number(difficulty?.complexityFactor) || 1);
@@ -350,7 +343,6 @@ if (playerPortraitEl) {
       let dmg = 0, heal = 0;
       sequence.forEach(a => {
         if (a === 'healer') {
-          // Healing: Female has it from the start; both characters from level > 2
           if (character?.name === 'Female' || level > 2) heal += 10 + level * 2;
         } else {
           dmg += 10 + level * 2;
@@ -360,7 +352,6 @@ if (playerPortraitEl) {
       playerHealth = Math.min(playerHealth + heal, 100);
       monsterHealth = Math.max(monsterHealth - dmg, 0);
 
-      // Score scaled by difficulty
       const scoreFactor = Math.max(0.5, Number(difficulty?.scoreFactor) || 1);
       score += Math.round(dmg * scoreFactor);
 
