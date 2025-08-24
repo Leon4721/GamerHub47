@@ -6,18 +6,59 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!raw) { window.location.href = 'index.html'; return; }
   const { name: playerName, character } = JSON.parse(raw);
 
-  // Label the player bar with chosen name
-  document.getElementById('player-health-label').textContent = `${playerName}'s Health`;
+// Put player's portrait into the left card (robust)
+const playerPortraitEl = document.getElementById('player-portrait');
 
-  // Put player's portrait into the left card
-  const playerPortraitEl = document.getElementById('player-portrait');
-  if (playerPortraitEl) {
-    const portrait =
-      character?.image || character?.portrait ||
-      'assets/images/characters/default.png';
-    playerPortraitEl.src = portrait;
-    playerPortraitEl.alt = character?.name ? `${character.name} portrait` : 'Selected character';
+function resolvePortraitPath() {
+  // preferred → alt → safe fallback
+  const candidate =
+    character?.image ||
+    character?.portrait ||
+    'assets/images/characters/default.png'; // adjust if your real path differs
+  return candidate;
+}
+
+function setPortraitSafe(imgEl, src) {
+  if (!imgEl) {
+    console.warn('[portrait] #player-portrait not found in DOM');
+    return;
   }
+
+  // Clear any prior handlers
+  imgEl.onerror = null;
+  imgEl.onload = null;
+
+  // Add robust onerror to swap to a known-good fallback
+  imgEl.onerror = () => {
+    console.error('[portrait] Failed to load:', imgEl.src);
+    // Try a hard-coded fallback variant (root vs relative) to cover path base issues
+    const fallbacks = [
+      'assets/images/characters/default.png',
+      '/assets/images/characters/default.png'
+    ];
+    const next = fallbacks.find(fb => !imgEl.src.endsWith(fb));
+    if (next) {
+      console.warn('[portrait] Trying fallback:', next);
+      imgEl.src = next;
+    }
+  };
+
+  // Log success so you can see which path actually worked
+  imgEl.onload = () => {
+    console.log('[portrait] Loaded:', imgEl.src);
+  };
+
+  // Set alt text and src
+  imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
+  imgEl.src = src;
+}
+
+if (playerPortraitEl) {
+  const src = resolvePortraitPath();
+  console.log('[portrait] Attempting:', src);
+  setPortraitSafe(playerPortraitEl, src);
+}
+
 
   // State
   let sequence = [];
@@ -36,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
     catch { return []; }
   }
 
+  // ⛑️ FIX: This line used to crash when playerPortraitEl was null.
+  // It's now guarded above; no second assignment here.
+
   function saveHighScore(entry) {
     const list = getHighScores();
     list.push(entry);
@@ -44,6 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const top5 = list.slice(0,5);
     localStorage.setItem('rpgHighScores', JSON.stringify(top5));
   }
+
+  // One-time flags for special popups
+  let shownHalfPlayer = false;
+  let shownHalfMonster = false;
+  let pathChoice = 'assault'; // default if player doesn't choose at Lv4 popup
 
   function makeRunEntry({ outcome }) {
     const now = new Date().toISOString().slice(0,10);
@@ -59,11 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
       date: now
     };
   }
-
-  // One-time flags for special popups
-  let shownHalfPlayer = false;
-  let shownHalfMonster = false;
-  let pathChoice = 'assault'; // default if player doesn't choose at Lv4 popup
 
   // DOM
   const buttons = document.querySelectorAll('.game-button');
@@ -86,7 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: 'Goblin',          level: 1, image: 'assets/images/goblin.png',        speed: 800, health: 100 },
     { name: 'Orc',             level: 2, image: 'assets/images/orc.png',           speed: 700, health: 120 },
     { name: 'Dark Mage',       level: 3, image: 'assets/images/darkmage.png',      speed: 600, health: 150 },
-    { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknigh.png',        speed: 500, health: 200 },
+    // NOTE: check filename below - was 'sknigh.png'; if your asset is 'sknight.png', update accordingly
+    { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknight.png',       speed: 500, health: 200 },
     { name: 'Dragon',          level: 5, image: 'assets/images/dragon.png',        speed: 400, health: 250 }
   ];
 
@@ -99,12 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setMonster(i) {
     const m = monsters[i];
-    monsterNameEl.textContent = m.name;
-    monsterLevelEl.textContent = m.level;
+    if (monsterNameEl) monsterNameEl.textContent = m.name;
+    if (monsterLevelEl) monsterLevelEl.textContent = m.level;
     monsterHealth = m.health;
-    levelDisplay.textContent = m.level;
-    monsterDisplay.innerHTML = '';
-    monsterDisplay.appendChild(createMonsterCard(m));
+    if (levelDisplay) levelDisplay.textContent = m.level;
+    if (monsterDisplay) {
+      monsterDisplay.innerHTML = '';
+      monsterDisplay.appendChild(createMonsterCard(m));
+    } else {
+      console.warn('Missing .monster-display element in DOM.');
+    }
     // Reset half-health flags per monster
     shownHalfMonster = false;
   }
@@ -122,13 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateDisplays() {
     const maxM = monsters[level - 1].health;
-    playerHPBar.style.width = `${playerHealth}%`;
-    monsterHPBar.style.width = `${(monsterHealth / maxM) * 100}%`;
-    playerHPValue.textContent = `${playerHealth}%`;
-    monsterHPValue.textContent = `${Math.max(0, Math.round((monsterHealth / maxM) * 100))}%`;
-    roundDisplay.textContent = round;
-    scoreDisplay.textContent = score;
-    levelDisplay.textContent = level;
+    if (playerHPBar) playerHPBar.style.width = `${playerHealth}%`;
+    if (monsterHPBar) monsterHPBar.style.width = `${(monsterHealth / maxM) * 100}%`;
+    if (playerHPValue) playerHPValue.textContent = `${playerHealth}%`;
+    if (monsterHPValue) monsterHPValue.textContent = `${Math.max(0, Math.round((monsterHealth / maxM) * 100))}%`;
+    if (roundDisplay) roundDisplay.textContent = round;
+    if (scoreDisplay) scoreDisplay.textContent = score;
+    if (levelDisplay) levelDisplay.textContent = level;
 
     // Half-health checks (pop once each)
     if (!shownHalfPlayer && playerHealth <= 50 && playerHealth > 0) {
@@ -154,28 +203,66 @@ document.addEventListener('DOMContentLoaded', () => {
     shownHalfPlayer = false;
     shownHalfMonster = false;
     setMonster(0);
-    feedback.textContent = 'Press Start Battle to begin your adventure!';
+    if (feedback) feedback.textContent = 'Press Start Battle to begin your adventure!';
     gameStarted = false;
     updateDisplays();
   }
 
-  function startBattle() {
-    if (gameStarted) return;
+ function startBattle() {
+  if (gameStarted) return;
+
+  // Only auto-scroll on narrow screens
+  if (window.innerWidth < 800) {
+    const controls = document.querySelector('.controls');
+    if (controls) {
+      controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  const begin = () => {
     gameStarted = true;
     feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
-
-    // Smooth scroll to controls
-    document.querySelector('.controls').scrollIntoView({
-      behavior: 'smooth',
-      block: 'center'
-    });
-
     setTimeout(nextRound, 1200);
+  };
+
+  // First-time users: show How-to once, then start
+  const seenHowto = localStorage.getItem('howtoSeen') === '1';
+  if (!seenHowto) {
+    const helpBtn = document.getElementById('help-btn');
+    const modal   = document.getElementById('howto-modal');
+
+    // Fallback: if modal elements aren't available, just start
+    if (!helpBtn || !modal) {
+      begin();
+      return;
+    }
+
+    // Open the How-to modal using the existing help.js logic
+    helpBtn.click();
+    localStorage.setItem('howtoSeen', '1');
+
+    // Wait until the modal is closed, then begin
+    const mo = new MutationObserver(() => {
+      if (modal.classList.contains('hidden')) {
+        mo.disconnect();
+        begin();
+      }
+    });
+    mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+    // Note: we deliberately DO NOT set gameStarted yet,
+    // so keyboard input won't be processed under the modal.
+    return;
   }
+
+  // Non-first-time path: start immediately
+  begin();
+}
+
 
   function replaySequence() {
     if (!gameStarted || !sequence.length) return;
-    feedback.textContent = 'Replaying the pattern...';
+    if (feedback) feedback.textContent = 'Replaying the pattern...';
     showSequence();
   }
 
@@ -196,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adds = Math.max(1, Math.round((baseAdds + extra) * factor));
     for (let i = 0; i < adds; i++) sequence.push(nextAttack());
 
-    feedback.textContent = `Memorize the attack pattern! Round ${round}`;
+    if (feedback) feedback.textContent = `Memorize the attack pattern! Round ${round}`;
     showSequence();
   }
 
@@ -208,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sequence.forEach((cls, i) => {
       setTimeout(() => highlightButton(cls), delay * (i + 1));
     });
-    setTimeout(() => { feedback.textContent = 'Your turn! Repeat the pattern.'; }, delay * (sequence.length + 1));
+    setTimeout(() => { if (feedback) feedback.textContent = 'Your turn! Repeat the pattern.'; }, delay * (sequence.length + 1));
   }
 
   function highlightButton(id) {
@@ -242,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
               round = 0;
               shownHalfPlayer = false; shownHalfMonster = false;
               updateDisplays();
-              feedback.textContent = `Retry Level ${level}!`;
+              if (feedback) feedback.textContent = `Retry Level ${level}!`;
               setTimeout(() => { gameStarted = true; nextRound(); }, 600);
             }
           })
@@ -251,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       setTimeout(() => {
-        feedback.textContent = `Wrong! You take ${dmg} damage.`;
+        if (feedback) feedback.textContent = `Wrong! You take ${dmg} damage.`;
         playerSequence = [];
         showSequence();
       }, 500);
@@ -264,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sequence.forEach(a => {
         if (a === 'healer') {
           // Healing: Female has it from the start; both characters from level > 2
-          if (character.name === 'Female' || level > 2) heal += 10 + level * 2;
+          if (character?.name === 'Female' || level > 2) heal += 10 + level * 2;
         } else {
           dmg += 10 + level * 2;
         }
@@ -280,17 +367,14 @@ document.addEventListener('DOMContentLoaded', () => {
       updateDisplays();
 
       if (monsterHealth <= 0) {
-        // Monster defeated
         document.querySelector('.monster-card')?.classList.replace('appear', 'defeat');
-        feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
+        if (feedback) feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
         score += Math.round(100 * level * scoreFactor);
 
-        // Level transition handling + required story popups
         setTimeout(() => {
           if (level < monsters.length) {
             const justCleared = level;
             level++;
-            // Reset for next level but show story between levels where requested
             sequence = [];
             round = 0;
             playerHealth = 100;
@@ -300,11 +384,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const doAdvance = () => {
               setMonster(level - 1);
               updateDisplays();
-              feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level - 1].name}!`;
+              if (feedback) feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level - 1].name}!`;
               setTimeout(nextRound, 1200);
             };
 
-            // Required popups:
             if (justCleared === 2) {
               gamePauseWith(() => showStory('afterLevel2', {}), doAdvance);
             } else if (justCleared === 3) {
@@ -316,7 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
               doAdvance();
             }
           } else {
-            // Victory
             gamePauseWith(() => showStory('victory', { score, rounds: round, path: pathChoice }));
             gameStarted = false;
           }
@@ -325,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parts = [];
         if (heal) parts.push(`Healed ${heal} HP.`);
         parts.push(`Dealt ${dmg} damage!`);
-        feedback.textContent = `✅ ${parts.join(' ')}`;
+        if (feedback) feedback.textContent = `✅ ${parts.join(' ')}`;
         setTimeout(nextRound, 1000);
       }
     }
@@ -334,10 +416,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function gamePauseWith(showFn, after = null) {
     const wasRunning = gameStarted;
     gameStarted = false;
-    // Show story, then optionally continue
     showFn();
     if (after) {
       const modal = document.getElementById('story-modal');
+      if (!modal) { after(); return; }
       const observer = new MutationObserver(() => {
         const hidden = modal?.classList.contains('hidden');
         if (hidden) {
@@ -345,13 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => { if (!wasRunning) gameStarted = true; after(); }, 150);
         }
       });
-      if (modal) observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+      observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
     }
   }
 
-  // Input bindings
-  startBtn.addEventListener('click', startBattle);
-  redoBtn.addEventListener('click', replaySequence);
+  // Input bindings (guarded)
+  if (startBtn) startBtn.addEventListener('click', startBattle);
+  else console.warn('Missing #start-btn');
+  if (redoBtn) redoBtn.addEventListener('click', replaySequence);
+
   buttons.forEach(b => b.addEventListener('click', () => handlePlayerInput(b.id)));
   document.addEventListener('keydown', e => {
     if (!gameStarted) return;
@@ -363,26 +447,21 @@ document.addEventListener('DOMContentLoaded', () => {
   (() => {
     let _buffer = "";
     function cheatDefeatLevel() {
-      // Make sure we’re in a valid state
       if (level < 1 || level > monsters.length) return;
 
-      // Drop the monster to 0 HP and run the same transition flow you use on kill
       monsterHealth = 0;
       updateDisplays();
 
-      // Animate card defeat + feedback + scoring
       document.querySelector('.monster-card')?.classList.replace('appear', 'defeat');
-      feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
+      if (feedback) feedback.textContent = `🏆 ${monsters[level - 1].name} defeated!`;
       const scoreFactor = Math.max(0.5, Number(difficulty?.scoreFactor) || 1);
       score += Math.round(100 * level * scoreFactor);
 
-      // Advance logic exactly like real kills
       setTimeout(() => {
         if (level < monsters.length) {
           const justCleared = level;
           level++;
 
-          // Reset round/sequence and health for next level
           sequence = [];
           round = 0;
           playerHealth = 100;
@@ -392,11 +471,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const doAdvance = () => {
             setMonster(level - 1);
             updateDisplays();
-            feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level - 1].name}!`;
+            if (feedback) feedback.textContent = `Advanced to level ${level}! Facing ${monsters[level - 1].name}!`;
             setTimeout(nextRound, 1200);
           };
 
-          // Required story beats between levels
           if (justCleared === 2) {
             gamePauseWith(() => showStory('afterLevel2', {}), doAdvance);
           } else if (justCleared === 3) {
@@ -408,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
             doAdvance();
           }
         } else {
-          // Final victory
           gamePauseWith(() => showStory('victory', { score, rounds: round, path: pathChoice }));
           gameStarted = false;
         }
@@ -416,13 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('keydown', (e) => {
-      // Build a rolling buffer of recent keystrokes
       const ch = e.key.length === 1 ? e.key : '';
       _buffer = (_buffer + ch).slice(-20);
-      // Trigger when the buffer ends with /Elias (case-sensitive)
       if (_buffer.endsWith('/Elias')) {
         cheatDefeatLevel();
-        _buffer = ""; // prevent immediate retrigger
+        _buffer = "";
       }
     });
   })();
