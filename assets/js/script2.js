@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  // ===== Portrait normalization (shared idea with game page) =====
+  // ===== Portrait normalization =====
   const PORTRAIT_DEFAULT = 'assets/images/characters/default.png';
   const PORTRAIT_DIR1    = 'assets/images/characters/';
   const PORTRAIT_DIR2    = 'assets/images/';
@@ -32,20 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const raw = String(p || '').trim();
     if (!raw) return PORTRAIT_DEFAULT;
 
-    // Absolute or already in characters folder → keep as is
     if (raw.startsWith('/') || raw.startsWith(PORTRAIT_DIR1)) return raw;
-
-    // If it already lives under assets/images/, allow it
     if (raw.startsWith(PORTRAIT_DIR2)) return raw;
 
-    // If they passed just a filename, put it under characters/
     const name = fileNameOnly(raw);
     if (name) return PORTRAIT_DIR1 + name;
 
-    // Fallback
     return PORTRAIT_DEFAULT;
   }
-  // ===============================================================
+  // ==================================
 
   const characterList = document.getElementById('characterList');
   const startBtn = document.getElementById('start-btn');
@@ -57,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.classList.add('character-card');
     card.dataset.index = index;
 
-    // Use the normalized path for display in the card too, so it matches game page
     const displayImg = normalizePortraitPath(char.image || char.portrait || PORTRAIT_DEFAULT);
 
     card.innerHTML = `
@@ -81,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
-      // Store a character object that already has a clean portrait path
       const portrait = normalizePortraitPath(char.image || char.portrait || PORTRAIT_DEFAULT);
       selectedCharacter = { ...char, portrait, image: portrait };
 
@@ -112,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </tr>`).join('') || '<tr><td colspan="9">No scores yet</td></tr>';
   }
 
-  // === Difficulty profiles used by the game page ===
+  // === Difficulty profiles ===
   const DIFFICULTY = {
     easy:   { key:'easy',   label:'Easy',   speedFactor: 2.0, complexityFactor: 0.5, scoreFactor: 0.5 },
     medium: { key:'medium', label:'Medium', speedFactor: 1.0, complexityFactor: 1.0, scoreFactor: 1.0 },
@@ -120,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function showDifficultyModal(onPick) {
-    // overlay
     const wrap = document.createElement('div');
     wrap.id = 'difficulty-modal';
     wrap.setAttribute('role','dialog');
@@ -130,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
       display:flex; align-items:center; justify-content:center; z-index: 2000;
     `;
 
-    // card
     const card = document.createElement('div');
     card.style.cssText = `
       background:#222; border:3px solid #ffcc00; color:#fff; width:min(92%,560px);
@@ -159,13 +150,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // === Inline notice helper ===
+  function showInlineNotice(msg, ms = 2600) {
+    const old = document.querySelector('.notice-pop');
+    if (old) old.remove();
+
+    const n = document.createElement('div');
+    n.className = 'notice-pop';
+    n.textContent = msg;
+    document.body.appendChild(n);
+
+    setTimeout(() => n.classList.add('fade-out'), ms - 350);
+    setTimeout(() => n.remove(), ms);
+  }
+
   // Start -> difficulty -> story -> game
   startBtn.addEventListener('click', () => {
     const playerName = document.getElementById('playerName').value.trim();
-    if (!playerName) { alert("Please enter your hero's name first!"); return; }
-    if (!selectedCharacter) { alert("Please select a character before starting the quest!"); return; }
+    if (!playerName) {
+      showInlineNotice('Please enter your hero’s name before starting.');
+      return;
+    }
+    if (!selectedCharacter) {
+      showInlineNotice('Pick a character to begin your quest.');
+      return;
+    }
 
-    // Save normalized portrait into the chosen character
     const portrait = normalizePortraitPath(selectedCharacter.portrait || selectedCharacter.image || PORTRAIT_DEFAULT);
     localStorage.setItem('playerData', JSON.stringify({
       name: playerName,
@@ -177,5 +187,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  renderHighScoresIndex(); // populate the index high score table on load
+  renderHighScoresIndex();
 });

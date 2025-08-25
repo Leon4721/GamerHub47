@@ -6,67 +6,59 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!raw) { window.location.href = 'index.html'; return; }
   const { name: playerName, character } = JSON.parse(raw);
 
-  // ===== Robust portrait loader with multi-step fallbacks =====
-  const PORTRAIT_DEFAULTS = [
-    'assets/images/characters/default.png',
-    '/assets/images/characters/default.png',
-    'assets/images/default.png',
-    '/assets/images/default.png'
-  ];
+// Put player's portrait into the left card (robust)
+const playerPortraitEl = document.getElementById('player-portrait');
 
-  function fileNameOnly(p) {
-    try { return String(p || '').split('/').pop() || ''; } catch { return ''; }
-  }
+function resolvePortraitPath() {
+  // preferred → alt → safe fallback
+  const candidate =
+    character?.image ||
+    character?.portrait ||
+    'assets/images/characters/default.png'; // adjust if your real path differs
+  return candidate;
+}
 
-  function buildPortraitCandidates(char) {
-    const chosen = (char?.portrait || char?.image || '').trim();
-
-    // If we got an absolute or characters-path, keep as-is first
-    const list = [];
-    if (chosen) list.push(chosen);
-
-    // If it isn't already inside /characters/, try mapping same filename into /characters/
-    const name = fileNameOnly(chosen);
-    if (name && !chosen.includes('/characters/')) {
-      list.push('assets/images/characters/' + name);
-    }
-
-    // If it isn't already inside /assets/images/, try that too
-    if (name && !chosen.startsWith('assets/images/')) {
-      list.push('assets/images/' + name);
-    }
-
-    // Add defaults last
-    return [...new Set([...list, ...PORTRAIT_DEFAULTS])];
-  }
-
-  function setPortraitWithFallbacks(imgEl, candidates) {
-    if (!imgEl || !candidates?.length) return;
-
-    let idx = 0;
-    const tryNext = () => {
-      if (idx >= candidates.length) return; // give up quietly
-      const src = candidates[idx++];
-      imgEl.onerror = tryNext;
-      imgEl.onload = () => { console.log('[portrait] Loaded:', imgEl.src); };
-      imgEl.src = src;
-    };
-
-    // Set alt text once
-    imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
-    tryNext();
-  }
-  // =================================================================
-
-  // Put player's portrait into the left card (robust)
-  const playerPortraitEl = document.getElementById('player-portrait');
-  if (playerPortraitEl) {
-    const candidates = buildPortraitCandidates(character);
-    console.log('[portrait] Candidates →', candidates);
-    setPortraitWithFallbacks(playerPortraitEl, candidates);
-  } else {
+function setPortraitSafe(imgEl, src) {
+  if (!imgEl) {
     console.warn('[portrait] #player-portrait not found in DOM');
+    return;
   }
+
+  // Clear any prior handlers
+  imgEl.onerror = null;
+  imgEl.onload = null;
+
+  // Add robust onerror to swap to a known-good fallback
+  imgEl.onerror = () => {
+    console.error('[portrait] Failed to load:', imgEl.src);
+    // Try a hard-coded fallback variant (root vs relative) to cover path base issues
+    const fallbacks = [
+      'assets/images/characters/default.png',
+      '/assets/images/characters/default.png'
+    ];
+    const next = fallbacks.find(fb => !imgEl.src.endsWith(fb));
+    if (next) {
+      console.warn('[portrait] Trying fallback:', next);
+      imgEl.src = next;
+    }
+  };
+
+  // Log success so you can see which path actually worked
+  imgEl.onload = () => {
+    console.log('[portrait] Loaded:', imgEl.src);
+  };
+
+  // Set alt text and src
+  imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
+  imgEl.src = src;
+}
+
+if (playerPortraitEl) {
+  const src = resolvePortraitPath();
+  console.log('[portrait] Attempting:', src);
+  setPortraitSafe(playerPortraitEl, src);
+}
+
 
   // State
   let sequence = [];
@@ -84,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
     catch { return []; }
   }
+
+  // ⛑️ FIX: This line used to crash when playerPortraitEl was null.
+  // It's now guarded above; no second assignment here.
 
   function saveHighScore(entry) {
     const list = getHighScores();
@@ -135,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: 'Goblin',          level: 1, image: 'assets/images/goblin.png',        speed: 800, health: 100 },
     { name: 'Orc',             level: 2, image: 'assets/images/orc.png',           speed: 700, health: 120 },
     { name: 'Dark Mage',       level: 3, image: 'assets/images/darkmage.png',      speed: 600, health: 150 },
-    // NOTE: ensure the filename really is 'sknight.png' in your assets
+    // NOTE: check filename below - was 'sknigh.png'; if your asset is 'sknight.png', update accordingly
     { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknight.png',       speed: 500, health: 200 },
     { name: 'Dragon',          level: 5, image: 'assets/images/dragon.png',        speed: 400, health: 250 }
   ];
@@ -173,6 +168,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Show the game mode inside the circle
   const modeEl = document.getElementById('mode-display');
   if (modeEl) modeEl.textContent = difficulty.label || 'Medium';
+
+  // ---- Difficulty scaling helpers --------------------------------------------
+  // Fixed baseline complexity per monster level (1..5). index 0 unused.
+  const BASE_ADDS_BY_LEVEL = [0, 1, 1, 2, 2, 3];
+
+  // Round bonus increases difficulty within a monster: R1=0, R2=+1, R3=+2, R4+=+3
+  function roundBonusOf(r) { return Math.min(3, Math.max(0, r - 1)); }
+
+  // Safely read the 'adds' multiplier from difficulty (backward compatible)
+  function getAddsMultiplier(diff) {
+    if (typeof diff?.addsMultiplier === 'number') return diff.addsMultiplier;
+    if (typeof diff?.complexityFactor === 'number') return diff.complexityFactor;
+    return 1.0;
+  }
+
+  // Compute Easy cap so that Lv5 on Easy is never harder than Lv2 on Hard (same round)
+  function capEasyAgainstHardL2(adds, round) {
+    const HARD_MULT = 1.5; // expected Hard complexity multiplier
+    const baseL2 = BASE_ADDS_BY_LEVEL[2] || 1;
+    const rawL2 = baseL2 + roundBonusOf(round);
+    const hardL2Adds = Math.max(1, Math.round(rawL2 * HARD_MULT));
+    return Math.min(adds, hardL2Adds);
+  }
+
+  // Determine number of NEW steps to add this round
+  function computeAddsForRound(level, round, diffObj) {
+    const base = BASE_ADDS_BY_LEVEL[level] || 1;
+    const raw = base + roundBonusOf(round);
+    const mul = getAddsMultiplier(diffObj);
+    let adds = Math.max(1, Math.round(raw * mul));
+    if (diffObj?.key === 'easy') adds = capEasyAgainstHardL2(adds, round);
+    return adds;
+  }
 
   function updateDisplays() {
     const maxM = monsters[level - 1].health;
@@ -213,46 +241,57 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDisplays();
   }
 
-  function startBattle() {
-    if (gameStarted) return;
+ function startBattle() {
+  if (gameStarted) return;
 
-    // Only auto-scroll on narrow screens
-    if (window.innerWidth < 800) {
-      const controls = document.querySelector('.controls');
-      if (controls) {
-        controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+  // Only auto-scroll on narrow screens
+  if (window.innerWidth < 800) {
+    const controls = document.querySelector('.controls');
+    if (controls) {
+      controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  }
 
-    const begin = () => {
-      gameStarted = true;
-      if (feedback) feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
-      setTimeout(nextRound, 1200);
-    };
+  const begin = () => {
+    gameStarted = true;
+    feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+    setTimeout(nextRound, 1200);
+  };
 
-    // First-time users: show How-to once, then start
-    const seenHowto = localStorage.getItem('howtoSeen') === '1';
-    if (!seenHowto) {
-      const helpBtn = document.getElementById('help-btn');
-      const modal   = document.getElementById('howto-modal');
+  // First-time users: show How-to once, then start
+  const seenHowto = localStorage.getItem('howtoSeen') === '1';
+  if (!seenHowto) {
+    const helpBtn = document.getElementById('help-btn');
+    const modal   = document.getElementById('howto-modal');
 
-      if (!helpBtn || !modal) { begin(); return; }
-
-      helpBtn.click();
-      localStorage.setItem('howtoSeen', '1');
-
-      const mo = new MutationObserver(() => {
-        if (modal.classList.contains('hidden')) {
-          mo.disconnect();
-          begin();
-        }
-      });
-      mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+    // Fallback: if modal elements aren't available, just start
+    if (!helpBtn || !modal) {
+      begin();
       return;
     }
 
-    begin();
+    // Open the How-to modal using the existing help.js logic
+    helpBtn.click();
+    localStorage.setItem('howtoSeen', '1');
+
+    // Wait until the modal is closed, then begin
+    const mo = new MutationObserver(() => {
+      if (modal.classList.contains('hidden')) {
+        mo.disconnect();
+        begin();
+      }
+    });
+    mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+    // Note: we deliberately DO NOT set gameStarted yet,
+    // so keyboard input won't be processed under the modal.
+    return;
   }
+
+  // Non-first-time path: start immediately
+  begin();
+}
+
 
   function replaySequence() {
     if (!gameStarted || !sequence.length) return;
@@ -260,30 +299,38 @@ document.addEventListener('DOMContentLoaded', () => {
     showSequence();
   }
 
-  function nextAttack() {
+  // ⬇️ UPDATED: prevents adjacent duplicates
+  function nextAttack(prev) {
     const choices = ['archer', 'mage', 'warrior', 'healer'];
-    return choices[Math.floor(Math.random() * choices.length)];
+    let pick;
+    do { pick = choices[Math.floor(Math.random() * choices.length)]; } while (pick === prev);
+    return pick;
   }
 
+  // ⬇️ UPDATED: per-level baseline + round bonus + difficulty + Easy cap; uses no-duplicate generator
   function nextRound() {
     if (!gameStarted) return;
     playerSequence = [];
     round++;
 
-    const baseAdds = 2;
-    const extra = (round % 2 === 0) ? 1 : 0;
-    const factor = Math.max(0.5, Number(difficulty?.complexityFactor) || 1);
-    const adds = Math.max(1, Math.round((baseAdds + extra) * factor));
-    for (let i = 0; i < adds; i++) sequence.push(nextAttack());
+    // Add new steps based on monster level + round + difficulty
+    const adds = computeAddsForRound(level, round, difficulty);
+    let last = sequence.length ? sequence[sequence.length - 1] : null;
+    for (let i = 0; i < adds; i++) {
+      const nxt = nextAttack(last);
+      sequence.push(nxt);
+      last = nxt;
+    }
 
     if (feedback) feedback.textContent = `Memorize the attack pattern! Round ${round}`;
     showSequence();
   }
 
+  // ⬇️ UPDATED: timing uses *multiplication* so your selector (Easy=2.0, Hard=0.5) maps to slower vs faster correctly
   function showSequence() {
     const baseDelay = monsters[level - 1].speed;
     const speedFactor = Math.max(0.5, Number(difficulty?.speedFactor) || 1);
-    const delay = Math.max(120, Math.round(baseDelay / speedFactor));
+    const delay = Math.max(120, Math.round(baseDelay * speedFactor));
 
     sequence.forEach((cls, i) => {
       setTimeout(() => highlightButton(cls), delay * (i + 1));
@@ -343,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let dmg = 0, heal = 0;
       sequence.forEach(a => {
         if (a === 'healer') {
+          // Healing: Female has it from the start; both characters from level > 2
           if (character?.name === 'Female' || level > 2) heal += 10 + level * 2;
         } else {
           dmg += 10 + level * 2;
@@ -352,6 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
       playerHealth = Math.min(playerHealth + heal, 100);
       monsterHealth = Math.max(monsterHealth - dmg, 0);
 
+      // Score scaled by difficulty
       const scoreFactor = Math.max(0.5, Number(difficulty?.scoreFactor) || 1);
       score += Math.round(dmg * scoreFactor);
 
@@ -492,6 +541,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   })();
+// Highlight helper: static (no animation), auto-clears after `duration`.
+function cue(id, { gold = false, duration = 450 } = {}) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.classList.remove('cue', 'cue-gold'); // reset
+  void el.offsetWidth;                     // reflow so class re-applies
+  el.classList.add(gold ? 'cue-gold' : 'cue');
+
+  setTimeout(() => el.classList.remove(gold ? 'cue-gold' : 'cue'), duration);
+}
+
+// Example sequence playback:
+// - normal cue uses the button's own glow
+// - the SECOND in any consecutive run becomes gold
+function playSequence(sequence, stepDelay = 700) {
+  sequence.forEach((id, i) => {
+    setTimeout(() => {
+      const sameAsPrev = i > 0 && sequence[i] === sequence[i - 1];
+      const secondInRun =
+        sameAsPrev && (i < 2 || sequence[i - 2] !== sequence[i]); // only the first repeat
+      cue(id, { gold: secondInRun, duration: Math.max(350, stepDelay - 150) });
+    }, i * stepDelay);
+  });
+}
 
   // Go!
   initGame();

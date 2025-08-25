@@ -150,6 +150,20 @@ body {
   display:flex; flex-direction:column; justify-content:center; align-items:center; transition: all .2s ease;
   box-shadow:0 6px 12px rgba(0,0,0,.3); position:relative; overflow:hidden;
 }
+/* Static highlight using each button's --glow */
+.game-button.cue{
+  box-shadow: 0 0 22px var(--glow);
+  transform: scale(1.03);
+}
+
+/* Gold highlight specifically for the second-in-a-row cue */
+.game-button.cue-gold{
+  box-shadow:
+    0 0 24px rgba(241,196,15,.95),
+    0 0 8px rgba(241,196,15,.6) inset;
+  transform: scale(1.03);
+}
+
 .game-button:hover{ transform: translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,.4); }
 .game-button:active{ transform: translateY(2px); }
 .game-button.active{ transform: scale(.95); box-shadow:0 0 20px rgba(255,255,255,.8); }
@@ -158,6 +172,7 @@ body {
 #mage{    background: linear-gradient(to bottom right, #3498db, #2980b9); }
 #warrior{ background: linear-gradient(to bottom right, #e74c3c, #c0392b); }
 #healer{  background: linear-gradient(to bottom right, #2ecc71, #27ae60); }
+
 .key-hint{
   position:absolute; bottom:8px; right:8px;
   background: rgba(0,0,0,.4); border-radius:50%; width:25px; height:25px;
@@ -254,6 +269,25 @@ body {
   max-width: 280px;
   border-radius: 12px;
   box-shadow: 0 6px 14px rgba(0,0,0,.6);
+}
+/* --- Inline notice (index) --- */
+.notice-pop {
+  position: fixed;
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
+  background: #1e1e1e;
+  color: #fff;
+  border: 2px solid #ffcc00;
+  border-radius: 10px;
+  padding: 12px 16px;
+  z-index: 3000;
+  box-shadow: 0 8px 20px rgba(0,0,0,.35);
+  font-weight: 600;
+}
+.notice-pop.fade-out {
+  opacity: 0;
+  transition: opacity .35s ease;
 }
 
 /* ========= Responsive ========= */
