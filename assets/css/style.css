@@ -403,7 +403,7 @@ body {
    It overrides earlier small-screen rules.
    =============================== */
 
-@media (max-width: 360px){
+@media (max-width: 420px){
   /* Container: make it nearly full-width and comfy */
   .game-container{
     box-sizing: border-box;
@@ -490,7 +490,7 @@ body {
 /* Optional: if height is short too (e.g. SE in landscape), tighten more */
 @media (max-width: 360px) and (max-height: 640px){
   :root{ --card-w: min(88vw, 300px); }
-  .card-frame{ aspect-ratio: 3.8 / 5; }      /* a bit shorter to fit */
+  .card-frame{ aspect-ratio: 3.9 / 5; }      /* a bit shorter to fit */
   .game-button{ height: 76px; }
   .health-bar{ height: 10px; }
 }
