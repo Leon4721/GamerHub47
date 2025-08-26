@@ -100,8 +100,7 @@ Choose your advance: break the wards by force, or slip beneath through the catac
   halfPlayer: (ctx) => ({
     image: 'assets/images/low_player.png',
     text:
-`Wounded, your vision narrows. ${ctx.name}, steady your breath.
-Remember: <em>Healer</em> restores HP (Female from start; both from Level 3+). 
+`Wounded, your vision narrows. ${ctx.name}, steady your breath. 
 Stay sharp—your foe will falter if your memory holds.`,
     buttons: [{ label: 'I will endure', action: () => {} }]
   }),

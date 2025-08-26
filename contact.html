@@ -4,15 +4,40 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Us - RPG Memory Battle</title>
+
+  <!-- Your global stylesheet (keep this) -->
   <link rel="stylesheet" href="./assets/css/style.css"/>
+
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
   <style>
+    /* -------- Robust page background (works on iOS/Android/Desktop) -------- */
+    /* Uses a fixed-position layer instead of background-attachment: fixed */
+    html, body { height: 100%; }
     body {
+      position: relative;
+      display: flex;
       flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 100vh;
       padding: 40px 15px;
+      color: #f0f0f0;
+      overflow-x: hidden;
     }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: url("/assets/images/bck_img.png") center center / cover no-repeat;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* -------- Contact card -------- */
     .contact-wrapper {
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.75);         /* slightly lighter so bg is visible */
       border: 3px solid #ffcc00;
       border-radius: 15px;
       padding: 25px;
@@ -30,9 +55,9 @@
       text-align: center;
       margin-bottom: 25px;
     }
-    .form-group {
-      margin-bottom: 15px;
-    }
+
+    .form-group { margin-bottom: 15px; }
+
     label {
       display: block;
       font-weight: bold;
@@ -49,13 +74,9 @@
       font-size: 1rem;
       outline: none;
     }
-    input:focus, textarea:focus {
-      border-color: #ffcc00;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
+    input:focus, textarea:focus { border-color: #ffcc00; }
+    textarea { resize: vertical; min-height: 120px; }
+
     .form-actions {
       display: flex;
       gap: 10px;
@@ -63,7 +84,7 @@
       flex-wrap: wrap;
       margin-top: 20px;
     }
-    .form-actions button, .form-actions a {
+    .btn {
       background: linear-gradient(to right, #2ecc71, #27ae60);
       color: #fff;
       border: none;
@@ -74,62 +95,101 @@
       text-decoration: none;
       transition: all 0.3s ease;
     }
-    .form-actions button:hover, .form-actions a:hover {
-      background: linear-gradient(to right, #27ae60, #2ecc71);
-    }
-    footer {
-      margin-top: 30px;
-      text-align: center;
-      color: #aaa;
-    }
-    footer a {
-      color: #ffcc00;
-      margin: 0 8px;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
+    .btn:hover { background: linear-gradient(to right, #27ae60, #2ecc71); }
+
+    footer { margin-top: 30px; text-align: center; color: #aaa; }
+    footer a { color: #ffcc00; margin: 0 8px; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* -------- Tiny phones (<= 360px) -------- */
+    @media (max-width: 360px) {
+      body { padding: 28px 12px; }
+      .contact-wrapper {
+        padding: 18px;
+        border-width: 2px;
+        width: 92vw;
+        max-width: 92vw;
+      }
+      .form-actions { gap: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="contact-wrapper">
+  <div class="contact-wrapper" role="main">
     <h1>Contact Us</h1>
     <p>Send us your feedback, ideas, or questions about RPG Memory Battle.</p>
 
-    <form id="contact-form">
+    <form id="contact-form" novalidate>
       <div class="form-group">
         <label for="name">Your Name</label>
-        <input id="name" name="name" type="text" required>
+        <input id="name" name="name" type="text" required autocomplete="name" placeholder="e.g., Leon Freeman" />
       </div>
 
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input id="email" name="email" type="email" required>
+        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
       </div>
 
       <div class="form-group">
         <label for="message">Message</label>
-        <textarea id="message" name="message" required></textarea>
+        <textarea id="message" name="message" required placeholder="How can we help?"></textarea>
       </div>
 
       <div class="form-actions">
-        <button type="submit">Send Message</button>
-        <button type="button" onclick="history.back()">Return</button>
-
+        <button type="submit" class="btn">Send Message</button>
+        <button type="button" id="btn-return" class="btn" aria-label="Return to the previous page">Return</button>
       </div>
+
+      <p id="form-status" aria-live="polite" style="text-align:center;margin-top:10px;"></p>
     </form>
   </div>
 
   <footer>
     <p>
-   <a href="https://github.com/leon4721/Project-RPG" target="_blank">
-  <i class="fab fa-github"></i> GitHub
-</a>
-</p>
+      <a href="https://github.com/leon4721/Project-RPG" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i> GitHub
+      </a>
+    </p>
     <p>&copy; 2025 RPG Memory Battle</p>
   </footer>
 
+  <script>
+    // Smart Return: go back if referrer is same-origin; else go home.
+    (function () {
+      const btn = document.getElementById('btn-return');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        try {
+          const ref = document.referrer;
+          if (ref && new URL(ref).origin === location.origin) {
+            history.back();
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch {
+          window.location.href = 'index.html';
+        }
+      });
+    })();
+
+    // Lightweight client-side form guard + friendly status
+    (function () {
+      const form = document.getElementById('contact-form');
+      const status = document.getElementById('form-status');
+      if (!form) return;
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          status.textContent = 'Please fill in all required fields.';
+          return;
+        }
+        // Hook this up to your backend/email service as needed.
+        status.textContent = 'Thanks! Your message has been captured locally.';
+        form.reset();
+      });
+    })();
+  </script>
 </body>
 </html>

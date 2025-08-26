@@ -123,7 +123,131 @@ document.addEventListener('DOMContentLoaded', () => {
   const redoBtn = document.getElementById('redo-btn');
   const playerHealthLabel  = document.getElementById('player-health-label');
   const monsterHealthLabel = document.getElementById('monster-health-label');
+// === Audio Manager: SFX + Music (independent toggles) ===
+const AudioFX = (() => {
+  let ctx;
+  let sfxEnabled  = JSON.parse(localStorage.getItem('sfxEnabled')  ?? 'true');
+  let musicEnabled= JSON.parse(localStorage.getItem('musicEnabled')?? 'false');
 
+  // Map button IDs → SFX files
+  const SFX_URLS = {
+    archer : 'assets/audio/sfx/archer.mp3',
+    mage   : 'assets/audio/sfx/mage.mp3',
+    warrior: 'assets/audio/sfx/warrior.mp3',
+    healer : 'assets/audio/sfx/healer.mp3',
+    success: 'assets/audio/sfx/success.mp3',
+    fail   : 'assets/audio/sfx/fail.mp3'
+  };
+
+  const buffers = {}; // decoded SFX buffers
+  const bgm = new Audio('assets/audio/music/overworld_theme.mp3');
+  bgm.loop = true;
+  bgm.volume = 0.35;  // music loudness (tune to taste)
+
+  function ensureCtx(){
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  async function loadAll(){
+    try{
+      ensureCtx();
+      await Promise.all(Object.entries(SFX_URLS).map(async ([key, url]) => {
+        const res = await fetch(url);
+        if (!res.ok) return; // file may not exist (optional)
+        const arr = await res.arrayBuffer();
+        buffers[key] = await ctx.decodeAudioData(arr);
+      }));
+    }catch(e){ console.warn('[audio] preload issue:', e); }
+  }
+
+  function beepFallback(){
+    // tiny triangle beep if a file is missing; avoids silence feeling like a bug
+    try{
+      ensureCtx();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(520, ctx.currentTime);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+      o.connect(g).connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + 0.16);
+    }catch{}
+  }
+
+  function play(name){
+    if (!sfxEnabled) return;
+    try{
+      ensureCtx();
+      const buf = buffers[name];
+      if (!buf){ beepFallback(); return; }
+      const src  = ctx.createBufferSource();
+      const gain = ctx.createGain();
+      gain.gain.value = 0.9;          // SFX loudness (tune to taste)
+      src.buffer = buf;
+      src.connect(gain).connect(ctx.destination);
+      src.start(0);
+    }catch(e){ console.warn('[audio] play error', e); }
+  }
+
+  function setSFX(on){
+    sfxEnabled = !!on;
+    localStorage.setItem('sfxEnabled', JSON.stringify(sfxEnabled));
+    updateButtons();
+  }
+  function toggleSFX(){ setSFX(!sfxEnabled); }
+
+  function setMusic(on){
+    musicEnabled = !!on;
+    localStorage.setItem('musicEnabled', JSON.stringify(musicEnabled));
+    if (musicEnabled) bgm.play().catch(()=>{});
+    else bgm.pause();
+    updateButtons();
+  }
+  function toggleMusic(){ setMusic(!musicEnabled); }
+
+  function unlock(){  // resume context on first gesture (autoplay policies)
+    try{
+      ensureCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+    }catch{}
+  }
+
+  function updateButtons(){
+    const sfxBtn = document.getElementById('sfx-toggle');
+    const musicBtn = document.getElementById('music-toggle');
+    if (sfxBtn){
+      sfxBtn.setAttribute('aria-pressed', String(sfxEnabled));
+      sfxBtn.title = `Sound effects: ${sfxEnabled ? 'on' : 'off'}`;
+      const i = sfxBtn.querySelector('i');
+      if (i){
+        i.classList.toggle('fa-volume-high', sfxEnabled);
+        i.classList.toggle('fa-volume-xmark', !sfxEnabled);
+      }
+    }
+    if (musicBtn){
+      musicBtn.setAttribute('aria-pressed', String(musicEnabled));
+      musicBtn.title = `Music: ${musicEnabled ? 'on' : 'off'}`;
+      musicBtn.classList.toggle('off', !musicEnabled);
+    }
+  }
+
+  function init(){
+    loadAll();                   // preload SFX (non-blocking)
+    updateButtons();
+    // Hook UI
+    document.getElementById('sfx-toggle')?.addEventListener('click', () => { unlock(); toggleSFX(); });
+    document.getElementById('music-toggle')?.addEventListener('click', () => { unlock(); toggleMusic(); });
+    // Ensure we unlock at first user gesture (e.g., Start Game)
+    window.addEventListener('click', unlock, { once: true });
+    // If music was left on last time, start it
+    if (musicEnabled) bgm.play().catch(()=>{});
+  }
+
+  return { init, play, unlock };
+})();
+AudioFX.init();
   // Monsters
   const monsters = [
     { name: 'Goblin',          level: 1, image: 'assets/images/goblin.png',        speed: 800, health: 100 },
@@ -363,13 +487,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setTimeout(() => { if (feedback) feedback.textContent = 'Your turn! Repeat the pattern.'; }, delay * (sequence.length + 1));
   }
-
   function highlightButton(id) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.classList.add('active');
-    setTimeout(() => btn.classList.remove('active'), 400);
-  }
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  // Play the SFX named after the id (archer/mage/warrior/healer)
+  AudioFX.play(id);
+
+  btn.classList.add('active');
+  setTimeout(() => btn.classList.remove('active'), 400);
+}
 
   function handlePlayerInput(id) {
     if (!gameStarted) return;

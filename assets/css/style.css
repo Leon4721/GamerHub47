@@ -172,6 +172,33 @@ body {
 #mage{    background: linear-gradient(to bottom right, #3498db, #2980b9); }
 #warrior{ background: linear-gradient(to bottom right, #e74c3c, #c0392b); }
 #healer{  background: linear-gradient(to bottom right, #2ecc71, #27ae60); }
+/* === Top-right action icons === */
+.top-actions{
+  position: fixed; top: 16px; right: 16px;
+  display: flex; gap: 10px; z-index: 1200;
+}
+.icon-btn{
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,0.6); border: 2px solid #ffcc00; color: #ffcc00;
+  cursor: pointer; transition: transform .15s ease, background .15s ease;
+}
+.icon-btn:hover{ transform: translateY(-2px); background: rgba(0,0,0,0.75); }
+.icon-btn i{ font-size: 18px; }
+
+/* Music "off" slash overlay */
+#music-toggle{ position: relative; overflow: hidden; }
+#music-toggle .slash{
+  display: none; position: absolute; width: 2px; height: 140%;
+  background: #ffcc00; top: -20%; left: 50%; transform: rotate(45deg);
+}
+#music-toggle.off .slash{ display: block; }
+
+/* Small screens: keep icons reachable */
+@media (max-width: 480px){
+  .top-actions{ top: 10px; right: 10px; }
+  .icon-btn{ width: 40px; height: 40px; }
+}
 
 .key-hint{
   position:absolute; bottom:8px; right:8px;
