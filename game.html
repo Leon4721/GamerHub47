@@ -60,14 +60,15 @@
       <section class="side monster-side">
         <div class="monster-meta">
           <div class="monster-name" id="monster-name">Goblin</div>
-          <div class="monster-level">Level <span id="monster-level">1</span></div>
+          <div class="monster"> <span id="monster"></span></div>
         </div>
 
         <div class="card-frame monster-display"><!-- .monster-card injected by JS --></div>
 
         <div class="health-container">
           <div class="health-label">
-            <span>Monster Health</span>
+            <!-- ADDED ID so JS can set “Goblin’s/Dragon’s/Orc’s Health” -->
+            <span id="monster-health-label">Monster Health</span>
             <span id="monster-health-value">100%</span>
           </div>
           <div class="health-bar"><div class="health-fill" id="monster-health" style="width:100%"></div></div>
@@ -89,8 +90,6 @@
 
     <div id="feedback">Press Start Battle to begin your adventure!</div>
   </div>
-
-  <!-- REMOVED the always-visible instructions-side to save space -->
 
   <!-- NEW: compact “?” Help button -->
   <button
@@ -145,11 +144,10 @@
   </a>
 
   <!-- Scripts: your game module (imports ui.js -> story.js), then the small help module -->
-   <script type="module" src="assets/js/ui.js"></script>
-   <script type="module" src="assets/js/help.js"></script>
-   <script type="module" src="assets/js/story.js"></script>
-   <script type="module" src="assets/js/script.js"></script>
-   <script src="assets/js/fit.js" defer></script>      <!-- fit after layout -->
-   
+  <script type="module" src="assets/js/ui.js"></script>
+  <script type="module" src="assets/js/help.js"></script>
+  <script type="module" src="assets/js/story.js"></script>
+  <script type="module" src="assets/js/script.js"></script>
+  <script src="assets/js/fit.js" defer></script> <!-- fit after layout -->
 </body>
 </html>

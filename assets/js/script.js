@@ -124,6 +124,8 @@ if (playerPortraitEl) {
   const levelDisplay = document.getElementById('level-display');
   const startBtn = document.getElementById('start-btn');
   const redoBtn = document.getElementById('redo-btn');
+  const playerHealthLabel  = document.getElementById('player-health-label');
+  const monsterHealthLabel = document.getElementById('monster-health-label');
 
   // Monsters
   const monsters = [
@@ -134,6 +136,9 @@ if (playerPortraitEl) {
     { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknight.png',       speed: 500, health: 200 },
     { name: 'Dragon',          level: 5, image: 'assets/images/dragon.png',        speed: 400, health: 250 }
   ];
+  function possessive(name) {
+  return /s$/i.test(name) ? `${name}'` : `${name}'s`;
+}
 
   function createMonsterCard(m) {
     const c = document.createElement('div');
@@ -148,6 +153,11 @@ if (playerPortraitEl) {
     if (monsterLevelEl) monsterLevelEl.textContent = m.level;
     monsterHealth = m.health;
     if (levelDisplay) levelDisplay.textContent = m.level;
+
+    // NEW: update monster health label + ARIA each time a monster is set
+    if (monsterHealthLabel) monsterHealthLabel.textContent = `${possessive(m.name)} Health`;
+    if (monsterHPBar)       monsterHPBar.setAttribute('aria-label', `${possessive(m.name)} Health`);
+
     if (monsterDisplay) {
       monsterDisplay.innerHTML = '';
       monsterDisplay.appendChild(createMonsterCard(m));
@@ -233,11 +243,16 @@ if (playerPortraitEl) {
     score = 0;
     playerHealth = 100;
     level = 1;
-    shownHalfPlayer = false;
-    shownHalfMonster = false;
+
+    // NEW: set player's health label with their name + ARIA once at init
+    if (playerHealthLabel) playerHealthLabel.textContent = `${possessive(playerName)} Health`;
+    if (playerHPBar)       playerHPBar.setAttribute('aria-label', `${possessive(playerName)} Health`);
+
     setMonster(0);
     if (feedback) feedback.textContent = 'Press Start Battle to begin your adventure!';
     gameStarted = false;
+    shownHalfPlayer = false;
+    shownHalfMonster = false;
     updateDisplays();
   }
 
