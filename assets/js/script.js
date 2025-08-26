@@ -6,59 +6,58 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!raw) { window.location.href = 'index.html'; return; }
   const { name: playerName, character } = JSON.parse(raw);
 
-// Put player's portrait into the left card (robust)
-const playerPortraitEl = document.getElementById('player-portrait');
+  // Put player's portrait into the left card (robust)
+  const playerPortraitEl = document.getElementById('player-portrait');
 
-function resolvePortraitPath() {
-  // preferred → alt → safe fallback
-  const candidate =
-    character?.image ||
-    character?.portrait ||
-    'assets/images/characters/default.png'; // adjust if your real path differs
-  return candidate;
-}
-
-function setPortraitSafe(imgEl, src) {
-  if (!imgEl) {
-    console.warn('[portrait] #player-portrait not found in DOM');
-    return;
+  function resolvePortraitPath() {
+    // preferred → alt → safe fallback
+    const candidate =
+      character?.image ||
+      character?.portrait ||
+      'assets/images/characters/default.png'; // adjust if your real path differs
+    return candidate;
   }
 
-  // Clear any prior handlers
-  imgEl.onerror = null;
-  imgEl.onload = null;
-
-  // Add robust onerror to swap to a known-good fallback
-  imgEl.onerror = () => {
-    console.error('[portrait] Failed to load:', imgEl.src);
-    // Try a hard-coded fallback variant (root vs relative) to cover path base issues
-    const fallbacks = [
-      'assets/images/characters/default.png',
-      '/assets/images/characters/default.png'
-    ];
-    const next = fallbacks.find(fb => !imgEl.src.endsWith(fb));
-    if (next) {
-      console.warn('[portrait] Trying fallback:', next);
-      imgEl.src = next;
+  function setPortraitSafe(imgEl, src) {
+    if (!imgEl) {
+      console.warn('[portrait] #player-portrait not found in DOM');
+      return;
     }
-  };
 
-  // Log success so you can see which path actually worked
-  imgEl.onload = () => {
-    console.log('[portrait] Loaded:', imgEl.src);
-  };
+    // Clear any prior handlers
+    imgEl.onerror = null;
+    imgEl.onload = null;
 
-  // Set alt text and src
-  imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
-  imgEl.src = src;
-}
+    // Add robust onerror to swap to a known-good fallback
+    imgEl.onerror = () => {
+      console.error('[portrait] Failed to load:', imgEl.src);
+      // Try a hard-coded fallback variant (root vs relative) to cover path base issues
+      const fallbacks = [
+        'assets/images/characters/default.png',
+        '/assets/images/characters/default.png'
+      ];
+      const next = fallbacks.find(fb => !imgEl.src.endsWith(fb));
+      if (next) {
+        console.warn('[portrait] Trying fallback:', next);
+        imgEl.src = next;
+      }
+    };
 
-if (playerPortraitEl) {
-  const src = resolvePortraitPath();
-  console.log('[portrait] Attempting:', src);
-  setPortraitSafe(playerPortraitEl, src);
-}
+    // Log success so you can see which path actually worked
+    imgEl.onload = () => {
+      console.log('[portrait] Loaded:', imgEl.src);
+    };
 
+    // Set alt text and src
+    imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
+    imgEl.src = src;
+  }
+
+  if (playerPortraitEl) {
+    const src = resolvePortraitPath();
+    console.log('[portrait] Attempting:', src);
+    setPortraitSafe(playerPortraitEl, src);
+  }
 
   // State
   let sequence = [];
@@ -76,9 +75,6 @@ if (playerPortraitEl) {
     try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
     catch { return []; }
   }
-
-  // ⛑️ FIX: This line used to crash when playerPortraitEl was null.
-  // It's now guarded above; no second assignment here.
 
   function saveHighScore(entry) {
     const list = getHighScores();
@@ -136,9 +132,10 @@ if (playerPortraitEl) {
     { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknight.png',       speed: 500, health: 200 },
     { name: 'Dragon',          level: 5, image: 'assets/images/dragon.png',        speed: 400, health: 250 }
   ];
+
   function possessive(name) {
-  return /s$/i.test(name) ? `${name}'` : `${name}'s`;
-}
+    return /s$/i.test(name) ? `${name}'` : `${name}'s`;
+  }
 
   function createMonsterCard(m) {
     const c = document.createElement('div');
@@ -154,7 +151,7 @@ if (playerPortraitEl) {
     monsterHealth = m.health;
     if (levelDisplay) levelDisplay.textContent = m.level;
 
-    // NEW: update monster health label + ARIA each time a monster is set
+    // Update monster health label + ARIA each time a monster is set
     if (monsterHealthLabel) monsterHealthLabel.textContent = `${possessive(m.name)} Health`;
     if (monsterHPBar)       monsterHPBar.setAttribute('aria-label', `${possessive(m.name)} Health`);
 
@@ -244,7 +241,7 @@ if (playerPortraitEl) {
     playerHealth = 100;
     level = 1;
 
-    // NEW: set player's health label with their name + ARIA once at init
+    // set player's health label with their name + ARIA once at init
     if (playerHealthLabel) playerHealthLabel.textContent = `${possessive(playerName)} Health`;
     if (playerHPBar)       playerHPBar.setAttribute('aria-label', `${possessive(playerName)} Health`);
 
@@ -256,57 +253,70 @@ if (playerPortraitEl) {
     updateDisplays();
   }
 
- function startBattle() {
-  if (gameStarted) return;
+  // === START BATTLE with improved How-to logic (show ONCE per player, ONLY at Level 1 start) ===
+  function startBattle() {
+    if (gameStarted) return;
 
-  // Only auto-scroll on narrow screens
-  if (window.innerWidth < 800) {
-    const controls = document.querySelector('.controls');
-    if (controls) {
-      controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Only auto-scroll on narrow screens
+    if (window.innerWidth < 800) {
+      const controls = document.querySelector('.controls');
+      if (controls) {
+        controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
-  }
 
-  const begin = () => {
-    gameStarted = true;
-    feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
-    setTimeout(nextRound, 1200);
-  };
+    const begin = () => {
+      gameStarted = true;
+      feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+      setTimeout(nextRound, 1200);
+    };
 
-  // First-time users: show How-to once, then start
-  const seenHowto = localStorage.getItem('howtoSeen') === '1';
-  if (!seenHowto) {
-    const helpBtn = document.getElementById('help-btn');
-    const modal   = document.getElementById('howto-modal');
+    // Per-player key; only consider modal at start of Level 1, before Round 1
+    const howtoKey = `howtoSeen:${playerName || 'anon'}`;
+    const seenHowto = localStorage.getItem(howtoKey) === '1';
+    const atVeryStart = level === 1 && round === 0;
 
-    // Fallback: if modal elements aren't available, just start
-    if (!helpBtn || !modal) {
-      begin();
+    if (atVeryStart && !seenHowto) {
+      const helpBtn = document.getElementById('help-btn');
+      const modal   = document.getElementById('howto-modal');
+
+      // Fallback: if modal elements aren't available, just start
+      if (!helpBtn || !modal) { begin(); return; }
+
+      // Open via existing handler
+      helpBtn.click();
+
+      // Force-open if handler didn't show it
+      setTimeout(() => {
+        if (modal.classList.contains('hidden')) {
+          helpBtn.setAttribute('aria-expanded', 'true');
+          modal.classList.remove('hidden');
+        }
+      }, 100);
+
+      // Mark seen only after the modal was shown then closed
+      const mo = new MutationObserver(() => {
+        const isHidden = modal.classList.contains('hidden');
+        // Detect that it was shown at least once
+        if (!modal.dataset._shownOnce && !isHidden) {
+          modal.dataset._shownOnce = '1';
+        }
+        // When it was shown and then becomes hidden → user closed it
+        if (modal.dataset._shownOnce === '1' && isHidden) {
+          mo.disconnect();
+          localStorage.setItem(howtoKey, '1');
+          begin();
+        }
+      });
+      mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+      // Do not start until modal closes
       return;
     }
 
-    // Open the How-to modal using the existing help.js logic
-    helpBtn.click();
-    localStorage.setItem('howtoSeen', '1');
-
-    // Wait until the modal is closed, then begin
-    const mo = new MutationObserver(() => {
-      if (modal.classList.contains('hidden')) {
-        mo.disconnect();
-        begin();
-      }
-    });
-    mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
-
-    // Note: we deliberately DO NOT set gameStarted yet,
-    // so keyboard input won't be processed under the modal.
-    return;
+    // Otherwise, just start immediately (no modal)
+    begin();
   }
-
-  // Non-first-time path: start immediately
-  begin();
-}
-
 
   function replaySequence() {
     if (!gameStarted || !sequence.length) return;
@@ -314,7 +324,7 @@ if (playerPortraitEl) {
     showSequence();
   }
 
-  // ⬇️ UPDATED: prevents adjacent duplicates
+  // prevents adjacent duplicates
   function nextAttack(prev) {
     const choices = ['archer', 'mage', 'warrior', 'healer'];
     let pick;
@@ -322,7 +332,7 @@ if (playerPortraitEl) {
     return pick;
   }
 
-  // ⬇️ UPDATED: per-level baseline + round bonus + difficulty + Easy cap; uses no-duplicate generator
+  // per-level baseline + round bonus + difficulty + Easy cap; uses no-duplicate generator
   function nextRound() {
     if (!gameStarted) return;
     playerSequence = [];
@@ -341,7 +351,7 @@ if (playerPortraitEl) {
     showSequence();
   }
 
-  // ⬇️ UPDATED: timing uses *multiplication* so your selector (Easy=2.0, Hard=0.5) maps to slower vs faster correctly
+  // timing uses multiplication so selector (Easy=2.0, Hard=0.5) maps to slower/faster correctly
   function showSequence() {
     const baseDelay = monsters[level - 1].speed;
     const speedFactor = Math.max(0.5, Number(difficulty?.speedFactor) || 1);
@@ -556,31 +566,32 @@ if (playerPortraitEl) {
       }
     });
   })();
-// Highlight helper: static (no animation), auto-clears after `duration`.
-function cue(id, { gold = false, duration = 450 } = {}) {
-  const el = document.getElementById(id);
-  if (!el) return;
 
-  el.classList.remove('cue', 'cue-gold'); // reset
-  void el.offsetWidth;                     // reflow so class re-applies
-  el.classList.add(gold ? 'cue-gold' : 'cue');
+  // Highlight helper: static (no animation), auto-clears after `duration`.
+  function cue(id, { gold = false, duration = 450 } = {}) {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-  setTimeout(() => el.classList.remove(gold ? 'cue-gold' : 'cue'), duration);
-}
+    el.classList.remove('cue', 'cue-gold'); // reset
+    void el.offsetWidth;                     // reflow so class re-applies
+    el.classList.add(gold ? 'cue-gold' : 'cue');
 
-// Example sequence playback:
-// - normal cue uses the button's own glow
-// - the SECOND in any consecutive run becomes gold
-function playSequence(sequence, stepDelay = 700) {
-  sequence.forEach((id, i) => {
-    setTimeout(() => {
-      const sameAsPrev = i > 0 && sequence[i] === sequence[i - 1];
-      const secondInRun =
-        sameAsPrev && (i < 2 || sequence[i - 2] !== sequence[i]); // only the first repeat
-      cue(id, { gold: secondInRun, duration: Math.max(350, stepDelay - 150) });
-    }, i * stepDelay);
-  });
-}
+    setTimeout(() => el.classList.remove(gold ? 'cue-gold' : 'cue'), duration);
+  }
+
+  // Example sequence playback:
+  // - normal cue uses the button's own glow
+  // - the SECOND in any consecutive run becomes gold
+  function playSequence(sequence, stepDelay = 700) {
+    sequence.forEach((id, i) => {
+      setTimeout(() => {
+        const sameAsPrev = i > 0 && sequence[i] === sequence[i - 1];
+        const secondInRun =
+          sameAsPrev && (i < 2 || sequence[i - 2] !== sequence[i]); // only the first repeat
+        cue(id, { gold: secondInRun, duration: Math.max(350, stepDelay - 150) });
+      }, i * stepDelay);
+    });
+  }
 
   // Go!
   initGame();
