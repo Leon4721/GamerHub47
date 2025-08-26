@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameStarted = false;
   let currentStreak = 0;
   let bestStreak = 0;
+  let howtoPending = false; // ⬅️ prevents double-popup/double-click during first-run modal
 
   function getHighScores() {
     try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
@@ -240,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     score = 0;
     playerHealth = 100;
     level = 1;
+    howtoPending = false;
 
     // set player's health label with their name + ARIA once at init
     if (playerHealthLabel) playerHealthLabel.textContent = `${possessive(playerName)} Health`;
@@ -253,9 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDisplays();
   }
 
-  // === START BATTLE with improved How-to logic (show ONCE per player, ONLY at Level 1 start) ===
+  // === START BATTLE with robust How-to logic (show ONCE per player, ONLY at Level 1 start) ===
   function startBattle() {
-    if (gameStarted) return;
+    if (gameStarted || howtoPending) return; // ⬅️ block extra clicks while modal flow is in progress
 
     // Only auto-scroll on narrow screens
     if (window.innerWidth < 800) {
@@ -283,35 +285,42 @@ document.addEventListener('DOMContentLoaded', () => {
       // Fallback: if modal elements aren't available, just start
       if (!helpBtn || !modal) { begin(); return; }
 
-      // Open via existing handler
+      howtoPending = true; // ⬅️ lock until we finish the one-time flow
+
+      // Attach observer BEFORE attempting to open, so we don't miss the "opened" state
+      let prevHidden = modal.classList.contains('hidden');
+      const mo = new MutationObserver(() => {
+        const isHidden = modal.classList.contains('hidden');
+
+        // Transition: OPENED (hidden -> visible)
+        if (prevHidden && !isHidden) {
+          // no-op; just noted it opened
+        }
+
+        // Transition: CLOSED (visible -> hidden)
+        if (!prevHidden && isHidden) {
+          mo.disconnect();
+          localStorage.setItem(howtoKey, '1');
+          howtoPending = false; // release the lock
+          begin();
+        }
+
+        prevHidden = isHidden;
+      });
+      mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+      // Try to open via existing handler
       helpBtn.click();
 
-      // Force-open if handler didn't show it
+      // Safety net: if still hidden after a short delay, force show once
       setTimeout(() => {
         if (modal.classList.contains('hidden')) {
           helpBtn.setAttribute('aria-expanded', 'true');
           modal.classList.remove('hidden');
         }
-      }, 100);
+      }, 150);
 
-      // Mark seen only after the modal was shown then closed
-      const mo = new MutationObserver(() => {
-        const isHidden = modal.classList.contains('hidden');
-        // Detect that it was shown at least once
-        if (!modal.dataset._shownOnce && !isHidden) {
-          modal.dataset._shownOnce = '1';
-        }
-        // When it was shown and then becomes hidden → user closed it
-        if (modal.dataset._shownOnce === '1' && isHidden) {
-          mo.disconnect();
-          localStorage.setItem(howtoKey, '1');
-          begin();
-        }
-      });
-      mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
-
-      // Do not start until modal closes
-      return;
+      return; // wait for user to close modal
     }
 
     // Otherwise, just start immediately (no modal)
