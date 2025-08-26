@@ -317,7 +317,7 @@ body {
 
 /* --- Phone-tight rules (≤350px width) --- */
 /* Ensures BOTH cards are the SAME SIZE and container is >80% width */
-@media (max-width: 350px){
+@media (max-width: 450px){
   /* keep container wide enough (>80% of viewport) */
   .game-container{
     width: 92vw !important;  /* >80% as requested */
