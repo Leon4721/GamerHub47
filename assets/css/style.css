@@ -311,3 +311,45 @@ body {
   .level-indicator .value{ font-size:1.6rem; }
   .level-indicator .mode{ font-size:.8rem; }
 }
+/* ===========================
+   RESPONSIVE FIXES YOU ASKED FOR
+   =========================== */
+
+/* --- Phone-tight rules (≤350px width) --- */
+/* Ensures BOTH cards are the SAME SIZE and container is >80% width */
+@media (max-width: 350px){
+  /* keep container wide enough (>80% of viewport) */
+  .game-container{
+    width: 92vw !important;  /* >80% as requested */
+    max-width: none !important;
+  }
+
+  /* Use a single variable to size BOTH cards identically */
+  :root{ --mobile-card: 80vw; }    /* 80% of the viewport width */
+
+  /* Player & monster cards — same square size */
+  .arena .card-frame{
+    width: var(--mobile-card) !important;
+    height: var(--mobile-card) !important;   /* enforce square even on older browsers */
+    max-width: none !important;
+    aspect-ratio: 1 / 1;                     /* modern browsers keep it square */
+    margin-inline: auto;                     /* center the card */
+  }
+
+  /* Make sure art scales nicely inside the card */
+  .monster-display .monster-card{
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  /* Keep bars/labels readable and full width */
+  .health-container{ margin-top: 10px; }
+  .health-label{ font-size: 14px; }
+  .health-bar{ height: 12px; border-radius: 12px; }
+
+  /* Buttons remain 2-up and full-width controls */
+  .game-buttons{ grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  .controls{ gap: 10px; }
+  .control-btn{ width: 100%; }
+}
