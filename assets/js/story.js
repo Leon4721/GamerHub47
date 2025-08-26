@@ -107,7 +107,7 @@ Stay sharp—your foe will falter if your memory holds.`,
   }),
 
   halfMonster: (ctx) => ({
-    image: 'assets/images/low_monster.png',
+    image: 'assets/images/half-health.png',
     text:
 `Your enemy staggers—half beaten! Keep your pattern true. 
 Strike clean to finish the job before it regains its footing.`,

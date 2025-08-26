@@ -259,14 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function startBattle() {
     if (gameStarted || howtoPending) return; // ⬅️ block extra clicks while modal flow is in progress
 
-    // Only auto-scroll on narrow screens
-    if (window.innerWidth < 800) {
-      const controls = document.querySelector('.controls');
-      if (controls) {
-        controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-
     const begin = () => {
       gameStarted = true;
       feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
