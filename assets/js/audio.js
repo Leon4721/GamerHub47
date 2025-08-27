@@ -9,14 +9,25 @@
   let musicEnabled = false;
   const buffers = {};           // decoded SFX buffers
 
-  // Paths (customise filenames to your assets)
+  // SFX library
   const SFX_URLS = {
+    // game buttons
     archer : 'assets/audio/sfx/archer.mp3',
     mage   : 'assets/audio/sfx/mage.mp3',
     warrior: 'assets/audio/sfx/warrior.mp3',
     healer : 'assets/audio/sfx/healer.mp3',
+
+    // feedback
     success: 'assets/audio/sfx/success.mp3',
-    fail   : 'assets/audio/sfx/fail.mp3'
+    fail   : 'assets/audio/sfx/fail.mp3',
+    game_over: 'assets/audio/sfx/game_over.mp3',
+
+    // index UX
+    namefill: 'assets/audio/sfx/namefill.mp3',
+    selectcharacter: 'assets/audio/sfx/selectcharacter.mp3',
+
+    // nav
+    contactus: 'assets/audio/sfx/contactus.mp3'
   };
 
   // Background music tag (HTMLAudio is fine for looped BGM)
@@ -125,12 +136,22 @@
     }
   }
 
+  function bindContactClickSfx() {
+    document.querySelectorAll('.contact-btn, a[href$="contact.html"]').forEach(a => {
+      a.addEventListener('click', () => {
+        unlock();
+        try { play('contactus'); } catch {}
+      }, { passive: true });
+    });
+  }
+
   function init() {
     readPrefs();
     updateButtons();
     loadAll(); // preload SFX (non-blocking)
+    bindContactClickSfx();
 
-    // UI hooks
+    // UI hooks for the on-page toggles (if present)
     document.getElementById('sfx-toggle')?.addEventListener('click', () => { unlock(); toggleSFX(); });
     document.getElementById('music-toggle')?.addEventListener('click', () => { unlock(); toggleMusic(); });
 
