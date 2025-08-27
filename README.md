@@ -4,7 +4,7 @@
 
 ![screenshot](docs/screenshots/game-preview.png)  
 
-[Live Webpage](https://leon4721.github.io/Project-RPG/)  
+[Live Webpage](https://leon4721.github.io/GamerHub47/)  
 
 ---
 
@@ -123,8 +123,9 @@ The website consists of 4 main pages:
 4. **404 Page** – Fantasy-themed error page with return link.  
 
 ### Wireframes  
-Wireframes were produced in **Balsamiq** for:  
-- <details><summary>Index</summary>
+Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
+
+- <details><summary>Index / Character Selection</summary>
 <img src=/docs/wireframes/index.html.png>
 </details>
 
@@ -136,14 +137,15 @@ Wireframes were produced in **Balsamiq** for:
 <img src=/docs/wireframes/setting.png>
 </details>
 
-- <details><summary>Story Pop Ups</summary>
+- <details><summary>Story Pop-Ups</summary>
 <img src=/docs/wireframes/story_pop.png>
 </details>
 
 - <details><summary>Contact Us</summary>
 <img src=/docs/wireframes/contact.png></details>
 
-
+- <details><summary>How to Play</summary>
+<img src=/docs/wireframes/htplay.png></details>
 
   
 ---

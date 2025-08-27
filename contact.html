@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Us - RPG Memory Battle</title>
 
-  <!-- Your global stylesheet (keep this) -->
+  <!-- Your global stylesheet -->
   <link rel="stylesheet" href="./assets/css/style.css"/>
 
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
   <style>
-    /* -------- Robust page background (works on iOS/Android/Desktop) -------- */
-    /* Uses a fixed-position layer instead of background-attachment: fixed */
+    /* -------- Robust page background -------- */
     html, body { height: 100%; }
     body {
       position: relative;
@@ -37,7 +36,7 @@
 
     /* -------- Contact card -------- */
     .contact-wrapper {
-      background: rgba(0,0,0,0.75);         /* slightly lighter so bg is visible */
+      background: rgba(0,0,0,0.75);
       border: 3px solid #ffcc00;
       border-radius: 15px;
       padding: 25px;
@@ -57,13 +56,8 @@
     }
 
     .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 6px; color: #ffcc00; }
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #ffcc00;
-    }
     input, textarea {
       width: 100%;
       padding: 10px;
@@ -96,6 +90,7 @@
       transition: all 0.3s ease;
     }
     .btn:hover { background: linear-gradient(to right, #27ae60, #2ecc71); }
+    .btn[disabled] { opacity: .7; cursor: not-allowed; }
 
     footer { margin-top: 30px; text-align: center; color: #aaa; }
     footer a { color: #ffcc00; margin: 0 8px; text-decoration: none; }
@@ -104,14 +99,31 @@
     /* -------- Tiny phones (<= 360px) -------- */
     @media (max-width: 360px) {
       body { padding: 28px 12px; }
-      .contact-wrapper {
-        padding: 18px;
-        border-width: 2px;
-        width: 92vw;
-        max-width: 92vw;
-      }
+      .contact-wrapper { padding: 18px; border-width: 2px; width: 92vw; max-width: 92vw; }
       .form-actions { gap: 8px; }
     }
+
+    /* -------- Modal (popup) -------- */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .modal {
+      background: #111;
+      border: 2px solid #ffcc00;
+      border-radius: 12px;
+      max-width: 520px; width: calc(100% - 40px);
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.7);
+    }
+    .modal h2 { margin: 0 0 10px; color: #ffcc00; font-size: 1.25rem; }
+    .modal p { margin: 0 0 16px; color: #eaeaea; }
+    .modal .actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .modal .btn { background: linear-gradient(to right,#f1c40f,#e67e22); color: #111; }
+    .hidden-hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -121,14 +133,19 @@
     <p>Send us your feedback, ideas, or questions about RPG Memory Battle.</p>
 
     <form id="contact-form" novalidate>
+      <!-- Honeypot anti-spam -->
+      <label class="hidden-hp">Leave this field empty
+        <input type="text" name="_honeypot" autocomplete="off" tabindex="-1" />
+      </label>
+
       <div class="form-group">
-        <label for="name">Your Name</label>
-        <input id="name" name="name" type="text" required autocomplete="name" placeholder="e.g., Leon Freeman" />
+        <label for="from_name">Your Name</label>
+        <input id="from_name" name="from_name" type="text" required autocomplete="name" placeholder="e.g., Leon Freeman" />
       </div>
 
       <div class="form-group">
-        <label for="email">Email Address</label>
-        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        <label for="reply_to">Email Address</label>
+        <input id="reply_to" name="reply_to" type="email" required autocomplete="email" placeholder="you@example.com" />
       </div>
 
       <div class="form-group">
@@ -136,11 +153,20 @@
         <textarea id="message" name="message" required placeholder="How can we help?"></textarea>
       </div>
 
+      <!-- Helpful extras passed to EmailJS -->
+      <input type="hidden" name="page_url" id="page_url" />
+      <input type="hidden" name="subject" value="RPG Memory Battle – Contact Form" />
+
       <div class="form-actions">
-        <button type="submit" class="btn">Send Message</button>
-        <button type="button" id="btn-return" class="btn" aria-label="Return to the previous page">Return</button>
+        <button type="submit" id="btn-send" class="btn">
+          <i class="fa-regular fa-paper-plane"></i> Send Message
+        </button>
+        <button type="button" id="btn-return" class="btn" aria-label="Return to the previous page">
+          Return
+        </button>
       </div>
 
+      <!-- Accessible live status (also mirrored in modal) -->
       <p id="form-status" aria-live="polite" style="text-align:center;margin-top:10px;"></p>
     </form>
   </div>
@@ -154,9 +180,29 @@
     <p>&copy; 2025 RPG Memory Battle</p>
   </footer>
 
+  <!-- Popup (modal) -->
+  <div id="modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2 id="modal-title">Notice</h2>
+      <p id="modal-message">Message text</p>
+      <div class="actions">
+        <button type="button" id="modal-ok" class="btn" aria-label="Close popup">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+ <script src="./assets/js/contact.js" defer></script>
   <script>
-    // Smart Return: go back if referrer is same-origin; else go home.
-    (function () {
+    // ===== EmailJS init =====
+    (function initEmailJS(){
+      const PUBLIC_KEY = 'public_EABcuOY_dhA9fVczZ';    
+      emailjs.init('public_EABcuOY_dhA9fVczZ');
+    })();
+
+    // ===== Smart Return =====
+    (function setupReturn(){
       const btn = document.getElementById('btn-return');
       if (!btn) return;
       btn.addEventListener('click', () => {
@@ -173,21 +219,90 @@
       });
     })();
 
-    // Lightweight client-side form guard + friendly status
-    (function () {
+    // ===== Modal helpers =====
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMsg = document.getElementById('modal-message');
+    const modalOk = document.getElementById('modal-ok');
+
+    function showModal(title, message) {
+      modalTitle.textContent = title || 'Notice';
+      modalMsg.textContent = message || '';
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden', 'false');
+      modalOk.focus();
+    }
+    function hideModal() {
+      modalBackdrop.style.display = 'none';
+      modalBackdrop.setAttribute('aria-hidden', 'true');
+    }
+    modalOk.addEventListener('click', hideModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) hideModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalBackdrop.getAttribute('aria-hidden') === 'false') hideModal();
+    });
+
+    // ===== Form logic (validation + EmailJS) =====
+    (function setupForm(){
       const form = document.getElementById('contact-form');
       const status = document.getElementById('form-status');
-      if (!form) return;
+      const sendBtn = document.getElementById('btn-send');
+      const pageUrlInput = document.getElementById('page_url');
+      if (pageUrlInput) pageUrlInput.value = window.location.href;
 
-      form.addEventListener('submit', (e) => {
+      const SERVICE_ID = 'service_3g1qw6b';      // your provided service
+      const TEMPLATE_ID = 'template_n9as6o4';     // <-- REPLACE with your template ID
+
+      // Small anti-bot: require at least 1200ms on page before submit
+      const loadTime = Date.now();
+
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // HTML5 validation first
         if (!form.checkValidity()) {
           status.textContent = 'Please fill in all required fields.';
+          showModal('Missing Information', 'Please fill in all required fields before sending.');
           return;
         }
-        // Hook this up to your backend/email service as needed.
-        status.textContent = 'Thanks! Your message has been captured locally.';
-        form.reset();
+
+        // Honeypot
+        if (form._honeypot && form._honeypot.value) {
+          return; // likely a bot
+        }
+
+        if (Date.now() - loadTime < 1200) {
+          status.textContent = 'Please wait a moment before sending.';
+          showModal('Slow down', 'Please wait a moment before sending.');
+          return;
+        }
+
+        // Send via EmailJS
+        try {
+          sendBtn.disabled = true;
+          status.textContent = 'Sending…';
+
+          // sendForm picks up inputs by their name attributes
+          await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form);
+
+          status.textContent = 'Thanks! Your message has been sent.';
+          showModal('Message Sent', 'Thanks! Your message has been sent. We’ll get back to you shortly.');
+          form.reset();
+          if (pageUrlInput) pageUrlInput.value = window.location.href; // repopulate after reset
+        } catch (err) {
+          console.error('[EmailJS] send error:', err);
+          let friendly = 'Sorry, sending failed. Please try again in a moment.';
+          const raw = String(err?.text || err?.message || '');
+          if (raw.includes('User ID')) friendly = 'Email service is not initialized correctly. Double-check your Public Key.';
+          if (raw.includes('service') || raw.includes('template')) friendly = 'Email template or service not found. Check your IDs.';
+
+          status.textContent = friendly;
+          showModal('Send Failed', friendly);
+        } finally {
+          sendBtn.disabled = false;
+        }
       });
     })();
   </script>
