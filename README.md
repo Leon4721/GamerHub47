@@ -144,10 +144,8 @@ Wireframes were produced in **Balsamiq** for:
 <img src="/docs/wireframes/contact.png>
 </details>
 
-- Tablet (stacked arena).  
-- Mobile (single-column layout).  
-![wireframes](docs/wireframes/game-wireframe.png)  
-
+![Game](docs/wireframes/game.html.png)  
+![Game](docs/wireframes/game.html.png)  
 ---
 
 ## Technologies Used  
