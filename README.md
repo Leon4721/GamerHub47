@@ -107,6 +107,11 @@ The goal of Project RPG is to build a **fantasy-themed memory game** that is:
 ## Design  
 
 ### Colour Scheme  
+We chose a dark-fantasy base with gold accents because it echoes classic RPG visual language: torchlit dungeons, treasure glint, “legendary” rarity frames. Green for player HP and red/orange for enemy damage mirrors D&D, Diablo, Baldur’s Gate, and MMO HUDs. Blue (arcane/mage), purple (archer/BeastMastery), red (warrior/strength), and Green (healer/druid) map to long-standing class color conventions, so actions are instantly readable—even for players coming from rhythm/improv memory games like Simon. High-contrast grey highlights call out each pattern without confusion. The palette also meets accessibility needs (contrast and label redundancy), keeping the screen legible on small devices while preserving an RPG atmosphere.
+
+The Color Pallet used was made on [adobe.com](https://color.adobe.com/create/color-wheel/)
+<img src=/docs/cwheel.jpeg></details>
+
 - **Dark fantasy palette** with gold highlights.  
 - Player HP: green gradient.  
 - Monster HP: red/orange gradient.  
@@ -122,7 +127,37 @@ The website consists of 4 main pages:
 1. **Index Page** – Character selection and difficulty modal.  
 2. **Game Page** – Main battle screen, help modal, and story modal.  
 3. **Contact Page** – Feedback form with validation.  
-4. **404 Page** – Fantasy-themed error page with return link.  
+4. **404 Page** – Fantasy-themed error page with return link.
+  
+The site is organised so players can learn fast and move smoothly between key views. Core UI patterns (title area, HUD, action strip, floating help/contact) remain consistent to reduce cognitive load.
+
+Screens & overlays included:
+
+Title / Character Select
+Players enter a hero name, browse character cards, and start their journey. The page also exposes quick audio controls and a floating contact link. A shared Story overlay can appear here after selection to set the scene.
+
+Main Battle
+The playfield displays a compact HUD with Level/Mode (circular badge) plus Round/Score, flanked by matching Player and Monster frames with semantic health bars. Primary controls (Start Battle and Replay Pattern) sit above a 2×2 action grid (Archer/Mage/Warrior/Healer) with printed key hints (1–4). A floating “?” opens the How-to-Play dialog; Story scenes can also overlay between levels. A persistent Contact button is available.
+
+How-to-Play (modal overlay)
+Available on the battle screen via the “?” button, this modal explains the sequence/response loop, keyboard controls, healing rules, and tips. It supports Esc to close, backdrop click, and focus return for accessibility.
+
+Story (modal overlay)
+Narrative cards (image, text, choice buttons) punctuate progression—after levels, at forks, on victory/defeat—and are shared between the title and game pages for consistency.
+
+Contact
+A dedicated page provides a styled form with client validation, a honeypot field, polite status updates, a confirm/error modal, and a smart Return action (back or home). EmailJS integration is wired for sending.
+
+404 Error Page
+A themed not-found screen keeps players inside the experience and offers a clear route back to the Home page. 
+
+Shared elements across screens:
+
+Top audio controls for SFX and music (toggle states, visible slash when music is off).
+
+Responsive container sizing and aspect-ratio cards to keep all critical UI on-screen on mobile without scrolling.
+
+This structure keeps navigation predictable: players start at Character Select, battle through the Main screen with help/story overlays as needed, reach out via Contact if required, and land on a friendly 404 if they stray.
 
 ### Wireframes  
 Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
