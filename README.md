@@ -4,7 +4,7 @@
 
 (Developer: Leon Freeman)  
 
-![screenshot](docs/screenshots/game-preview.png)  
+![screenshot](docs/amr.png)  
 
 [Live Webpage](https://leon4721.github.io/GamerHub47/)  
 
