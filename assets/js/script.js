@@ -1,6 +1,9 @@
 // game logic with story popups at exact milestones + half-health events
 import { showStory } from './ui.js';
 
+if (window.__RPG_INIT__) { console.warn('RPG already initialized'); }
+else { window.__RPG_INIT__ = true; }
+
 document.addEventListener('DOMContentLoaded', () => {
   const raw = localStorage.getItem('playerData');
   if (!raw) { window.location.href = 'index.html'; return; }
