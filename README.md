@@ -1,4 +1,6 @@
-# Project RPG | Memory Battle Game  
+# Project two  
+
+# Rythm and Sigil RPG | Memory Battle Game  
 
 (Developer: Leon Freeman)  
 
