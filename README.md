@@ -124,7 +124,10 @@ The website consists of 4 main pages:
 
 ### Wireframes  
 Wireframes were produced in **Balsamiq** for:  
-- Desktop (battle arena with side panels).  
+- <details><summary>Index</summary>
+<img src="docs/wireframes/index.png">
+</details>
+
 - Tablet (stacked arena).  
 - Mobile (single-column layout).  
 ![wireframes](docs/wireframes/game-wireframe.png)  
