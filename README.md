@@ -125,7 +125,23 @@ The website consists of 4 main pages:
 ### Wireframes  
 Wireframes were produced in **Balsamiq** for:  
 - <details><summary>Index</summary>
-<img src="docs/wireframes/index.png">
+<img src="/docs/wireframes/index.html.png>
+</details>
+
+- <details><summary>Game</summary>
+<img src="/docs/wireframes/game.html.png>
+</details>
+
+- <details><summary>Difficulty settings</summary>
+<img src="/docs/wireframes/setting.png>
+</details>
+
+- <details><summary>Story Pop Ups</summary>
+<img src="/docs/wireframes/story_pop.png>
+</details>
+
+- <details><summary>Contact Us</summary>
+<img src="/docs/wireframes/contact.png>
 </details>
 
 - Tablet (stacked arena).  
