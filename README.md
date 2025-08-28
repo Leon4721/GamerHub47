@@ -255,9 +255,10 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 
 - **Name Entry & Character Selection**  
   Players begin by entering their name and choosing a hero.   
-
-  ![Character Selection](docs/features/characters.png)  
-
+ 
+- <details><summary>Character Selection</summary>
+<img src="/docs/features/name.png ">
+</details>
 ---
 
 - **Difficulty Modes**  
