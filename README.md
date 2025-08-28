@@ -371,20 +371,19 @@ Tested using Chrome DevTools and real devices:
 
 | User Story | Feature | Action | Expected Result | Actual Result | Screenshot |  
 |------------|---------|--------|----------------|---------------|------------|  
-| Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![]( 
-   <img src="docs/validation/lighthouse/404.png"> <) |  
-| Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
-| Choose difficulty | Difficulty Select | Pick Easy/Normal/Hard | Mode is highlighted and stored | Works | ![](docs/testing/difficulty.png) |  
-| Track progress | HUD (HP bars, Score, Level) | Start a battle | HP bars update; score & round increment | Works | ![](docs/testing/hud.png) |  
-| Feel invested | Story Cutscenes | Reach story milestone | Narrative modal with text & image appears | Works | ![](docs/testing/story.png) |  
-| Save high scores | localStorage Leaderboard | Finish game | Score saved and displayed | Works | ![](docs/testing/scores.png) |  
-| Retry level | Defeat popup | Click `Retry` | Restart same level | Works | ![](docs/testing/retry.png) |  
-| Replay pattern | Controls | Click `Replay Pattern` | Pattern replays correctly | Works | ![](docs/testing/replay.png) |  
-| Mobile friendly | Responsive Layout | Open on phone/tablet/desktop | Layout adapts, touch targets usable | Works | ![](docs/testing/responsive.png) |  
-| Contact developer | Contact Form (EmailJS) | Submit form | Confirmation shown & email sent | **Needs fix** | ![](docs/testing/contact.png) |  
-| Audio control | Audio & Music Toggles | Toggle icons | States persist, ARIA updated | Works | ![](docs/testing/audio.png) |  
+| Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works |<img src="docs/user-Story-testing/htoplay.png"> |  
+| Choose hero | Character Select | Click card | Character highlighted | Works | <img src="docs/user-Story-testing/cselectiion.png"> |  
+| Choose difficulty | Difficulty Select | Pick Easy/Normal/Hard | Mode is highlighted and stored | Works | <img src="docs/user-Story-testing/diff.png"> |  
+| Track progress | HUD (HP bars, Score, Level) | Start a battle | HP bars update; score & round increment | Works |<img src="docs/user-Story-testing/scoretrack.png">|  
+| Feel invested | Story Cutscenes | Reach story milestone | Narrative modal with text & image appears | Works | <img src="docs/user-Story-testing/story.png">|  
+| Save high scores | localStorage Leaderboard | Finish game | Score saved and displayed | Works | <img src="docs/user-Story-testing/scoretrack.png"> |  
+| Retry level | Defeat popup | Click `Retry` | Restart same level | Works | <img src="docs/user-Story-testing/retry.png"> |  
+| Replay pattern | Controls | Click `Replay Pattern` | Pattern replays correctly | Works | <img src="docs/user-Story-testing/repeat.png.png> |  
+| Mobile friendly | Responsive Layout | Open on phone/tablet/desktop | Layout adapts, touch targets usable | Works |<img src="docs/user-Story-testing/cselectiion.png"> |  
+| Contact developer | Contact Form (EmailJS) | Submit form | Confirmation shown & email sent | work| <img src="docs/user-Story-testing/cselectiion.png"> |  
+| Audio control | Audio & Music Toggles | Toggle icons | States persist, ARIA updated | Works | <img src="docs/user-Story-testing/audiom.png">|  
 
-| Custom 404 | `/404.html` | Visit invalid route | Branded 404 page with link home | Works | ![](docs/testing/404.png) |  
+| Custom 404 | `/404.html` | Visit invalid route | Branded 404 page with link home | Works | <img src="docs/user-Story-testing/404.png">|  
 
 
 
