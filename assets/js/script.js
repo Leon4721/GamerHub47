@@ -291,9 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (monsterDisplay) {
       monsterDisplay.innerHTML = '';
       monsterDisplay.appendChild(createMonsterCard(m));
-    } else {
-      console.warn('Missing .monster-display element in DOM.');
-    }
+    } else
     // Reset half-health flags per monster
     shownHalfMonster = false;
   }
