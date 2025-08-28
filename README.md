@@ -221,12 +221,10 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 - [EmailJS](https://www.emailjs.com) used to send email from the contact form
 - [Favicon.io](https://favicon.io) for making the site favicon
 - [Font Awesome](https://fontawesome.com/) - Icons from Font Awesome were used throughout the site
-- Gimp and Microsoft Paint were used to create game pictures and resize background image
 - [Git](https://git-scm.com/) was used for version control within VSCode to push the code to GitHub
 - [GitHub](https://github.com/) was used as a remote repository to store project code
 - [Google Fonts](https://fonts.google.com/)
-- [Remove.bg](https://www.remove.bg/) was used to remove background on logos
-- [This source](https://chir.ag/projects/name-that-color) was used to initially name root colors from the colour pallet. I have removed unwanted colors and renamed all during the development of the project.
+- [adobe](https://color.adobe.com/create/color-wheel) was used to for color wheels and design. 
 - [Chrome dev tools](https://developers.google.com/web/tools/chrome-devtools) were used for debugging of the code and check site for responsiveness
 - [WC3 Validator](https://validator.w3.org/), [Jigsaw W3 Validator](https://jigsaw.w3.org/css-validator/), [JShint](https://jshint.com/), [Wave Validator](https://wave.webaim.org/), [Lighthouse](https://developers.google.com/web/tools/lighthouse/) and [Am I Responsive](http://ami.responsivedesign.is/) were all used to validate the website
 
@@ -373,8 +371,21 @@ Tested using Chrome DevTools and real devices:
 | Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![](docs/testing/help.png) |  
 | Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
 | Save score | localStorage | Finish game | Score saved to table | Works | ![](docs/testing/scores.png) | 
- 
-| Retry level | Defeat popup | Click “Retry” | Restart same level | Works | ![](docs/testing/retry.png) |  
+| Retry level | Defeat popup | Click “Retry” | Restart same level | Works | ![](docs/testing/retry.png) | 
+| User Story        | Feature                           | Action                       | Expected Result                                         | Actual Result                              | Screenshot  |
+| ----------------- | --------------------------------- | ---------------------------- | ------------------------------------------------------- | ------------------------------------------ | ----------- |
+| Understand rules  | Help Modal                        | Click **?** button           | Instructions popup appears with clear how-to-play steps | Works                                      | *Add image* |
+| Choose hero       | Character Select                  | Click a hero card            | Selected card is highlighted and stored for the session | Works                                      | *Add image* |
+| Choose difficulty | Difficulty Select                 | Pick Easy/Normal/Hard        | Mode is highlighted and saved for the session           | Works                                      | *Add image* |
+| Track progress    | HUD (HP bars, Score, Level/Round) | Start a battle               | Player/Monster HP bars update; score/level increments   | Works                                      | *Add image* |
+| Feel invested     | Story Cutscenes                   | Reach story milestones       | Cutscene modal appears with narrative text and image    | Works                                      | *Add image* |
+| Save high scores  | localStorage Leaderboard          | Finish a game                | Score saved and visible on scoreboard                   | Works                                      | *Add image* |
+| Retry a level     | Defeat Popup                      | Click **Retry**              | Same level restarts with same difficulty                | Works                                      | *Add image* |
+| Replay pattern    | Controls                          | Click **Replay Pattern**     | Most recent pattern replays with correct timing         | Works                                      | *Add image* |
+| Mobile friendly   | Responsive Layout                 | Open on phone/tablet/desktop | Layout remains usable; touch targets large enough       | Works                                      | *Add image* |
+| Contact developer | Contact Form (EmailJS)            | Submit a message             | Success toast/confirmation and email sent               | **Needs fix** (intermittent “Send Failed”) | *Add image* |
+| Audio control     | Audio/Music Toggles               | Toggle SFX/Music             | States persist; icons/ARIA updated accordingly          | Works                                      | *Add image* |
+
 
 ---
 
