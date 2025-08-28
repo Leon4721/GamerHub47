@@ -30,7 +30,7 @@
     <h1 class="game-title">Memory Battle</h1>
 
     <!-- Level + Mode in one circle -->
-    <div class="level-indicator" aria-live="polite" aria-label="Game HUD">
+    <div class="level-indicator" role="status" aria-atomic="true" aria-label="Game HUD">
       <div class="label">LEVEL</div>
       <div class="value" id="level-display">1</div>
       <div class="mode-label">MODE</div>
@@ -54,7 +54,7 @@
     <!-- ARENA: Player vs Monster -->
     <div class="arena">
       <!-- LEFT: Player -->
-      <section class="side player-side">
+      <div class="side player-side">
         <!-- Spacer for symmetry added via CSS ::before -->
         <div class="card-frame">
         <img id="player-portrait" src="assets/images/characters/default.png" alt="Selected user character"/>
@@ -66,10 +66,10 @@
           </div>
           <div class="health-bar"><div class="health-fill" id="player-health" style="width:100%"></div></div>
         </div>
-      </section>
+      </div>
 
       <!-- RIGHT: Monster -->
-      <section class="side monster-side">
+      <div class="side monster-side">
         <div class="monster-meta">
           <div class="monster-name" id="monster-name">Goblin</div>
           <div class="monster"> <span id="monster"></span></div>
@@ -85,7 +85,7 @@
           </div>
           <div class="health-bar"><div class="health-fill" id="monster-health" style="width:100%"></div></div>
         </div>
-      </section>
+      </div>
     </div>
 
     <div class="controls">
@@ -93,7 +93,7 @@
       <button class="control-btn" id="redo-btn">Replay Pattern</button>
     </div>
 
-    <div class="game-buttons" aria-label="Action Buttons">
+    <div class="game-buttons" role="group" aria-label="Action Buttons">
       <button class="game-button" id="archer"><span class="button-icon" aria-hidden="true">🏹</span>Archer<span class="key-hint"><kbd>1</kbd></span></button>
       <button class="game-button" id="mage"><span class="button-icon" aria-hidden="true">🔮</span>Mage<span class="key-hint"><kbd>2</kbd></span></button>
       <button class="game-button" id="warrior"><span class="button-icon" aria-hidden="true">⚔️</span>Warrior<span class="key-hint"><kbd>3</kbd></span></button>

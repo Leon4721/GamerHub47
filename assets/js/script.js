@@ -766,6 +766,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }, i * stepDelay);
     });
   }
+// help.js (or wherever you auto-open)
+const HOWTO_KEY = 'rpg_seen_howto';
+
+function openHowtoModal({firstRun = false} = {}) {
+  const modal = document.getElementById('howto-modal');
+  modal.classList.remove('hidden');
+  document.getElementById('howto-title')?.focus();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const firstVisit = !localStorage.getItem(HOWTO_KEY);
+  if (firstVisit) {
+    localStorage.setItem(HOWTO_KEY, '1');
+    // Open without scrolling page
+    openHowtoModal({ firstRun: true });
+
+    // If you *really* want to scroll on small screens, do it after layout settles:
+    if (window.innerWidth < 800) {
+      requestAnimationFrame(() => {
+        document.getElementById('howto-modal')
+          ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      });
+    }
+  }
+});
 
   // Go!
   initGame();
