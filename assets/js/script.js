@@ -5,8 +5,26 @@ if (window.__RPG_INIT__) { console.warn('RPG already initialized'); }
 else { window.__RPG_INIT__ = true; }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Ensure something paints before any logic
+  try {
+    const sk = document.getElementById('skeleton');
+    const app = document.getElementById('app');
+    if (sk || app) {
+      requestAnimationFrame(() => {
+        if (sk) sk.style.display = 'none';
+        if (app) app.hidden = false;
+      });
+    }
+  } catch(e) { /* noop */ }
+
   const raw = localStorage.getItem('playerData');
-  if (!raw) { window.location.href = 'index.html'; return; }
+if (!raw) {
+  const sk = document.getElementById('skeleton');
+  if (sk) sk.textContent = 'Redirecting to title…';
+  requestAnimationFrame(() => { window.location.href = 'index.html'; });
+  return;
+}
+
   const { name: playerName, character } = JSON.parse(raw);
 
   // Put player's portrait into the left card (robust)
@@ -770,23 +788,6 @@ function openHowtoModal({firstRun = false} = {}) {
   modal.classList.remove('hidden');
   document.getElementById('howto-title')?.focus();
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-  const firstVisit = !localStorage.getItem(HOWTO_KEY);
-  if (firstVisit) {
-    localStorage.setItem(HOWTO_KEY, '1');
-    // Open without scrolling page
-    openHowtoModal({ firstRun: true });
-
-    // If you *really* want to scroll on small screens, do it after layout settles:
-    if (window.innerWidth < 800) {
-      requestAnimationFrame(() => {
-        document.getElementById('howto-modal')
-          ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      });
-    }
-  }
-});
 
   // Go!
   initGame();
