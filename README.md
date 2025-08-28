@@ -439,7 +439,63 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 
 ### JavaScript Validation  
 - Scripts tested with **JSHint**.  
-- No major issues found; code uses ES6 modules cleanly.  
+- No major issues found
+
+<details>
+  <summary>audio</summary>
+  <img src="docs/validation/js/audio.png>
+</details>
+
+<details>
+  <summary>contatc.js</summary>
+  <img src="docs/validation/js/contact.png">
+</details>
+
+<details>
+  <summary>errors.js</summary>
+  <img src="docs/validation/js/errors.png">
+</details>
+
+<details>
+  <summary>fit.js</summary>
+  <img src="docs/validation/js/fit.png">
+</details>
+
+<details>
+  <summary>help.js</summary>
+  <img src="docs/validation/js/help.png>
+</details>
+
+<details>
+  <summary>script.js</summary>
+  <img src="docs/validation/js/Script.js.png">
+</details>
+
+<details>
+  <summary>script2.js</summary>
+  <img src="docs/validation/js/script2.png">
+</details>
+
+<details>
+  <summary>story.js</summary>
+  <img src="docs/validation/js/story.png">
+</details>
+
+<details>
+  <summary>ui.js</summary>
+  <img src="docs/validation/js/ui.png">
+</details>
+
+<details>
+  <summary>audio-hooks.js</summary>
+  <img src="docs/validation/js/audiohooks.png">
+</details>
+
+<details>
+  <summary>a11y.js</summary>
+  <img src="docs/validation/js/a11y.png">
+</details>
+
 
 ### Accessibility  
 - Tested with WAVE → 0 errors.  
