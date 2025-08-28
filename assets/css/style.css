@@ -18,6 +18,11 @@ body {
   padding: 10px;
   color: #f0f0f0;
 }
+/* Safety: ensure something always paints immediately */
+html, body { opacity: 1 !important; visibility: visible !important; }
+
+/* If you animate fades, never start at 0 exactly */
+@keyframes fadeInSafe { from { opacity: 0.01; } to { opacity: 1; } }
 
 /* ========= Container & Title ========= */
 .game-container {
