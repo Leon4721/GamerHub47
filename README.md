@@ -381,7 +381,7 @@ Tested using Chrome DevTools and real devices:
 | Contact developer | Contact Form (EmailJS) | Submit form | Confirmation shown & email sent | work| <img src="docs/user-Story-testing/msgsent.png"> |  
 | Audio control | Audio & Music Toggles | Toggle icons | States persist, ARIA updated | Works | <img src="docs/user-Story-testing/audiom.png">|  
 | Custom 404 | `/404.html` | Visit invalid route | Branded 404 page with link home | Works | <img src="docs/user-Story-testing/404.png">|
-| Replay pattern | Controls | Click `Replay Pattern` | Pattern replays correctly | Works | <img src="docs/user-Story-testing/repeat.png> |    
+| Replay pattern | Controls | Click `Replay Pattern` | Pattern replays correctly | Works | <img src="docs/user-Story-testing/repeat.png"> |    
 
 
 
