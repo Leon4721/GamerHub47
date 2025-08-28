@@ -1,4 +1,4 @@
-// selection.js — handles character selection and the pre-game story popup
+
 import { showStory } from './ui.js';
 
 if (window.__RPG_INIT__) throw new Error('init twice');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  // ===== Portrait normalization =====
+
   const PORTRAIT_DEFAULT = 'assets/images/characters/default.png';
   const PORTRAIT_DIR1    = 'assets/images/characters/';
   const PORTRAIT_DIR2    = 'assets/images/';
@@ -43,13 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return PORTRAIT_DEFAULT;
   }
-  // ==================================
+ 
 
   const characterList = document.getElementById('characterList');
   const startBtn = document.getElementById('start-btn');
   let selectedCharacter = null;
 
-  // Build character cards
+
   characters.forEach((char, index) => {
     const card = document.createElement('div');
     card.classList.add('character-card');
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </tr>`).join('') || '<tr><td colspan="9">No scores yet</td></tr>';
   }
 
-  // === Difficulty profiles ===
+  
   const DIFFICULTY = {
     easy:   { key:'easy',   label:'Easy',   speedFactor: 2.0, complexityFactor: 0.5, scoreFactor: 0.5 },
     medium: { key:'medium', label:'Medium', speedFactor: 1.0, complexityFactor: 1.0, scoreFactor: 1.0 },
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === Inline notice helper ===
+  
   function showInlineNotice(msg, ms = 2600) {
     const old = document.querySelector('.notice-pop');
     if (old) old.remove();
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => n.remove(), ms);
   }
 
-  // Start -> difficulty -> story -> game
+
   startBtn.addEventListener('click', () => {
     const playerName = document.getElementById('playerName').value.trim();
     if (!playerName) {

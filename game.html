@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rhythem & Sigil</title>
 
-  <!-- Styles -->
+
   <link rel="stylesheet" href="./assets/css/style.css"/>
-  <!-- NEW: Help / How-to modal styles -->
+
   <link rel="stylesheet" href="./assets/css/help.css"/>
   <link rel="stylesheet" href="./assets/css/fit.css">
-  <!-- Icons (used by contact/help buttons) -->
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
   <div class="top-actions" role="toolbar" aria-label="Quick actions">
-  <!-- Speaker: toggles SFX on/off -->
+
   <button id="sfx-toggle" class="icon-btn" aria-pressed="true" title="Sound effects: on" aria-label="Toggle sound effects">
     <i class="fa-solid fa-volume-high"></i>
   </button>
 
-  <!-- Music: toggles background music on/off (separate from SFX) -->
+
   <button id="music-toggle" class="icon-btn off" aria-pressed="false" title="Music: off" aria-label="Toggle background music">
     <i class="fa-solid fa-music"></i>
     <span class="slash" aria-hidden="true"></span>
@@ -29,7 +29,7 @@
   <div class="game-container">
     <h1 class="game-title">Memory Battle</h1>
 
-    <!-- Level + Mode in one circle -->
+
     <div class="level-indicator" role="status" aria-atomic="true" aria-label="Game HUD">
       <div class="label">LEVEL</div>
       <div class="value" id="level-display">1</div>
@@ -37,7 +37,6 @@
       <div class="mode" id="mode-display">Medium</div>
     </div>
 
-    <!-- Stats -->
     <div class="game-header header-with-monster">
       <div class="stats-rail">
         <div class="stat-box">
@@ -51,11 +50,11 @@
       </div>
     </div>
 
-    <!-- ARENA: Player vs Monster -->
+ 
     <div class="arena">
-      <!-- LEFT: Player -->
+ 
       <div class="side player-side">
-        <!-- Spacer for symmetry added via CSS ::before -->
+      
         <div class="card-frame">
         <img id="player-portrait" alt="Selected user character"/>
         </div>
@@ -68,18 +67,17 @@
         </div>
       </div>
 
-      <!-- RIGHT: Monster -->
       <div class="side monster-side">
         <div class="monster-meta">
           <div class="monster-name" id="monster-name">Goblin</div>
           <div class="monster"> <span id="monster"></span></div>
         </div>
 
-        <div class="card-frame monster-display"><!-- .monster-card injected by JS --></div>
+        <div class="card-frame monster-display"></div>
 
         <div class="health-container">
           <div class="health-label">
-            <!-- ADDED ID so JS can set “Goblin’s/Dragon’s/Orc’s Health” -->
+           
             <span id="monster-health-label">Monster Health</span>
             <span id="monster-health-value">100%</span>
           </div>
@@ -103,7 +101,7 @@
     <div id="feedback">Press Start Battle to begin your adventure!</div>
   </div>
 
-  <!-- NEW: compact “?” Help button -->
+
   <button
     id="help-btn"
     class="help-fab"
@@ -115,7 +113,6 @@
     <span class="help-icon">?</span>
   </button>
 
-  <!-- NEW: How-to-Play Modal -->
   <div id="howto-modal" class="howto-modal hidden" role="dialog" aria-modal="true" aria-labelledby="howto-title">
     <div class="howto-backdrop" data-dismiss="howto"></div>
     <div class="howto-card" role="document">
@@ -141,7 +138,6 @@
     </div>
   </div>
 
-  <!-- Story Modal (existing, used by the game story system) -->
   <div id="story-modal" class="hidden">
     <div class="story-card">
       <img id="story-image" alt="A young elvish woman kidnapped bya group of orc and goblins"/>
@@ -150,12 +146,11 @@
     </div>
   </div>
 
-  <!-- Contact Us floating button (existing) -->
   <a href="contact.html" class="contact-btn" title="Contact Us">
     <i class="fas fa-envelope" aria-hidden="true"></i> <span class="sr-only">Contact Us</span>
   </a>
 
-  <!-- Scripts: your game module (imports ui.js -> story.js), then the small help module -->
+  
   <script type="module" src="assets/js/ui.js" defer></script>
   <script type="module" src="assets/js/help.js" defer></script>
   <script type="module" src="assets/js/story.js" defer></script>

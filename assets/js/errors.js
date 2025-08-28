@@ -1,5 +1,3 @@
-// assets/js/errors.js
-// Lightweight global error handler + toast UI.
 
 (() => {
   const toast = document.createElement('div');
@@ -31,7 +29,7 @@
     showToast('A background task failed. We recovered gracefully.');
   });
 
-  // Safe wrappers you can call around risky ops:
+
   window.safeTry = async (fn, fallback) => {
     try { return await fn(); } catch (err) { console.warn('[safeTry]', err); return fallback; }
   };

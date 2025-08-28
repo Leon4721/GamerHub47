@@ -1,28 +1,24 @@
-// assets/js/audio.js
-// Global audio manager: background music and per-button SFX, with independent toggles.
-// Exposes window.AudioFX { init(), play(name) }
+
 
 (function () {
   const AudioFX = {};
-  let ctx;                      // WebAudio context for SFX
+  let ctx;                      
   let sfxEnabled   = true;
   let musicEnabled = false;
-  const buffers = {};           // decoded SFX buffers
+  const buffers = {};           
 
-    // feedback
     success: 'assets/audio/sfx/success.mp3',
     fail   : 'assets/audio/sfx/fail.mp3',
     game_over: 'assets/audio/sfx/game_over.mp3',
 
-    // index UX
+
     namefill: 'assets/audio/sfx/namefill.mp3',
     selectcharacter: 'assets/audio/sfx/selectcharacter.mp3',
 
-    // nav
+
     contactus: 'assets/audio/sfx/contactus.mp3'
   };
 
-  // Background music tag (HTMLAudio is fine for looped BGM)
   const bgm = new Audio('assets/audio/music/overworld_theme.mp3');
   bgm.loop = true;
   bgm.volume = 0.35;
@@ -46,7 +42,7 @@
       ensureCtx();
       await Promise.all(Object.entries(SFX_URLS).map(async ([key, url]) => {
         const res = await fetch(url);
-        if (!res.ok) return; // optional files allowed
+        if (!res.ok) return; 
         const arr = await res.arrayBuffer();
         buffers[key] = await ctx.decodeAudioData(arr);
       }));
@@ -140,21 +136,20 @@
   function init() {
     readPrefs();
     updateButtons();
-    loadAll(); // preload SFX (non-blocking)
+    loadAll(); 
     bindContactClickSfx();
 
-    // UI hooks for the on-page toggles (if present)
+    
     document.getElementById('sfx-toggle')?.addEventListener('click', () => { unlock(); toggleSFX(); });
     document.getElementById('music-toggle')?.addEventListener('click', () => { unlock(); toggleMusic(); });
 
-    // Ensure we unlock on first user gesture (covers autoplay restrictions)
+   
     window.addEventListener('click', unlock, { once: true });
 
-    // If user left music ON last time, resume it
+  
     if (musicEnabled) bgm.play().catch(()=>{});
   }
 
-  // expose
   AudioFX.init = init;
   AudioFX.play = play;
   window.AudioFX = AudioFX;

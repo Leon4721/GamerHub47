@@ -1,4 +1,4 @@
-// ui.js
+
 import { storyBeats } from './story.js';
 
 export function showStory(beatKey, context = {}) {
@@ -7,7 +7,7 @@ export function showStory(beatKey, context = {}) {
   const textEl = document.getElementById('story-text');
   const btnContainer = document.getElementById('story-buttons');
 
-  // If any node is missing, don't crash—log and bail.
+
   if (!modal || !imgEl || !textEl || !btnContainer) {
     console.warn('[Story] Modal nodes missing in DOM.');
     return;
@@ -15,7 +15,7 @@ export function showStory(beatKey, context = {}) {
 
   let beat = storyBeats?.[beatKey];
 
-  // Fallback if the beat key doesn't exist
+
   if (!beat) {
     console.warn(`[Story] Unknown beat key: ${beatKey}`);
     beat = {
@@ -25,7 +25,7 @@ export function showStory(beatKey, context = {}) {
     };
   }
 
-  // If beat is a function, safely execute it
+ 
   if (typeof beat === 'function') {
     try { beat = beat(context); }
     catch (err) {
@@ -38,7 +38,7 @@ export function showStory(beatKey, context = {}) {
     }
   }
 
-  // Render the scene
+
   imgEl.src = beat.image || '';
   textEl.innerHTML = (beat.text || '').replace(/\n/g, '<br/>');
   btnContainer.innerHTML = '';

@@ -1,5 +1,4 @@
-// story.js
-// Central place for all story beats (images + text + buttons)
+
 function getHighScores() {
   try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
   catch { return []; }
@@ -43,7 +42,7 @@ function formatRunText(r) {
 }
 
 export const storyBeats = {
-  // 1) After character is selected, BEFORE moving to game.html
+
   postSelect: (ctx) => {
     const { name, character } = ctx;
     const isFemale = character?.name === 'Female';
@@ -63,7 +62,7 @@ Form your party. Ready your skills. The hunt begins.`,
     };
   },
 
-  // 2) After Level 2 is completed, BEFORE Level 3 begins
+
   afterLevel2: {
     image: 'assets/images/after_orcs.png',
     text:
@@ -74,7 +73,7 @@ Ahead lies a ruined watchtower, humming with warded magic.`,
     buttons: [{ label: 'Press On to Level 3', action: () => {} }]
   },
 
-  // 3) After Level 3 is defeated, BEFORE Level 4 begins
+
   afterLevel3: {
     image: 'assets/images/mage_revealed.png',
     text:
@@ -84,7 +83,7 @@ The path forks—sigils hint at guarded gates and hidden catacombs.`,
     buttons: [{ label: 'Approach the Spire', action: () => {} }]
   },
 
-  // 4) After Level 4 is defeated, BEFORE Level 5 begins
+
   afterLevel4: {
     image: 'assets/images/spire_gates.png',
     text:
@@ -96,7 +95,7 @@ Choose your advance: break the wards by force, or slip beneath through the catac
     ]
   },
 
-  // 5) Half-health events (separate for player and monster)
+
   halfPlayer: (ctx) => ({
     image: 'assets/images/low_player.png',
     text:
@@ -113,7 +112,7 @@ Strike clean to finish the job before it regains its footing.`,
     buttons: [{ label: 'Finish this', action: () => {} }]
   }),
 
-  // 6) Game ending beats
+ 
   victory: (ctx) => ({
     image: 'assets/images/dragon_defeated.png',
     text:
