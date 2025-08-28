@@ -371,7 +371,8 @@ Tested using Chrome DevTools and real devices:
 
 | User Story | Feature | Action | Expected Result | Actual Result | Screenshot |  
 |------------|---------|--------|----------------|---------------|------------|  
-| Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![](docs/testing/help.png) |  
+| Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![]( 
+   <img src="docs/validation/lighthouse/404.png"> <) |  
 | Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
 | Choose difficulty | Difficulty Select | Pick Easy/Normal/Hard | Mode is highlighted and stored | Works | ![](docs/testing/difficulty.png) |  
 | Track progress | HUD (HP bars, Score, Level) | Start a battle | HP bars update; score & round increment | Works | ![](docs/testing/hud.png) |  
@@ -382,6 +383,7 @@ Tested using Chrome DevTools and real devices:
 | Mobile friendly | Responsive Layout | Open on phone/tablet/desktop | Layout adapts, touch targets usable | Works | ![](docs/testing/responsive.png) |  
 | Contact developer | Contact Form (EmailJS) | Submit form | Confirmation shown & email sent | **Needs fix** | ![](docs/testing/contact.png) |  
 | Audio control | Audio & Music Toggles | Toggle icons | States persist, ARIA updated | Works | ![](docs/testing/audio.png) |  
+
 | Custom 404 | `/404.html` | Visit invalid route | Branded 404 page with link home | Works | ![](docs/testing/404.png) |  
 
 
