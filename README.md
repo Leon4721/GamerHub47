@@ -254,10 +254,51 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 ### HTML Validation  
 - All pages validated with W3C Markup Validation Service.  
 - No errors on custom code; minor warnings only from third-party CDNs.  
+<details>
+  <summary>Index</summary>
+  <img src="docs/validation/html/index.html.png">
+</details>
+
+<details>
+  <summary>Game</summary>
+  <img src="docs/validation/html/game.html.png">
+</details>
+
+<details>
+  <summary>Contact</summary>
+  <img src="docs/validation/html/contact.html .png">
+</details> 
+
+<details>
+  <summary>404</summary>
+  <img src="docs/validation/html/404.html.png">
+</details>
+
 
 ### CSS Validation  
 - Passed W3C Jigsaw CSS Validator.  
 - Only warnings related to vendor prefixes.  
+
+<details>
+  <summary>Style</summary>
+  <img src="docs/validation/css/style.css.png">
+</details>
+
+<details>
+  <summary>Style 2</summary>
+  <img src="docs/validation/css/Style2.css.png">
+</details>
+
+<details>
+  <summary>Help</summary>
+  <img src="docs/validation/css/help.css.pngg">
+</details>
+
+<details>
+  <summary>Fit</summary>
+  <img src="docs/validation/css/fit.css.png">
+</details>
+
 
 ### JavaScript Validation  
 - Scripts tested with **JSHint**.  
@@ -268,11 +309,48 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 - Modals close on Escape and trap focus correctly.  
 - Keyboard shortcuts (1–4) for accessibility.  
 
+<details>
+  <summary>Index</summary>
+  <img src="docs/validation/wave/index.png">
+</details>
+
+<details>
+  <summary>Game</summary>
+  <img src="docs/validation/wave/game.png">
+</details>
+
+<details>
+  <summary>Contact</summary>
+  <img src="docs/validation/wave/contact.png">
+</details>
+
+<details>
+  <summary>404</summary>
+  <img src="docs/validation/wave/404.png">
+</details>
+
 ### Performance  
 - Lighthouse tested.  
-- Game loads quickly due to lightweight assets.  
-- Scores: Performance 95+, Accessibility 100, Best Practices 100.  
+  
+  <details>
+  <summary>Index</summary>
+  <img src="docs/validation/lighthouse/index.png">
+</details>
 
+  <details>
+  <summary>Game</summary>
+  <img src="docs/validation/lighthouse/game.png">
+</details>
+
+  <details>
+  <summary>Contact</summary>
+  <img src="docs/validation/lighthouse/contact.png">
+</details
+
+  <details>
+  <summary>404</summary>
+  <img src="docs/validation/lighthouse/404.png">
+</details>
 ---
 
 ## Testing  
@@ -294,7 +372,8 @@ Tested using Chrome DevTools and real devices:
 |------------|---------|--------|----------------|---------------|------------|  
 | Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![](docs/testing/help.png) |  
 | Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
-| Save score | localStorage | Finish game | Score saved to table | Works | ![](docs/testing/scores.png) |  
+| Save score | localStorage | Finish game | Score saved to table | Works | ![](docs/testing/scores.png) | 
+ 
 | Retry level | Defeat popup | Click “Retry” | Restart same level | Works | ![](docs/testing/retry.png) |  
 
 ---
