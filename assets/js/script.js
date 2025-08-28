@@ -135,12 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Map button IDs → SFX files
     const SFX_URLS = {
-      archer : 'assets/audio/sfx/archer.mp3',
-      mage   : 'assets/audio/sfx/mage.mp3',
-      warrior: 'assets/audio/sfx/warrior.mp3',
-      healer : 'assets/audio/sfx/healer.mp3',
       success: 'assets/audio/sfx/success.mp3',
-      fail   : 'assets/audio/sfx/fail.mp3',
+  
       // NEW:
       game_over: 'assets/audio/sfx/game_over.mp3',
       contactus: 'assets/audio/sfx/contactus.mp3'
