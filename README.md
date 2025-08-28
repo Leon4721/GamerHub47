@@ -365,13 +365,6 @@ Tested using Chrome DevTools and real devices:
 - Microsoft Edge ✔  
 - Safari ✔  
 
-### Testing User Stories  
-| User Story | Feature | Action | Expected Result | Actual Result | Screenshot |  
-|------------|---------|--------|----------------|---------------|------------|  
-| Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![](docs/testing/help.png) |  
-| Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
-| Save score | localStorage | Finish game | Score saved to table | Works | ![](docs/testing/scores.png) | 
-| Retry level | Defeat popup | Click “Retry” | Restart same level | Works | ![](docs/testing/retry.png) | 
 ## Testing User Stories
 
 ### Site User
@@ -389,15 +382,6 @@ Tested using Chrome DevTools and real devices:
 | Mobile friendly | Responsive Layout | Open on phone/tablet/desktop | Layout adapts, touch targets usable | Works | ![](docs/testing/responsive.png) |  
 | Contact developer | Contact Form (EmailJS) | Submit form | Confirmation shown & email sent | **Needs fix** | ![](docs/testing/contact.png) |  
 | Audio control | Audio & Music Toggles | Toggle icons | States persist, ARIA updated | Works | ![](docs/testing/audio.png) |  
-
-### Site Owner
-
-| User Story | Feature | Action | Expected Result | Actual Result | Screenshot |  
-|------------|---------|--------|----------------|---------------|------------|  
-| Easy to learn, hard to master | Onboarding + Difficulty | New player flow → later rounds | Clear early wins, harder later rounds | Works | ![](docs/testing/difficulty-curve.png) |  
-| Engaging narrative | Cutscenes & Characters | Progress through levels | Story events increase replayability | Works | ![](docs/testing/narrative.png) |  
-| Validated code | HTML/CSS/JS Validation | Run validators | No blocking errors | Works | ![](docs/testing/validation.png) |  
-| Accessibility & performance | ARIA, Lighthouse | Run audits | High a11y/perf scores; keyboard usable | Works | ![](docs/testing/a11y.png) |  
 | Custom 404 | `/404.html` | Visit invalid route | Branded 404 page with link home | Works | ![](docs/testing/404.png) |  
 
 
