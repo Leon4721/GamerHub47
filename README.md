@@ -255,7 +255,7 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 
 - **Name Entry & Character Selection**  
   Players begin by entering their name and choosing a hero.   
- 
+
 - <details><summary>Character Selection</summary>
 <img src="/docs/features/name.png ">
 </details>
@@ -267,9 +267,10 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - **Medium**: Faster pace with longer memory chains, adding pressure.  
   - **Hard**: Demands precision and endurance, with rapid cues and complex patterns.  
   Each round escalates in difficulty, creating an RPG-style sense of progression.  
-
-  ![Difficulty Modes](docs/features/difficulty.png)  
-
+  
+- <details><summary>Difficulty Modes</summary>
+<img src="/docs/features/diffi.png ">
+</details>
 ---
 
 - **Controls**  
@@ -278,8 +279,10 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - *Replay Pattern* allows the user to replay the current sequence before attempting it.  
   These controls make the game accessible, especially for beginners learning the rhythm.  
 
-  ![Game Controls](docs/features/controls.png)  
-
+   
+- <details><summary>Game Controls</summary>
+<img src="/docs/features/buttons.png">
+</details>
 ---
 
 - **Four Actions**  
@@ -287,14 +290,20 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - Each action has a large touch button, designed for mobile and tablet players.  
   - Keyboard shortcuts (**1–4**) mirror the actions, ensuring cross-platform accessibility.  
 
-  ![Action Buttons](docs/features/actions.png)  
-
+- <details><summary>Action Buttons</summary>
+<img src="/docs/features/triggers.png">
+</details>
 ---
 
 - **Highlight on Cues**  
   Visual highlights appear on action buttons when a cue is triggered. Repeated cues are handled clearly, ensuring no ambiguity when buttons repeat in a sequence. This enhances fairness and user confidence during gameplay.  
 
   ![Cue Highlights](docs/features/cues.png)  
+- <details><summary>Cue Highlights</summary>
+<img src="/docs/features/glow2.png">
+</details>
+<img src="/docs/features/glow.png">
+</details>
 
 ---
 
@@ -307,7 +316,11 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   This ensures players always know their status at a glance.  
 
   ![Game HUD](docs/features/hud.png)  
-
+- <details><summary>Game HUD</summary>
+<img src="/docs/features/scores.png">
+</details>
+<img src="/docs/features/hbars.png">
+</details>
 ---
 
 - **How-to-Play Modal**  
@@ -317,8 +330,11 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - Provides clear, step-by-step instructions with visual cues.  
   This ensures the game is beginner-friendly while supporting replayability.  
 
-  ![How to Play](docs/features/help.png)  
-
+- <details><summary>How to Play</summary>
+<img src="/docs/features/how1.png">
+</details>
+<img src="/docs/features/how2.png">
+</details>
 ---
 
 - **Audio & Music Toggles**  
@@ -326,9 +342,12 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - Icon states change to show whether audio is on or off.  
   - Preferences are saved in **localStorage**, so settings persist between sessions.  
   This gives users control over immersion without disrupting gameplay.  
-
-  ![Audio Toggles](docs/features/audio.png)  
-
+ 
+- <details><summary>Audio Toggles</summary>
+<img src="/docs/features/musoff.png">
+</details>
+<img src="/docs/features/muson.png>
+</details>
 ---
 
 - **Contact Page**  
@@ -338,8 +357,11 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - Displays **submission confirmation**, reassuring players their message was sent.  
   Designed to be responsive and accessible.  
 
-  ![Contact Page](docs/features/contact.png)  
-
+- <details><summary>Contact Page</summary>
+<img src="/docs/features/mail.png">
+</details>
+<img src="/docs/features/mail2.png">
+</details>
 ---
 
 - **Custom 404 Page**  
@@ -348,7 +370,9 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - Provides a **clear route back to the Home page**.  
   This prevents confusion and ensures users remain within the RPG experience.  
 
-  ![404 Page](docs/features/404.png)  
+- <details><summary>404</summary>
+<img src="/docs/features/404.png">
+</details>
 
 ---
 
@@ -358,7 +382,6 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   - Useful for quickly checking later story cutscenes and difficulty progression.  
   While not part of normal gameplay, it demonstrates robust debugging and testing support.  
 
-  ![Cheat Code](docs/features/cheat.png)  
 
 
 ---
