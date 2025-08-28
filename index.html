@@ -3,59 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rhythem & Sigil</title>
+  <title>Rhythm & Sigil</title>
+
+  <!-- Performance: ensure something always paints -->
+  <style>
+    html, body { opacity: 1 !important; visibility: visible !important; }
+  </style>
+
+  <!-- Optional perf hint for CDN -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="stylesheet" href="./assets/css/style2.css"/>
+
+  <!-- Your styles (base first, overrides after) -->
   <link rel="stylesheet" href="./assets/css/style.css"/>
+  <link rel="stylesheet" href="./assets/css/style2.css"/>
 </head>
 <body>
-    <div class="top-actions" role="toolbar" aria-label="Quick actions">
-  <!-- Speaker: toggles SFX on/off -->
-  <button id="sfx-toggle" class="icon-btn" aria-pressed="true" title="Sound effects: on" aria-label="Toggle sound effects">
-    <i class="fa-solid fa-volume-high"></i>
-  </button>
+  <!-- Paint bait for Lighthouse if JS is blocked -->
+  <noscript><p style="position:absolute;left:-9999px;">Loading…</p></noscript>
 
-  <!-- Music: toggles background music on/off (separate from SFX) -->
-  <button id="music-toggle" class="icon-btn off" aria-pressed="false" title="Music: off" aria-label="Toggle background music">
-    <i class="fa-solid fa-music"></i>
-    <span class="slash" aria-hidden="true"></span>
-  </button>
-</div>
+  <div class="top-actions" role="toolbar" aria-label="Quick actions">
+    <!-- Speaker: toggles SFX on/off -->
+    <button id="sfx-toggle" class="icon-btn" aria-pressed="true" title="Sound effects: on" aria-label="Toggle sound effects">
+      <i class="fa-solid fa-volume-high"></i>
+    </button>
 
-<!-- Main selection/login -->
-<main class="login-container">
-  <h1 class="title">CHARACTER SELECTION</h1>
-  <p class="subtitle">Enter your name and choose your hero!</p>
-
-  <div class="player-name">
-    <label for="playerName" class="sr-only">Hero name</label>
-    <input type="text" id="playerName" placeholder="Enter your hero name..." autocomplete="name"/>
+    <!-- Music: toggles background music on/off (separate from SFX) -->
+    <button id="music-toggle" class="icon-btn off" aria-pressed="false" title="Music: off" aria-label="Toggle background music">
+      <i class="fa-solid fa-music"></i>
+      <span class="slash" aria-hidden="true"></span>
+    </button>
   </div>
 
-  <section class="character-selection" id="characterList" aria-label="Available characters"></section>
+  <!-- Main selection/login -->
+  <main class="login-container">
+    <h1 class="title">CHARACTER SELECTION</h1>
+    <p class="subtitle">Enter your name and choose your hero!</p>
 
-  <button id="start-btn" disabled>BEGIN YOUR QUEST</button>
-  <p class="game-link">Already have a character? <a href="./game.html">Continue your adventure</a></p>
-</main>
+    <div class="player-name">
+      <label for="playerName" class="sr-only">Hero name</label>
+      <input type="text" id="playerName" placeholder="Enter your hero name..." autocomplete="name"/>
+    </div>
 
-<!-- Shared Story Modal (unchanged visuals) -->
-<div id="story-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="story-text">
-  <div class="story-card" role="document">
-    <img id="story-image" alt="Tapestry scene of an elvish girl being kidnapped by goblins and orcs"/>
-    <p id="story-text"></p>
-    <div id="story-buttons"></div>
+    <section class="character-selection" id="characterList" aria-label="Available characters"></section>
+
+    <button id="start-btn" disabled>BEGIN YOUR QUEST</button>
+    <p class="game-link">Already have a character? <a href="./game.html">Continue your adventure</a></p>
+  </main>
+
+  <!-- Shared Story Modal -->
+  <div id="story-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="story-text">
+    <div class="story-card" role="document">
+      <img id="story-image" alt="Tapestry scene of an elvish girl being kidnapped by goblins and orcs"/>
+      <p id="story-text"></p>
+      <div id="story-buttons"></div>
+    </div>
   </div>
-</div>
 
-<a href="contact.html" class="contact-btn">
-  <i class="fas fa-envelope"></i> Contact Us
-</a>
+  <a href="contact.html" class="contact-btn" title="Contact Us">
+    <i class="fas fa-envelope" aria-hidden="true"></i> <span class="sr-only">Contact Us</span>
+  </a>
 
-  <!-- Load story/ui first so script2 can call showStory -->
-  <script type="module" src="assets/js/story.js" defer></script>
-  <script type="module" src="assets/js/ui.js" defer></script>
-  <script type="module" src="assets/js/script2.js" defer></script>
-  <script type="module" src="assets/js/script.js" defer></script>
+  <!-- ===== Scripts =====
+       Note: type="module" scripts are deferred by default.
+       Kept order: helper bridge first, then your modules.
+  -->
+
+  <!-- Bridge: expose key exports globally (no visual/function loss if some files expect globals) -->
+  <script type="module">
+    import * as UI from './assets/js/ui.js';
+    import * as STORY from './assets/js/story.js';
+
+    // Minimal, safe globals (only what’s commonly needed)
+    window.showStory = UI.showStory || STORY.showStory;
+    window.RPG = { ...UI, ...STORY };
+  </script>
+
+  <!-- Your modules -->
+  <script type="module" src="assets/js/story.js"></script>
+  <script type="module" src="assets/js/ui.js"></script>
+  <script type="module" src="assets/js/script2.js"></script>
+  <script type="module" src="assets/js/script.js"></script>
+
+  <!-- Non-module helpers -->
   <script src="assets/js/a11y.js" defer></script>
   <script src="assets/js/fit.js" defer></script>
 </body>
