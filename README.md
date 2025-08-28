@@ -44,7 +44,7 @@
 11. [Acknowledgements](#acknowledgements)  
 
 ---
-Project Rationale – Rhythm & Sigil
+### Project Rationale Rhythm & Sigil
 
 Developed by CD Projekt Noir
 
@@ -60,15 +60,15 @@ This approach ensures that the game is not only fun and immersive but also socia
 
 At the start of Rhythm & Sigil, the player steps into the role of a chosen hero. As Galihad, the male Knight, your bride-to-be has been stolen by goblin raiders. As Eva, the female Elf warrior, it is your tribal sister who has been taken. What begins as a personal rescue quickly reveals a deeper evil at work.
 
-The goblins are not acting alone—they serve a cunning Dark Mage, whose forbidden sorcery binds both goblins and orcs to her will. Each battle draws you closer to her fortress, where illusions and traps mask the true scale of her corruption. What feels like a rescue mission becomes a desperate fight against spreading darkness.
+- The goblins are not acting alone—they serve a cunning Dark Mage, whose forbidden sorcery binds both goblins and orcs to her will. Each battle draws you closer to her fortress, where illusions and traps mask the true scale of her corruption. What feels like a rescue mission becomes a desperate fight against spreading darkness.
 
-From facing endless waves of goblins, to dueling orc warlords, the journey culminates in a confrontation with the dreaded Skeleton Knight, a fallen champion reanimated by necromancy. Defeating him reveals the Mage’s ultimate weapon—an ancient dragon, a living force of elemental fire and destruction.
+- From facing endless waves of goblins, to dueling orc warlords, the journey culminates in a confrontation with the dreaded Skeleton Knight, a fallen champion reanimated by necromancy. Defeating him reveals the Mage’s ultimate weapon—an ancient dragon, a living force of elemental fire and destruction.
 
-This unfolding narrative transforms a simple quest of love and loyalty into a true RPG epic, where the player discovers that every choice carries weight, every victory uncovers hidden truths, and only courage can overcome the rising tide of shadow.
+- This unfolding narrative transforms a simple quest of love and loyalty into a true RPG epic, where the player discovers that every choice carries weight, every victory uncovers hidden truths, and only courage can overcome the rising tide of shadow.
 
 ## Project Goals  
 
-The goal of "R & S" is to build a **fantasy-themed memory game** that is:  
+The goal of "R & S" (Rhythm & Sigil) is to build a **fantasy-themed memory game** that is:  
 - Engaging, story-driven, and visually immersive.  
 - Accessible and responsive across modern devices.  
 - Educational in the sense of memory training, while entertaining through story driven battles.  
