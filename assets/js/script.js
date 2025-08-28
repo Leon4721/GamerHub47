@@ -9,56 +9,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!raw) { window.location.href = 'index.html'; return; }
   const { name: playerName, character } = JSON.parse(raw);
 
-  // Put player's portrait into the left card (robust)
+  // Put player's portrait into the left card (robust, no root-path fallbacks)
   const playerPortraitEl = document.getElementById('player-portrait');
 
   function resolvePortraitPath() {
-    // preferred → alt → safe fallback
-    const candidate =
+    // preferred → alt → safe fallback (relative only to avoid GitHub Pages root 404s)
+    return (
       character?.image ||
       character?.portrait ||
-      'assets/images/characters/default.png'; // adjust if your real path differs
-    return candidate;
+      'assets/images/characters/default.png'
+    );
   }
 
   function setPortraitSafe(imgEl, src) {
-    if (!imgEl) {
-      console.warn('[portrait] #player-portrait not found in DOM');
-      return;
-    }
+    if (!imgEl) return;
 
-    // Clear any prior handlers
-    imgEl.onerror = null;
+    imgEl.onerror = () => {
+      // Single safe fallback (relative only)
+      const fallback = 'assets/images/characters/default.png';
+      if (!imgEl.src.endsWith(fallback)) imgEl.src = fallback;
+    };
     imgEl.onload = null;
 
-    // Add robust onerror to swap to a known-good fallback
-    imgEl.onerror = () => {
-      console.error('[portrait] Failed to load:', imgEl.src);
-      // Try a hard-coded fallback variant (root vs relative) to cover path base issues
-      const fallbacks = [
-        'assets/images/characters/default.png',
-        '/assets/images/characters/default.png'
-      ];
-      const next = fallbacks.find(fb => !imgEl.src.endsWith(fb));
-      if (next) {
-        console.warn('[portrait] Trying fallback:', next);
-        imgEl.src = next;
-      }
-    };
-
-    // Log success so you can see which path actually worked
-    imgEl.onload = () => {
-      console.log('[portrait] Loaded:', imgEl.src);
-    };
-
-    // Set alt text and src
     imgEl.alt = character?.name ? `${character.name} portrait` : 'Selected character portrait';
     imgEl.src = src;
   }
 
   if (playerPortraitEl) {
     const src = resolvePortraitPath();
-    console.log('[portrait] Attempting:', src);
     setPortraitSafe(playerPortraitEl, src);
   }
 
@@ -73,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameStarted = false;
   let currentStreak = 0;
   let bestStreak = 0;
-  let howtoPending = false; // ⬅️ prevents double-popup/double-click during first-run modal
+  let howtoPending = false; // prevents double-popup during first-run modal
 
   function getHighScores() {
     try { return JSON.parse(localStorage.getItem('rpgHighScores')) || []; }
@@ -83,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function saveHighScore(entry) {
     const list = getHighScores();
     list.push(entry);
-    // Sort by score desc, then bestStreak desc, then rounds desc
     list.sort((a,b) => b.score - a.score || b.bestStreak - a.bestStreak || b.rounds - a.rounds);
     const top5 = list.slice(0,5);
     localStorage.setItem('rpgHighScores', JSON.stringify(top5));
@@ -92,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // One-time flags for special popups
   let shownHalfPlayer = false;
   let shownHalfMonster = false;
-  let pathChoice = 'assault'; // default if player doesn't choose at Lv4 popup
+  let pathChoice = 'assault';
 
   function makeRunEntry({ outcome }) {
     const now = new Date().toISOString().slice(0,10);
@@ -133,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let sfxEnabled  = JSON.parse(localStorage.getItem('sfxEnabled')  ?? 'true');
     let musicEnabled= JSON.parse(localStorage.getItem('musicEnabled')?? 'false');
 
-    // Map button IDs → SFX files
     const SFX_URLS = {
       archer : 'assets/audio/sfx/archer.mp3',
       mage   : 'assets/audio/sfx/mage.mp3',
@@ -141,15 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
       healer : 'assets/audio/sfx/healer.mp3',
       success: 'assets/audio/sfx/success.mp3',
       fail   : 'assets/audio/sfx/fail.mp3',
-      // NEW:
       game_over: 'assets/audio/sfx/game_over.mp3',
       contactus: 'assets/audio/sfx/contactus.mp3'
     };
 
-    const buffers = {}; // decoded SFX buffers
+    const buffers = {};
     const bgm = new Audio('assets/audio/music/overworld_theme.mp3');
     bgm.loop = true;
-    bgm.volume = 0.35;  // music loudness (tune to taste)
+    bgm.volume = 0.35;
 
     function ensureCtx(){
       if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -160,15 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ensureCtx();
         await Promise.all(Object.entries(SFX_URLS).map(async ([key, url]) => {
           const res = await fetch(url);
-          if (!res.ok) return; // file may not exist (optional)
+          if (!res.ok) return;
           const arr = await res.arrayBuffer();
           buffers[key] = await ctx.decodeAudioData(arr);
         }));
-      }catch(e){ console.warn('[audio] preload issue:', e); }
+      }catch(e){ /* non-blocking */ }
     }
 
     function beepFallback(){
-      // tiny triangle beep if a file is missing; avoids silence feeling like a bug
       try{
         ensureCtx();
         const o = ctx.createOscillator();
@@ -191,11 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!buf){ beepFallback(); return; }
         const src  = ctx.createBufferSource();
         const gain = ctx.createGain();
-        gain.gain.value = 0.9;          // SFX loudness (tune to taste)
+        gain.gain.value = 0.9;
         src.buffer = buf;
         src.connect(gain).connect(ctx.destination);
         src.start(0);
-      }catch(e){ console.warn('[audio] play error', e); }
+      }catch(e){ /* ignore */ }
     }
 
     function setSFX(on){
@@ -214,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function toggleMusic(){ setMusic(!musicEnabled); }
 
-    function unlock(){  // resume context on first gesture (autoplay policies)
+    function unlock(){
       try{
         ensureCtx();
         if (ctx.state === 'suspended') ctx.resume();
@@ -241,18 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init(){
-      loadAll();                   // preload SFX (non-blocking)
+      loadAll();
       updateButtons();
-      // Hook UI
       document.getElementById('sfx-toggle')?.addEventListener('click', () => { unlock(); toggleSFX(); });
       document.getElementById('music-toggle')?.addEventListener('click', () => { unlock(); toggleMusic(); });
-      // Contact button/link SFX
       document.querySelectorAll('.contact-btn, a[href$="contact.html"]').forEach(a => {
         a.addEventListener('click', () => { unlock(); play('contactus'); }, { passive: true });
       });
-      // Ensure we unlock at first user gesture (e.g., Start Game)
       window.addEventListener('click', unlock, { once: true });
-      // If music was left on last time, start it
       if (musicEnabled) bgm.play().catch(()=>{});
     }
 
@@ -265,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: 'Goblin',          level: 1, image: 'assets/images/goblin.png',        speed: 800, health: 100 },
     { name: 'Orc',             level: 2, image: 'assets/images/orc.png',           speed: 700, health: 120 },
     { name: 'Dark Mage',       level: 3, image: 'assets/images/darkmage.png',      speed: 600, health: 150 },
-    // NOTE: check filename below - was 'sknigh.png'; if your asset is 'sknight.png', update accordingly
     { name: 'Skeleton Knight', level: 4, image: 'assets/images/sknight.png',       speed: 500, health: 200 },
     { name: 'Dragon',          level: 5, image: 'assets/images/dragon.png',        speed: 400, health: 250 }
   ];
@@ -283,60 +252,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setMonster(i) {
     const m = monsters[i];
-    if (monsterNameEl) monsterNameEl.textContent = m.name;
+    if (monsterNameEl)  monsterNameEl.textContent  = m.name;
     if (monsterLevelEl) monsterLevelEl.textContent = m.level;
     monsterHealth = m.health;
     if (levelDisplay) levelDisplay.textContent = m.level;
 
-    // Update monster health label + ARIA each time a monster is set
     if (monsterHealthLabel) monsterHealthLabel.textContent = `${possessive(m.name)} Health`;
     if (monsterHPBar)       monsterHPBar.setAttribute('aria-label', `${possessive(m.name)} Health`);
 
     if (monsterDisplay) {
       monsterDisplay.innerHTML = '';
       monsterDisplay.appendChild(createMonsterCard(m));
-    } else {
-      console.warn('Missing .monster-display element in DOM.');
     }
-    // Reset half-health flags per monster
     shownHalfMonster = false;
   }
 
-  // Difficulty (defaults to Medium; apply factors)
+  // Difficulty
   const defaultDiff = { key:'medium', label:'Medium', speedFactor:1.0, complexityFactor:1.0, scoreFactor:1.0 };
   const difficulty = (() => {
     try { return JSON.parse(localStorage.getItem('difficulty')) || defaultDiff; }
     catch { return defaultDiff; }
   })();
 
-  // Show the game mode inside the circle
   const modeEl = document.getElementById('mode-display');
   if (modeEl) modeEl.textContent = difficulty.label || 'Medium';
 
   // ---- Difficulty scaling helpers --------------------------------------------
-  // Fixed baseline complexity per monster level (1..5). index 0 unused.
   const BASE_ADDS_BY_LEVEL = [0, 1, 1, 2, 2, 3];
-
-  // Round bonus increases difficulty within a monster: R1=0, R2=+1, R3=+2, R4+=+3
   function roundBonusOf(r) { return Math.min(3, Math.max(0, r - 1)); }
-
-  // Safely read the 'adds' multiplier from difficulty (backward compatible)
   function getAddsMultiplier(diff) {
     if (typeof diff?.addsMultiplier === 'number') return diff.addsMultiplier;
     if (typeof diff?.complexityFactor === 'number') return diff.complexityFactor;
     return 1.0;
   }
-
-  // Compute Easy cap so that Lv5 on Easy is never harder than Lv2 on Hard (same round)
   function capEasyAgainstHardL2(adds, round) {
-    const HARD_MULT = 1.5; // expected Hard complexity multiplier
+    const HARD_MULT = 1.5;
     const baseL2 = BASE_ADDS_BY_LEVEL[2] || 1;
     const rawL2 = baseL2 + roundBonusOf(round);
     const hardL2Adds = Math.max(1, Math.round(rawL2 * HARD_MULT));
     return Math.min(adds, hardL2Adds);
   }
-
-  // Determine number of NEW steps to add this round
   function computeAddsForRound(level, round, diffObj) {
     const base = BASE_ADDS_BY_LEVEL[level] || 1;
     const raw = base + roundBonusOf(round);
@@ -356,17 +311,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scoreDisplay) scoreDisplay.textContent = score;
     if (levelDisplay) levelDisplay.textContent = level;
 
-    // Half-health checks (pop once each)
     if (!shownHalfPlayer && playerHealth <= 50 && playerHealth > 0) {
       shownHalfPlayer = true;
-      // CHANGED to openStory so we can tag the popup type/level
       gamePauseWith(() => openStory('halfPlayer', { name: playerName }));
     }
     if (!shownHalfMonster && monsterHealth > 0) {
       const maxHealth = monsters[level - 1].health;
       if ((monsterHealth / maxHealth) <= 0.5) {
         shownHalfMonster = true;
-        // CHANGED to openStory so we can tag the popup type/level
         gamePauseWith(() => openStory('halfMonster', {}));
       }
     }
@@ -381,7 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
     level = 1;
     howtoPending = false;
 
-    // set player's health label with their name + ARIA once at init
     if (playerHealthLabel) playerHealthLabel.textContent = `${possessive(playerName)} Health`;
     if (playerHPBar)       playerHPBar.setAttribute('aria-label', `${possessive(playerName)} Health`);
 
@@ -393,17 +344,16 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDisplays();
   }
 
-  // === START BATTLE with robust How-to logic (show ONCE per player, ONLY at Level 1 start) ===
+  // === START BATTLE (shows How-to ONCE per player, only at the very start) ===
   function startBattle() {
-    if (gameStarted || howtoPending) return; // ⬅️ block extra clicks while modal flow is in progress
+    if (gameStarted || howtoPending) return;
 
     const begin = () => {
       gameStarted = true;
-      feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
+      if (feedback) feedback.textContent = `Battle begins! Defeat the ${monsters[0].name}!`;
       setTimeout(nextRound, 1200);
     };
 
-    // Per-player key; only consider modal at start of Level 1, before Round 1
     const howtoKey = `howtoSeen:${playerName || 'anon'}`;
     const seenHowto = localStorage.getItem(howtoKey) === '1';
     const atVeryStart = level === 1 && round === 0;
@@ -411,38 +361,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (atVeryStart && !seenHowto) {
       const helpBtn = document.getElementById('help-btn');
       const modal   = document.getElementById('howto-modal');
-
-      // Fallback: if modal elements aren't available, just start
       if (!helpBtn || !modal) { begin(); return; }
 
-      howtoPending = true; // ⬅️ lock until we finish the one-time flow
+      howtoPending = true;
 
-      // Attach observer BEFORE attempting to open, so we don't miss the "opened" state
       let prevHidden = modal.classList.contains('hidden');
       const mo = new MutationObserver(() => {
         const isHidden = modal.classList.contains('hidden');
-
-        // Transition: OPENED (hidden -> visible)
-        if (prevHidden && !isHidden) {
-          // no-op; just noted it opened
-        }
-
-        // Transition: CLOSED (visible -> hidden)
         if (!prevHidden && isHidden) {
           mo.disconnect();
           localStorage.setItem(howtoKey, '1');
-          howtoPending = false; // release the lock
+          howtoPending = false;
           begin();
         }
-
         prevHidden = isHidden;
       });
       mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
 
-      // Try to open via existing handler
+      // Open via existing handler (NO auto-scroll)
       helpBtn.click();
 
-      // Safety net: if still hidden after a short delay, force show once
+      // Safety net: force open if still hidden briefly after
       setTimeout(() => {
         if (modal.classList.contains('hidden')) {
           helpBtn.setAttribute('aria-expanded', 'true');
@@ -450,10 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }, 150);
 
-      return; // wait for user to close modal
+      return;
     }
 
-    // Otherwise, just start immediately (no modal)
     begin();
   }
 
@@ -471,13 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return pick;
   }
 
-  // per-level baseline + round bonus + difficulty + Easy cap; uses no-duplicate generator
   function nextRound() {
     if (!gameStarted) return;
     playerSequence = [];
     round++;
 
-    // Add new steps based on monster level + round + difficulty
     const adds = computeAddsForRound(level, round, difficulty);
     let last = sequence.length ? sequence[sequence.length - 1] : null;
     for (let i = 0; i < adds; i++) {
@@ -490,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showSequence();
   }
 
-  // timing uses multiplication so selector (Easy=2.0, Hard=0.5) maps to slower/faster correctly
   function showSequence() {
     const baseDelay = monsters[level - 1].speed;
     const speedFactor = Math.max(0.5, Number(difficulty?.speedFactor) || 1);
@@ -505,9 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function highlightButton(id) {
     const btn = document.getElementById(id);
     if (!btn) return;
-    // Play the SFX named after the id (archer/mage/warrior/healer)
     AudioFX.play(id);
-
     btn.classList.add('active');
     setTimeout(() => btn.classList.remove('active'), 400);
   }
@@ -517,24 +450,17 @@ document.addEventListener('DOMContentLoaded', () => {
     playerSequence.push(id);
     highlightButton(id);
 
-    // Mistake handling
     if (playerSequence[playerSequence.length - 1] !== sequence[playerSequence.length - 1]) {
       const dmg = 10 + level * 2;
       playerHealth = Math.max(playerHealth - dmg, 0);
-      // NEW: fail sound
       AudioFX.play('fail');
       updateDisplays();
       if (playerHealth <= 0) {
-
-        // NEW: ONLY here – game over sound
         AudioFX.play('game_over');
-
-        // DEFEAT popup
         gamePauseWith(() =>
           openStory('defeat', {
             score, rounds: round,
             retry: () => {
-              // Soft reset current level
               playerHealth = 100;
               monsterHealth = monsters[level - 1].health;
               sequence = [];
@@ -557,12 +483,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Completed pattern correctly
     if (playerSequence.length === sequence.length) {
       let dmg = 0, heal = 0;
       sequence.forEach(a => {
         if (a === 'healer') {
-          // Healing: Female has it from the start; both characters from level > 2
           if (character?.name === 'Female' || level > 2) heal += 10 + level * 2;
         } else {
           dmg += 10 + level * 2;
@@ -572,7 +496,6 @@ document.addEventListener('DOMContentLoaded', () => {
       playerHealth = Math.min(playerHealth + heal, 100);
       monsterHealth = Math.max(monsterHealth - dmg, 0);
 
-      // Score scaled by difficulty
       const scoreFactor = Math.max(0.5, Number(difficulty?.scoreFactor) || 1);
       score += Math.round(dmg * scoreFactor);
 
@@ -628,16 +551,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Story tagging + pause/resume with success chime on close (Lv≥3) ---
   let __lastStory = { type: null, threshold: 0 };
   function openStory(type, payload) {
-    // Determine the "level threshold" this story corresponds to
     let threshold;
     switch (type) {
       case 'afterLevel2': threshold = 2; break;
       case 'afterLevel3': threshold = 3; break;
       case 'afterLevel4': threshold = 4; break;
       case 'victory':     threshold = 5; break;
-      case 'defeat':      threshold = -1; break; // explicitly excluded from success chime
+      case 'defeat':      threshold = -1; break;
       case 'halfPlayer':
-      case 'halfMonster': threshold = level; break; // current level context
+      case 'halfMonster': threshold = level; break;
       default:            threshold = level;
     }
     __lastStory = { type, threshold };
@@ -656,12 +578,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const hidden = modal?.classList.contains('hidden');
       if (hidden) {
         observer.disconnect();
-
-        // NEW: play success SFX when any story popup (except 'defeat') closes AND threshold ≥ 3
         if (__lastStory.type !== 'defeat' && __lastStory.threshold >= 3) {
           AudioFX.play('success');
         }
-
         if (after) {
           setTimeout(() => { if (!wasRunning) gameStarted = true; after(); }, 150);
         }
@@ -670,9 +589,8 @@ document.addEventListener('DOMContentLoaded', () => {
     observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
   }
 
-  // Input bindings (guarded)
+  // Input bindings
   if (startBtn) startBtn.addEventListener('click', startBattle);
-  else console.warn('Missing #start-btn');
   if (redoBtn) redoBtn.addEventListener('click', replaySequence);
 
   buttons.forEach(b => b.addEventListener('click', () => handlePlayerInput(b.id)));
@@ -741,56 +659,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
-  // Highlight helper: static (no animation), auto-clears after `duration`.
+  // Highlight helper
   function cue(id, { gold = false, duration = 450 } = {}) {
     const el = document.getElementById(id);
     if (!el) return;
 
-    el.classList.remove('cue', 'cue-gold'); // reset
-    void el.offsetWidth;                     // reflow so class re-applies
+    el.classList.remove('cue', 'cue-gold');
+    void el.offsetWidth;
     el.classList.add(gold ? 'cue-gold' : 'cue');
 
     setTimeout(() => el.classList.remove(gold ? 'cue-gold' : 'cue'), duration);
   }
 
-  // Example sequence playback:
-  // - normal cue uses the button's own glow
-  // - the SECOND in any consecutive run becomes gold
+  // Example sequence playback
   function playSequence(sequence, stepDelay = 700) {
     sequence.forEach((id, i) => {
       setTimeout(() => {
         const sameAsPrev = i > 0 && sequence[i] === sequence[i - 1];
-        const secondInRun =
-          sameAsPrev && (i < 2 || sequence[i - 2] !== sequence[i]); // only the first repeat
+        const secondInRun = sameAsPrev && (i < 2 || sequence[i - 2] !== sequence[i]);
         cue(id, { gold: secondInRun, duration: Math.max(350, stepDelay - 150) });
       }, i * stepDelay);
     });
   }
-// help.js (or wherever you auto-open)
-const HOWTO_KEY = 'rpg_seen_howto';
 
-function openHowtoModal({firstRun = false} = {}) {
-  const modal = document.getElementById('howto-modal');
-  modal.classList.remove('hidden');
-  document.getElementById('howto-title')?.focus();
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  const firstVisit = !localStorage.getItem(HOWTO_KEY);
-  if (firstVisit) {
-    localStorage.setItem(HOWTO_KEY, '1');
-    // Open without scrolling page
-    openHowtoModal({ firstRun: true });
-
-    // If you *really* want to scroll on small screens, do it after layout settles:
-    if (window.innerWidth < 800) {
-      requestAnimationFrame(() => {
-        document.getElementById('howto-modal')
-          ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      });
-    }
-  }
-});
+  // NOTE: Removed the separate help.js-style auto-open on DOMContentLoaded
+  // (that was causing the first-load "jump"/glitch). How-to opens only on
+  // first Start Battle for this player.
 
   // Go!
   initGame();
