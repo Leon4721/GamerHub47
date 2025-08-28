@@ -18,13 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch(e) { /* noop */ }
 
   const raw = localStorage.getItem('playerData');
-if (!raw) {
-  const sk = document.getElementById('skeleton');
-  if (sk) sk.textContent = 'Redirecting to title…';
-  requestAnimationFrame(() => { window.location.href = 'index.html'; });
-  return;
-}
-
+  if (!raw) { window.location.href = 'index.html'; return; }
   const { name: playerName, character } = JSON.parse(raw);
 
   // Put player's portrait into the left card (robust)
