@@ -9,14 +9,6 @@
   let musicEnabled = false;
   const buffers = {};           // decoded SFX buffers
 
-  // SFX library
-  const SFX_URLS = {
-    // game buttons
-    archer : 'assets/audio/sfx/archer.mp3',
-    mage   : 'assets/audio/sfx/mage.mp3',
-    warrior: 'assets/audio/sfx/warrior.mp3',
-    healer : 'assets/audio/sfx/healer.mp3',
-
     // feedback
     success: 'assets/audio/sfx/success.mp3',
     fail   : 'assets/audio/sfx/fail.mp3',
