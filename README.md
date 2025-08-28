@@ -44,13 +44,34 @@
 11. [Acknowledgements](#acknowledgements)  
 
 ---
+Project Rationale – Rhythm & Sigil
+
+Developed by CD Projekt Noir
+
+Introduction
+
+Rhythm & Sigil is an interactive RPG-inspired memory battle game that fuses the mechanics of rhythm and pattern recall with the immersive storytelling of fantasy role-playing games. Drawing creative influence from Baldur’s Gate 3, Skyrim, Elden Ring and RuneScape, the game distills the essence of large-scale RPG combat into a streamlined, accessible browser experience.
+
+The project was conceived as both a creative homage to the RPG genre and a personal exploration of inclusivity within fantasy storytelling. Too often, fantasy worlds underrepresent minority groups or present them in narrow ways. Rhythm & Sigil addresses this gap by featuring a diverse cast of heroes, including strong representation of POC characters, so that players of different cultural backgrounds can see themselves reflected in a genre that has historically lacked this inclusivity.
+
+This approach ensures that the game is not only fun and immersive but also socially meaningful — a reminder that fantasy worlds should be as diverse as the real one.
+
+## Game Lore
+
+At the start of Rhythm & Sigil, the player steps into the role of a chosen hero. As Galihad, the male Knight, your bride-to-be has been stolen by goblin raiders. As Eva, the female Elf warrior, it is your tribal sister who has been taken. What begins as a personal rescue quickly reveals a deeper evil at work.
+
+The goblins are not acting alone—they serve a cunning Dark Mage, whose forbidden sorcery binds both goblins and orcs to her will. Each battle draws you closer to her fortress, where illusions and traps mask the true scale of her corruption. What feels like a rescue mission becomes a desperate fight against spreading darkness.
+
+From facing endless waves of goblins, to dueling orc warlords, the journey culminates in a confrontation with the dreaded Skeleton Knight, a fallen champion reanimated by necromancy. Defeating him reveals the Mage’s ultimate weapon—an ancient dragon, a living force of elemental fire and destruction.
+
+This unfolding narrative transforms a simple quest of love and loyalty into a true RPG epic, where the player discovers that every choice carries weight, every victory uncovers hidden truths, and only courage can overcome the rising tide of shadow.
 
 ## Project Goals  
 
-The goal of Project RPG is to build a **fantasy-themed memory game** that is:  
+The goal of "R & S" is to build a **fantasy-themed memory game** that is:  
 - Engaging, story-driven, and visually immersive.  
-- Accessible and responsive across all modern devices.  
-- Educational in the sense of memory training, while entertaining through RPG battles.  
+- Accessible and responsive across modern devices.  
+- Educational in the sense of memory training, while entertaining through story driven battles.  
 
 ### User Goals  
 - Play a quick and fun RPG game with clear rules.  
@@ -90,9 +111,8 @@ The goal of Project RPG is to build a **fantasy-themed memory game** that is:
 - I want to understand how to play using a help modal.  
 - I want clear health bars and scores so I can track progress.  
 - I want immersive story cutscenes to feel invested.  
-- I want my high scores saved so I can try to beat them.  
-- I want to retry a level if I fail without starting over.  
-- I want to play on mobile, tablet, and desktop without losing usability.  
+- I want my high scores saved so I can try to beat them.    
+- I want to play on mobile, tablet, and desktop.  
 - I want to contact the developer for support or feedback.  
 
 #### Site Owner  
@@ -233,17 +253,112 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
 
 ## Features  
 
-- **Name Entry & Character Selection** (portraits, role flavor).
-- **Difficulty Modes** with intra-round progression; **Easy** is intentionally gentle, and deeper rounds/levels escalate.
-- **Controls:** *Start Battle* and *Replay Pattern*.
-- **Four Actions:** Archer, Mage, Warrior, Healer — with keyboard **1–4** parity and large touch targets.
-- **Highlight on Cues** to avoid ambiguity on repeated buttons.
-- **HUD:** Level/Mode, Round, Score, and HP bars (semantic colors).
-- **How-to-Play Modal:** opens automatically on a user’s first visit, then available anytime via “?”.
-- **Audio & Music Toggles:** persisted; accessible states.
-- **Contact Page:** submission confirmation.
-- **Custom 404:** clear route back to safety.
-- **Cheat Code** (`/Elias`) to skip levels (developer testing tool).  
+- **Name Entry & Character Selection**  
+  Players begin by entering their name and choosing a hero.   
+
+  ![Character Selection](docs/features/characters.png)  
+
+---
+
+- **Difficulty Modes**  
+  Three levels of challenge are available:  
+  - **Easy**: A gentle introduction with slower sequences for first-time players.  
+  - **Medium**: Faster pace with longer memory chains, adding pressure.  
+  - **Hard**: Demands precision and endurance, with rapid cues and complex patterns.  
+  Each round escalates in difficulty, creating an RPG-style sense of progression.  
+
+  ![Difficulty Modes](docs/features/difficulty.png)  
+
+---
+
+- **Controls**  
+  Two core controls guide the flow of the game:  
+  - *Start Battle* begins each new sequence.  
+  - *Replay Pattern* allows the user to replay the current sequence before attempting it.  
+  These controls make the game accessible, especially for beginners learning the rhythm.  
+
+  ![Game Controls](docs/features/controls.png)  
+
+---
+
+- **Four Actions**  
+  The game uses four RPG-inspired actions: **Archer, Mage, Warrior, and Healer**.  
+  - Each action has a large touch button, designed for mobile and tablet players.  
+  - Keyboard shortcuts (**1–4**) mirror the actions, ensuring cross-platform accessibility.  
+
+  ![Action Buttons](docs/features/actions.png)  
+
+---
+
+- **Highlight on Cues**  
+  Visual highlights appear on action buttons when a cue is triggered. Repeated cues are handled clearly, ensuring no ambiguity when buttons repeat in a sequence. This enhances fairness and user confidence during gameplay.  
+
+  ![Cue Highlights](docs/features/cues.png)  
+
+---
+
+- **HUD (Heads-Up Display)**  
+  The HUD displays essential game information:  
+  - Current **Level/Mode**  
+  - **Round number**  
+  - **Score tracker**  
+  - **Hero and Enemy HP bars**, with semantic colors (green = healthy, yellow = warning, red = critical)  
+  This ensures players always know their status at a glance.  
+
+  ![Game HUD](docs/features/hud.png)  
+
+---
+
+- **How-to-Play Modal**  
+  A tutorial modal explains the rules and controls:  
+  - Opens automatically on the first visit.  
+  - Accessible anytime via the “?” button.  
+  - Provides clear, step-by-step instructions with visual cues.  
+  This ensures the game is beginner-friendly while supporting replayability.  
+
+  ![How to Play](docs/features/help.png)  
+
+---
+
+- **Audio & Music Toggles**  
+  Players can toggle **Sound Effects** and **Background Music** independently.  
+  - Icon states change to show whether audio is on or off.  
+  - Preferences are saved in **localStorage**, so settings persist between sessions.  
+  This gives users control over immersion without disrupting gameplay.  
+
+  ![Audio Toggles](docs/features/audio.png)  
+
+---
+
+- **Contact Page**  
+  A fully styled form lets players send feedback or queries.  
+  - Fields for **name, email, and message**.  
+  - Integrated with **EmailJS** for message delivery.  
+  - Displays **submission confirmation**, reassuring players their message was sent.  
+  Designed to be responsive and accessible.  
+
+  ![Contact Page](docs/features/contact.png)  
+
+---
+
+- **Custom 404 Page**  
+  An RPG-themed error page keeps immersion intact if users reach a non-existent link.  
+  - Features fantasy artwork (hero vs dragon).  
+  - Provides a **clear route back to the Home page**.  
+  This prevents confusion and ensures users remain within the RPG experience.  
+
+  ![404 Page](docs/features/404.png)  
+
+---
+
+- **Cheat Code**  
+  A hidden cheat code (`/Elias`) allows level skipping.  
+  - Implemented as a developer testing tool.  
+  - Useful for quickly checking later story cutscenes and difficulty progression.  
+  While not part of normal gameplay, it demonstrates robust debugging and testing support.  
+
+  ![Cheat Code](docs/features/cheat.png)  
+
 
 ---
 
