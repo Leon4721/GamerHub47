@@ -1,6 +1,9 @@
 // game logic with story popups at exact milestones + half-health events
 import { showStory } from './ui.js';
 
+if (window.__RPG_INIT__) throw new Error('init twice');
+window.__RPG_INIT__ = true;
+
 if (window.__RPG_INIT__) { console.warn('RPG already initialized'); }
 else { window.__RPG_INIT__ = true; }
 

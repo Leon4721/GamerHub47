@@ -1,6 +1,9 @@
 // selection.js — handles character selection and the pre-game story popup
 import { showStory } from './ui.js';
 
+if (window.__RPG_INIT__) throw new Error('init twice');
+window.__RPG_INIT__ = true;
+
 document.addEventListener('DOMContentLoaded', () => {
   const characters = [
     {
