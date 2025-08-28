@@ -187,34 +187,64 @@ Wireframes were produced in **Balsamiq** for:  PC , Ipad Pro , and Iphone SE
   
 ---
 
-## Technologies Used  
+## Technologies Used
 
-### Languages  
-- HTML5  
-- CSS3  
-- JavaScript ES6  
+### Languages & Core APIs
+- **HTML5** — semantic structure, modal markup, forms.
+- **CSS3** — responsive layout (Flexbox/Grid), media queries, transitions.
+- **JavaScript (ES6+)** — game logic, event handling, DOM updates.
+- **Web Storage (localStorage)** — persist name, character, audio/music, first-visit flag.
+- **HTML5 Audio API** — sound effects/music playback and toggles.
+
+### Libraries & Services
+- **EmailJS** — client-side email delivery for the Contact form (with success/fail handling).
+- **Font Awesome (CDN)** — iconography (e.g., help “?” icon, UI controls).
+
+### Tooling & Hosting
+- **Git + GitHub** — version control and collaboration.
+- **GitHub Pages** — static site hosting and deployment.
+- **Chrome DevTools** — performance/viewport testing and debugging.
+
+### Accessibility & Quality
+- **ARIA attributes & keyboard support** — accessible toggles, focus states, and modal behavior.
+- **WCAG-aligned color semantics** — HP/status bars with meaningful colors.
+- **Validation & Testing** — HTML/CSS validation and cross-device/browser checks.
+
+### Assets
+- **Raster images (PNG/JPG) & SVG** — portraits, UI icons, and decorative graphics.
+
 
 ### Frameworks, Libraries & Tools  
-- Font Awesome (icons).  
-- Git & GitHub for version control and hosting.  
-- GitHub Pages for deployment.  
-- Lighthouse, WAVE, W3C Validators for validation.  
-- Balsamiq for wireframes.  
-- Remove.bg for image adjustments.  
+- [Am I Responsive](http://ami.responsivedesign.is/) was used to create the multi-device mock-up you can see at the start of this README.md file.
+- [Balsamiq](https://balsamiq.com/) to create the wireframes for the project
+- [Bootstrap v5.1.3](https://getbootstrap.com/)
+- [EmailJS](https://www.emailjs.com) used to send email from the contact form
+- [Favicon.io](https://favicon.io) for making the site favicon
+- [Font Awesome](https://fontawesome.com/) - Icons from Font Awesome were used throughout the site
+- Gimp and Microsoft Paint were used to create game pictures and resize background image
+- [Git](https://git-scm.com/) was used for version control within VSCode to push the code to GitHub
+- [GitHub](https://github.com/) was used as a remote repository to store project code
+- [Google Fonts](https://fonts.google.com/)
+- [Remove.bg](https://www.remove.bg/) was used to remove background on logos
+- [This source](https://chir.ag/projects/name-that-color) was used to initially name root colors from the colour pallet. I have removed unwanted colors and renamed all during the development of the project.
+- [Chrome dev tools](https://developers.google.com/web/tools/chrome-devtools) were used for debugging of the code and check site for responsiveness
+- [WC3 Validator](https://validator.w3.org/), [Jigsaw W3 Validator](https://jigsaw.w3.org/css-validator/), [JShint](https://jshint.com/), [Wave Validator](https://wave.webaim.org/), [Lighthouse](https://developers.google.com/web/tools/lighthouse/) and [Am I Responsive](http://ami.responsivedesign.is/) were all used to validate the website
+
 
 ---
 
 ## Features  
 
-- **Character Selection** (Knight or Archer with stats).  
-- **Difficulty Modes**: Easy, Medium, Hard.  
-- **Monster Battles**: Goblin → Orc → Dark Mage → Skeleton Knight → Dragon.  
-- **Story Cutscenes** between levels (branching after Lv4).  
-- **Replay Pattern Button** for accessibility.  
-- **High Score Persistence** via localStorage.  
-- **Help Modal (“?”)** with instructions.  
-- **Contact Page** with feedback form.  
-- **404 Page** with themed dragon image.  
+- **Name Entry & Character Selection** (portraits, role flavor).
+- **Difficulty Modes** with intra-round progression; **Easy** is intentionally gentle, and deeper rounds/levels escalate.
+- **Controls:** *Start Battle* and *Replay Pattern*.
+- **Four Actions:** Archer, Mage, Warrior, Healer — with keyboard **1–4** parity and large touch targets.
+- **Highlight on Cues** to avoid ambiguity on repeated buttons.
+- **HUD:** Level/Mode, Round, Score, and HP bars (semantic colors).
+- **How-to-Play Modal:** opens automatically on a user’s first visit, then available anytime via “?”.
+- **Audio & Music Toggles:** persisted; accessible states.
+- **Contact Page:** submission confirmation.
+- **Custom 404:** clear route back to safety.
 - **Cheat Code** (`/Elias`) to skip levels (developer testing tool).  
 
 ---

@@ -57,7 +57,7 @@
       <section class="side player-side">
         <!-- Spacer for symmetry added via CSS ::before -->
         <div class="card-frame">
-          <img id="player-portrait" alt="Selected character"/>
+        <img id="player-portrait" src="assets/images/characters/default.png" alt="Selected user character"/>
         </div>
         <div class="health-container">
           <div class="health-label">
@@ -94,10 +94,10 @@
     </div>
 
     <div class="game-buttons" aria-label="Action Buttons">
-      <button class="game-button" id="archer"><div class="button-icon">🏹</div>Archer<div class="key-hint">1</div></button>
-      <button class="game-button" id="mage"><div class="button-icon">🔮</div>Mage<div class="key-hint">2</div></button>
-      <button class="game-button" id="warrior"><div class="button-icon">⚔️</div>Warrior<div class="key-hint">3</div></button>
-      <button class="game-button" id="healer"><div class="button-icon">❤️</div>Healer<div class="key-hint">4</div></button>
+      <button class="game-button" id="archer"><span class="button-icon" aria-hidden="true">🏹</span>Archer<span class="key-hint"><kbd>1</kbd></span></button>
+      <button class="game-button" id="mage"><span class="button-icon" aria-hidden="true">🔮</span>Mage<span class="key-hint"><kbd>2</kbd></span></button>
+      <button class="game-button" id="warrior"><span class="button-icon" aria-hidden="true">⚔️</span>Warrior<span class="key-hint"><kbd>3</kbd></span></button>
+      <button class="game-button" id="healer"><span class="button-icon" aria-hidden="true">❤️</span>Healer<span class="key-hint"><kbd>4</kbd></span></button>
     </div>
 
     <div id="feedback">Press Start Battle to begin your adventure!</div>
@@ -144,7 +144,7 @@
   <!-- Story Modal (existing, used by the game story system) -->
   <div id="story-modal" class="hidden">
     <div class="story-card">
-      <img id="story-image" src="" alt="Story Scene"/>
+      <img id="story-image" src="/assets/images/intro_trail.png" alt="A young elvish woman kidnapped bya group of orc and goblins"/>
       <p id="story-text"></p>
       <div id="story-buttons"></div>
     </div>

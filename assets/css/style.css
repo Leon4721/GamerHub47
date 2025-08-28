@@ -216,7 +216,6 @@ body {
 /* Prevent large reflows while sections render */
 .game-container {
   content-visibility: auto;
-  contain-intrinsic-size: 800px;   /* rough initial size to avoid jump */
 }
 
 /* Make How-to overlay instead of pushing layout (optional but smoothest) */
