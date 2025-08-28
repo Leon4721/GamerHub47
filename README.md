@@ -372,19 +372,34 @@ Tested using Chrome DevTools and real devices:
 | Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
 | Save score | localStorage | Finish game | Score saved to table | Works | ![](docs/testing/scores.png) | 
 | Retry level | Defeat popup | Click “Retry” | Restart same level | Works | ![](docs/testing/retry.png) | 
-| User Story        | Feature                           | Action                       | Expected Result                                         | Actual Result                              | Screenshot  |
-| ----------------- | --------------------------------- | ---------------------------- | ------------------------------------------------------- | ------------------------------------------ | ----------- |
-| Understand rules  | Help Modal                        | Click **?** button           | Instructions popup appears with clear how-to-play steps | Works                                      | *Add image* |
-| Choose hero       | Character Select                  | Click a hero card            | Selected card is highlighted and stored for the session | Works                                      | *Add image* |
-| Choose difficulty | Difficulty Select                 | Pick Easy/Normal/Hard        | Mode is highlighted and saved for the session           | Works                                      | *Add image* |
-| Track progress    | HUD (HP bars, Score, Level/Round) | Start a battle               | Player/Monster HP bars update; score/level increments   | Works                                      | *Add image* |
-| Feel invested     | Story Cutscenes                   | Reach story milestones       | Cutscene modal appears with narrative text and image    | Works                                      | *Add image* |
-| Save high scores  | localStorage Leaderboard          | Finish a game                | Score saved and visible on scoreboard                   | Works                                      | *Add image* |
-| Retry a level     | Defeat Popup                      | Click **Retry**              | Same level restarts with same difficulty                | Works                                      | *Add image* |
-| Replay pattern    | Controls                          | Click **Replay Pattern**     | Most recent pattern replays with correct timing         | Works                                      | *Add image* |
-| Mobile friendly   | Responsive Layout                 | Open on phone/tablet/desktop | Layout remains usable; touch targets large enough       | Works                                      | *Add image* |
-| Contact developer | Contact Form (EmailJS)            | Submit a message             | Success toast/confirmation and email sent               | **Needs fix** (intermittent “Send Failed”) | *Add image* |
-| Audio control     | Audio/Music Toggles               | Toggle SFX/Music             | States persist; icons/ARIA updated accordingly          | Works                                      | *Add image* |
+## Testing User Stories
+
+### Site User
+
+| User Story | Feature | Action | Expected Result | Actual Result | Screenshot |  
+|------------|---------|--------|----------------|---------------|------------|  
+| Understand rules | Help Modal | Click `?` button | Instructions popup appears | Works | ![](docs/testing/help.png) |  
+| Choose hero | Character Select | Click card | Character highlighted | Works | ![](docs/testing/select.png) |  
+| Choose difficulty | Difficulty Select | Pick Easy/Normal/Hard | Mode is highlighted and stored | Works | ![](docs/testing/difficulty.png) |  
+| Track progress | HUD (HP bars, Score, Level) | Start a battle | HP bars update; score & round increment | Works | ![](docs/testing/hud.png) |  
+| Feel invested | Story Cutscenes | Reach story milestone | Narrative modal with text & image appears | Works | ![](docs/testing/story.png) |  
+| Save high scores | localStorage Leaderboard | Finish game | Score saved and displayed | Works | ![](docs/testing/scores.png) |  
+| Retry level | Defeat popup | Click `Retry` | Restart same level | Works | ![](docs/testing/retry.png) |  
+| Replay pattern | Controls | Click `Replay Pattern` | Pattern replays correctly | Works | ![](docs/testing/replay.png) |  
+| Mobile friendly | Responsive Layout | Open on phone/tablet/desktop | Layout adapts, touch targets usable | Works | ![](docs/testing/responsive.png) |  
+| Contact developer | Contact Form (EmailJS) | Submit form | Confirmation shown & email sent | **Needs fix** | ![](docs/testing/contact.png) |  
+| Audio control | Audio & Music Toggles | Toggle icons | States persist, ARIA updated | Works | ![](docs/testing/audio.png) |  
+
+### Site Owner
+
+| User Story | Feature | Action | Expected Result | Actual Result | Screenshot |  
+|------------|---------|--------|----------------|---------------|------------|  
+| Easy to learn, hard to master | Onboarding + Difficulty | New player flow → later rounds | Clear early wins, harder later rounds | Works | ![](docs/testing/difficulty-curve.png) |  
+| Engaging narrative | Cutscenes & Characters | Progress through levels | Story events increase replayability | Works | ![](docs/testing/narrative.png) |  
+| Validated code | HTML/CSS/JS Validation | Run validators | No blocking errors | Works | ![](docs/testing/validation.png) |  
+| Accessibility & performance | ARIA, Lighthouse | Run audits | High a11y/perf scores; keyboard usable | Works | ![](docs/testing/a11y.png) |  
+| Custom 404 | `/404.html` | Visit invalid route | Branded 404 page with link home | Works | ![](docs/testing/404.png) |  
+
 
 
 ---
