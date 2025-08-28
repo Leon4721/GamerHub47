@@ -582,26 +582,75 @@ Tested using Chrome DevTools and real devices:
 
 ---
 
-## Bugs  
+## 🐞 Bugs & Fixes  
 
 | Bug | Fix |  
 |-----|-----|  
-| Help.js loaded twice in `game.html` | Removed duplicate `<script>` tag |  
-| Player portrait alt text missing | Added dynamic alt with hero name |  
-| Contact return button failed when opened directly | Added fallback to `index.html` |  
-| Scaling issue on iPhone SE | Added `fit.js` auto-scaler |  
-| Monster images not displaying on certain levels | Corrected typo in image path |  
+| **Help.js loaded twice in `game.html`** | Removed duplicate `<script>` tag |  
+| **Player portrait alt text missing** | Added dynamic `alt` attribute populated with hero name |  
+| **Contact return button failed when opened directly** | Implemented fallback redirect to `index.html` |  
+| **Scaling issue on iPhone SE** | Added `fit.js` auto-scaler for responsive resizing |  
+| **Monster images not displaying on certain levels** | Corrected file path typo in monster image references |  
 
----
 
 ## Deployment  
 
 ### GitHub Pages  
-The project was deployed via GitHub Pages:  
-1. Go to repository → Settings → Pages.  
-2. Select branch `main`.  
-3. Site published at: [Project RPG Live](https://leon4721.github.io/Project-RPG/).  
 
-### Forking Repository  
-1. Navigate to repo → click **Fork**.  
-2. Mak
+The website was deployed using **GitHub Pages** by following these steps:  
+
+1. In the GitHub repository, navigate to the **Settings** tab.  
+2. In the left-hand menu, select **Pages**.  
+3. Under *Source*, select **Branch: main**.  
+4. Once saved, GitHub will refresh and the live site will be published from the repository.  
+5. The link to the live site will appear:  
+👉 [Live Site – Rhythm & Sigil RPG](https://leon4721.github.io/GamerHub47/)  
+
+---
+
+### Forking the GitHub Repository  
+
+1. Navigate to the repository on GitHub.  
+2. In the top-right corner, click the **Fork** button.  
+3. This creates a copy of the repository under your own GitHub account for experimentation or contribution.  
+
+---
+
+### Making a Local Clone  
+
+1. Navigate to the repository on GitHub.  
+2. Click the green **Code** button above the file list.  
+3. Copy the URL provided under **HTTPS**.  
+4. Open Git Bash and change the current working directory to the location where you want the clone.  
+5. Type git clone and paste the URL from the clipboard ($ git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY)
+6. Press Enter to create your local clone
+# Credits  
+
+### Images & Assets  
+- Character portraits created/edited by **Leon Freeman** using a mix of AI generation and open-license sources.  
+- Background images sourced from **Unsplash** and edited for a fantasy aesthetic.  
+- Fantasy icons & HUD elements from **Font Awesome**.  
+- Dragon, Skeleton Knight and Orc artwork adapted from royalty-free fantasy stock and modified to match the project’s visual theme.  
+
+### Code  
+- Modal accessibility structure adapted from **Bootstrap v5.1.3** documentation.  
+- Email integration guided by **EmailJS official docs & template editor**.  
+- Game loop and memory-sequence logic inspired by classic *Simon* game logic but rebuilt for RPG immersion.  
+- CSS gradient buttons and text-shadow styles inspired by resources on **w3schools** and **CSS Gradient Generator**.  
+- Debugging support from **Chrome DevTools**, **JSHint**, and **WC3 Validators**.  
+
+### Tools  
+- **Balsamiq** – wireframing.  
+- **Favicon.io** – for favicon creation.  
+- **Remove.bg** – background cleanup for character art.  
+- **Am I Responsive** – multi-device preview mockups.  
+- **Adobe Color** – palette refinement.  
+
+---
+
+## Acknowledgements  
+
+- Huge thanks to **Code Institute** for the project framework and grading rubrics that guided the scope of development.  
+- Gratitude to **family & friends** who tested the game on phones and tablets, providing valuable feedback on scaling, responsiveness, and play balance.  
+- Appreciation to the online **RPG communities** (Reddit, Discord servers) who inspired narrative direction and inclusivity focus.  
+- Special credit to my partner **Candice** for testing, creative brainstorming, and encouragement throughout the project.  
